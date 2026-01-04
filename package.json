@@ -1,0 +1,27 @@
+{
+  "name": "rutin",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt"
+  },
+  "dependencies": {
+    "@kobalte/core": "^0.13.11",
+    "solid-js": "^1.9.10"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.21.0",
+    "oxlint": "^1.36.0",
+    "solid-devtools": "^0.34.4",
+    "unocss": "^66.5.12",
+    "vite": "^7.3.0",
+    "vite-plugin-solid": "^2.11.10"
+  },
+  "packageManager": "pnpm@10.26.0"
+}
