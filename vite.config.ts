@@ -1,15 +1,9 @@
 import { defineConfig } from 'vite';
-import solidPlugin from 'vite-plugin-solid';
-import devtools from 'solid-devtools/vite';
-import UnocssPlugin from '@unocss/vite';
+import solid from 'vite-plugin-solid';
+import uno from 'unocss/vite';
 
 export default defineConfig({
-  plugins: [
-    solidPlugin(),
-    UnocssPlugin({
-      // your config or in uno.config.ts
-    }),
-  ],
+  plugins: [solid(), uno()],
   server: {
     port: 3000,
   },

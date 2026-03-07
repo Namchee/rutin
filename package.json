@@ -7,6 +7,10 @@
   "author": "",
   "main": "index.js",
   "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "format": "oxfmt"
@@ -19,7 +23,7 @@
     "oxfmt": "^0.21.0",
     "oxlint": "^1.36.0",
     "solid-devtools": "^0.34.4",
-    "unocss": "^66.5.12",
+    "unocss": "^66.6.6",
     "vite": "^7.3.0",
     "vite-plugin-solid": "^2.11.10"
   },
