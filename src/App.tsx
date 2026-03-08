@@ -2,6 +2,8 @@ import { type Component, createSignal } from 'solid-js';
 
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
+import { ScheduleHint } from './components/ScheduleHint';
+import type { ScheduleFormat } from './types';
 
 const Placeholders = {
   cron: '* * * * *',
@@ -10,7 +12,7 @@ const Placeholders = {
 };
 
 const App: Component = () => {
-  const [format, setFormat] = createSignal<'cron' | 'quartz' | 'systemd'>('cron');
+  const [format, setFormat] = createSignal<ScheduleFormat>('cron');
   const [value, setValue] = createSignal('');
 
   return (
@@ -37,9 +39,7 @@ const App: Component = () => {
           />
         </TextField>
 
-        <div class="text-sm flex justify-center text-gray-400">
-          <p>Year</p>
-        </div>
+        <ScheduleHint format={format()} index={0} />
       </Tabs>
     </div>
   );
