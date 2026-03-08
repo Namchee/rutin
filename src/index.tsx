@@ -1,6 +1,8 @@
 import 'uno.css';
+import './assets/styles/global.css';
+import './assets/styles/fonts.css';
+
 import { render } from 'solid-js/web';
-import 'solid-devtools';
 
 import App from './App';
 
@@ -12,4 +14,5 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
+// biome-ignore lint/style/noNonNullAssertion: Legit code
 render(() => <App />, root!);
