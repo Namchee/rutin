@@ -1,12 +1,22 @@
-import type { Component } from 'solid-js';
+import { type Component, createSignal } from 'solid-js';
 
-import { Tabs, TabsList, TabsTrigger } from '@/components/Tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
+import { TextField, TextFieldInput } from '@/components/ui/TextField';
+
+const Placeholders = {
+  cron: '* * * * *',
+  quartz: '* * * * * * *',
+  systemd: '* *-*-* *:*:*',
+};
 
 const App: Component = () => {
+  const [format, setFormat] = createSignal<'cron' | 'quartz' | 'systemd'>('cron');
+  const [value, setValue] = createSignal('');
+
   return (
     <div class="max-w-3xl font-sans w-full mx-auto mt-24 flex flex-col items-center border border-border rounded-md p-4">
-      <Tabs defaultValue="cron">
-        <TabsList class="rounded-full">
+      <Tabs value={format()} onChange={setFormat} class="flex flex-col justify-center w-full">
+        <TabsList class="relative rounded-full mx-auto">
           <TabsTrigger value="cron" class="rounded-full cursor-pointer">
             CRON
           </TabsTrigger>
@@ -17,6 +27,19 @@ const App: Component = () => {
             Systemd
           </TabsTrigger>
         </TabsList>
+
+        <TextField class="mt-8 w-full">
+          <TextFieldInput
+            class="font-mono text-2xl text-center h-16 w-full"
+            value={value()}
+            onInput={e => setValue(e.currentTarget.value)}
+            placeholder={Placeholders[format()]}
+          />
+        </TextField>
+
+        <div class="text-sm flex justify-center text-gray-400">
+          <p>Year</p>
+        </div>
       </Tabs>
     </div>
   );

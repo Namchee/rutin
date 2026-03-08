@@ -2,7 +2,7 @@
   font-family: "Geist";
   src:
     local("Geist"),
-    url("../fonts/geist.woff2") format("woff2");
+    url("../fonts/geist.woff2") format("woff2-variations");
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
@@ -12,7 +12,7 @@
   font-family: "Geist Mono";
   src:
     local("Geist Mono"),
-    url("../fonts/geist-mono.woff2") format("woff2");
+    url("../fonts/geist-mono.woff2") format("woff2-variations");
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
