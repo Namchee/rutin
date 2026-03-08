@@ -1,13 +1,15 @@
 import { type Component, createSignal } from 'solid-js';
 
+import { GithubIcon } from '@/components/icons/Github';
+import { HeartIcon } from '@/components/icons/Heart';
+import { NamcheeIcon } from '@/components/icons/Namchee';
+import { SolidJsIcon } from '@/components/icons/Solid';
+
+import { ScheduleHint } from '@/components/ScheduleHint';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
-import { GithubIcon } from './components/icons/Github';
-import { HeartIcon } from './components/icons/Heart';
-import { NamcheeIcon } from './components/icons/Namchee';
-import { SolidJsIcon } from './components/icons/Solid';
-import { ScheduleHint } from './components/ScheduleHint';
-import type { ScheduleFormat } from './types';
+
+import type { ScheduleFormat } from '@/types';
 
 const Placeholders = {
   cron: '* * * * *',
@@ -59,7 +61,7 @@ const App: Component = () => {
         </div>
 
         <div class="flex items-center">
-          <a href="https://www.github.com" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/Namchee/rutin" target="_blank" rel="noopener noreferrer">
             <GithubIcon class="w-4 h-4" />
           </a>
         </div>
