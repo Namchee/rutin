@@ -1,3 +1,5 @@
+import { Dynamic } from 'solid-js/web';
+
 import type { ScheduleFormat } from '@/types';
 
 interface ScheduleHintProps {
@@ -5,19 +7,17 @@ interface ScheduleHintProps {
   index: number;
 }
 
-export function ScheduleHint({ format, index }: Readonly<ScheduleHintProps>) {
+export function ScheduleHint(props: Readonly<ScheduleHintProps>) {
   const hintMap = {
     cron: UnixCRONHint,
     quartz: QuartzCRONHint,
     systemd: SystemdHint,
   };
 
-  const Element = hintMap[format];
-
-  return <Element index={index} />;
+  return <Dynamic component={hintMap[props.format]} index={props.index} />;
 }
 
-function UnixCRONHint({ index }: Omit<ScheduleHintProps, 'format'>) {
+function UnixCRONHint(props: Omit<ScheduleHintProps, 'format'>) {
   return (
     <div class="text-sm flex justify-center text-gray-400 gap-2 mt-2">
       <p>Minute</p>
@@ -29,9 +29,9 @@ function UnixCRONHint({ index }: Omit<ScheduleHintProps, 'format'>) {
   );
 }
 
-function QuartzCRONHint({ index }: Omit<ScheduleHintProps, 'format'>) {
+function QuartzCRONHint(props: Omit<ScheduleHintProps, 'format'>) {
   return (
-    <div class="text-sm flex justify-center text-gray-400 mt-2">
+    <div class="text-sm flex justify-center text-gray-400 gap-2 mt-2">
       <p>Seconds</p>
       <p>Minutes</p>
       <p>Hours</p>
@@ -43,7 +43,7 @@ function QuartzCRONHint({ index }: Omit<ScheduleHintProps, 'format'>) {
   );
 }
 
-function SystemdHint({ index }: Omit<ScheduleHintProps, 'format'>) {
+function SystemdHint(props: Omit<ScheduleHintProps, 'format'>) {
   return (
     <div class="text-sm flex justify-center text-gray-400 gap-2 mt-2">
       <p>Day</p>
