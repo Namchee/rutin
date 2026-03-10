@@ -20,6 +20,7 @@ const Placeholders = {
 
 const App: Component = () => {
   const [format, setFormat] = createSignal<ScheduleFormat>('cron');
+  const [isNonStandard, setNonStandard] = createSignal(false);
   const [value, setValue] = createSignal('');
 
   return (
