@@ -1,4 +1,3 @@
-import { createInputMask, createMaskPattern } from '@solid-primitives/input-mask';
 import { type Component, createSignal } from 'solid-js';
 
 import { BranchIcon } from '@/components/icons/Branch';
@@ -11,6 +10,8 @@ import { ScheduleHint } from '@/components/ScheduleHint';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
 import type { ScheduleFormat } from '@/types';
+import { TriangleAlertIcon } from './components/icons/TriangleAlert';
+import { Tooltip, TooltipContent, TooltipTrigger } from './components/ui/Tooltip';
 
 const Placeholders = {
   cron: '* * * * *',
@@ -20,7 +21,7 @@ const Placeholders = {
 
 const App: Component = () => {
   const [format, setFormat] = createSignal<ScheduleFormat>('cron');
-  const [isNonStandard, setNonStandard] = createSignal(false);
+  const [isNonStandard, setNonStandard] = createSignal(true);
   const [value, setValue] = createSignal('');
 
   return (
@@ -38,18 +39,27 @@ const App: Component = () => {
           </TabsTrigger>
         </TabsList>
 
-        <TextField class="mt-8 w-full">
+        <TextField class="mt-8 w-full relative ">
           <TextFieldInput
-            class="font-mono text-2xl h-16 w-full"
+            class="font-mono text-2xl h-16 w-full text-center"
             value={value()}
-            onInput={e => {
-              createMaskPattern(createInputMask('* * * * *'), () => '* * * * *');
-
-              setValue(e.currentTarget.value);
-            }}
+            onInput={e => setValue(e.currentTarget.value)}
             spellcheck={false}
+            placeholder={Placeholders[format()]}
             autocomplete="off"
           />
+
+          {isNonStandard() && (
+            <Tooltip>
+              <TooltipTrigger>
+                <TriangleAlertIcon class="absolute right-4 top-4 w-8 h-8 text-yellow-500" />
+              </TooltipTrigger>
+
+              <TooltipContent>
+                <p>This scheduling value contains a non-standard syntax. Use with caution</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
         </TextField>
 
         <ScheduleHint format={format()} index={0} />
