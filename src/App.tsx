@@ -39,30 +39,34 @@ const App: Component = () => {
           </TabsTrigger>
         </TabsList>
 
-        <TextField class="mt-8 w-full relative ">
-          <TextFieldInput
-            class="font-mono text-2xl h-16 w-full text-center"
-            value={value()}
-            onInput={e => setValue(e.currentTarget.value)}
-            spellcheck={false}
-            placeholder={Placeholders[format()]}
-            autocomplete="off"
-          />
+        <div class="mt-8">
+          <p class="text-2xl text-center mb-2">At 12 Every Sunday</p>
 
-          {isNonStandard() && (
-            <Tooltip>
-              <TooltipTrigger>
-                <TriangleAlertIcon class="absolute right-4 top-4 w-8 h-8 text-yellow-500" />
-              </TooltipTrigger>
+          <TextField class="w-full relative ">
+            <TextFieldInput
+              class="font-mono text-2xl h-16 w-full text-center"
+              value={value()}
+              onInput={e => setValue(e.currentTarget.value)}
+              spellcheck={false}
+              placeholder={Placeholders[format()]}
+              autocomplete="off"
+            />
 
-              <TooltipContent>
-                <p>This scheduling value contains a non-standard syntax. Use with caution</p>
-              </TooltipContent>
-            </Tooltip>
-          )}
-        </TextField>
+            {isNonStandard() && (
+              <Tooltip>
+                <TooltipTrigger>
+                  <TriangleAlertIcon class="absolute right-4 top-4 w-8 h-8 text-yellow-500" />
+                </TooltipTrigger>
 
-        <ScheduleHint format={format()} index={0} />
+                <TooltipContent>
+                  <p>This scheduling value contains a non-standard syntax. Use with caution</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </TextField>
+
+          <ScheduleHint format={format()} index={0} />
+        </div>
       </Tabs>
 
       <footer class="flex flex-col gap-2 items-center w-full mt-auto text-gray-400 text-sm">
