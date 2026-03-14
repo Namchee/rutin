@@ -17,6 +17,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      cronstrue:
+        specifier: ^3.13.0
+        version: 3.13.0
       solid-js:
         specifier: ^1.9.10
         version: 1.9.10
@@ -885,6 +888,10 @@ packages:
 
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
+
+  cronstrue@3.13.0:
+    resolution: {integrity: sha512-M06cKwRIN46AyuM8BOmF1HUkBTkd3/h7uYImnrH1T3wtRKBGOibVo3jZ42VheEvx8LtgZbG/4GI35vfIxYxMug==}
+    hasBin: true
 
   css-tree@3.1.0:
     resolution: {integrity: sha512-0eW44TGN5SQXU1mWSkKwFstI/22X2bG1nYzZTYMAWjylYURhse752YgbE4Cx46AC+bAvI+/dYTPRk1LqSUnu6w==}
@@ -2111,6 +2118,8 @@ snapshots:
   consola@3.4.2: {}
 
   convert-source-map@2.0.0: {}
+
+  cronstrue@3.13.0: {}
 
   css-tree@3.1.0:
     dependencies:

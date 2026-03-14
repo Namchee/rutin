@@ -11,25 +11,30 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
 import type { ScheduleFormat } from '@/types';
 import { TriangleAlertIcon } from './components/icons/TriangleAlert';
+import { ScheduleSyntax } from './components/ScheduleSyntax';
 import { Tooltip, TooltipContent, TooltipTrigger } from './components/ui/Tooltip';
 
 const Placeholders = {
-  cron: '* * * * *',
+  unix: '* * * * *',
   quartz: '* * * * * * *',
   systemd: '* *-*-* *:*:*',
 };
 
 const App: Component = () => {
-  const [format, setFormat] = createSignal<ScheduleFormat>('cron');
+  const [format, setFormat] = createSignal<ScheduleFormat>('unix');
   const [isNonStandard, setNonStandard] = createSignal(true);
   const [value, setValue] = createSignal('');
 
+  const [descriptor, setDescriptor] = createSignal(
+    'At minute 30 past every hour from 22 through 23 and every hour from 0 through 2 on every day-of-week from Monday through Friday.',
+  );
+
   return (
     <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-24 pb-8 flex flex-col items-center rounded-md p-4">
-      <Tabs value={format()} onChange={setFormat} class="flex flex-col justify-center w-full">
+      <Tabs value={format()} onChange={setFormat} class="flex flex-col w-full flex-1">
         <TabsList class="relative rounded-full mx-auto">
-          <TabsTrigger value="cron" class="rounded-full cursor-pointer">
-            CRON
+          <TabsTrigger value="unix" class="rounded-full cursor-pointer">
+            UNIX
           </TabsTrigger>
           <TabsTrigger value="quartz" class="rounded-full cursor-pointer">
             Quartz
@@ -39,10 +44,12 @@ const App: Component = () => {
           </TabsTrigger>
         </TabsList>
 
-        <div class="mt-8">
-          <p class="text-2xl text-center mb-2">At 12 Every Sunday</p>
+        <div style={{ 'margin-top': '32px' }}>
+          <div class="text-xl grid place-items-center mb-4 text-balance line-clamp-2 h-[56px]">
+            <p class="text-center">{descriptor()}</p>
+          </div>
 
-          <TextField class="w-full relative ">
+          <TextField class="w-full relative">
             <TextFieldInput
               class="font-mono text-2xl h-16 w-full text-center"
               value={value()}
@@ -65,7 +72,9 @@ const App: Component = () => {
             )}
           </TextField>
 
-          <ScheduleHint format={format()} index={0} />
+          <ScheduleHint format={format()} index={-1} />
+
+          <ScheduleSyntax format={format()} index={-1} />
         </div>
       </Tabs>
 

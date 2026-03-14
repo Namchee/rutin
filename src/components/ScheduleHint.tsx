@@ -9,15 +9,15 @@ interface ScheduleHintProps {
 
 export function ScheduleHint(props: Readonly<ScheduleHintProps>) {
   const hintMap = {
-    cron: UnixCRONHint,
-    quartz: QuartzCRONHint,
+    cron: UnixCronHint,
+    quartz: QuartzCronHint,
     systemd: SystemdHint,
   };
 
   return <Dynamic component={hintMap[props.format]} index={props.index} />;
 }
 
-function UnixCRONHint(props: Omit<ScheduleHintProps, 'format'>) {
+function UnixCronHint(props: Omit<ScheduleHintProps, 'format'>) {
   return (
     <div class="text-sm flex justify-center text-gray-400 gap-2 mt-2">
       <p>Minute</p>
@@ -29,7 +29,7 @@ function UnixCRONHint(props: Omit<ScheduleHintProps, 'format'>) {
   );
 }
 
-function QuartzCRONHint(props: Omit<ScheduleHintProps, 'format'>) {
+function QuartzCronHint(props: Omit<ScheduleHintProps, 'format'>) {
   return (
     <div class="text-sm flex justify-center text-gray-400 gap-2 mt-2">
       <p>Seconds</p>

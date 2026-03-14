@@ -1,1 +1,1 @@
-export type ScheduleFormat = 'cron' | 'quartz' | 'systemd';
+export type ScheduleFormat = 'unix' | 'quartz' | 'systemd';
