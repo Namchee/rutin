@@ -74,7 +74,10 @@ const App: Component = () => {
 
           <ScheduleHint format={format()} index={-1} />
 
-          <ScheduleSyntax format={format()} index={-1} />
+          <div class="grid grid-cols-2">
+            <ScheduleSyntax format={format()} index={-1} />
+            <ScheduleSyntax format={format()} index={0} />
+          </div>
         </div>
       </Tabs>
 
