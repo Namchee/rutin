@@ -169,17 +169,18 @@ export function ScheduleSyntax(props: Readonly<ScheduleSyntaxProps>) {
   const dict = Syntaxes[props.format][props.index.toString()];
 
   return (
-    <Table class="max-w-content w-full mx-auto text-foreground/75 mt-8">
+    <Table class="text-foreground/70">
       <TableHeader>
-        <TableHead class="text-right">Syntax</TableHead>
-        <TableHead>Description</TableHead>
+        <TableHead class="text-center font-medium" colSpan={2}>
+          Syntaxes
+        </TableHead>
       </TableHeader>
 
       <TableBody>
         {Object.entries(dict).map(([key, value]) => (
           <TableRow>
-            <TableCell class="font-mono text-right">{key}</TableCell>
-            <TableCell>{value}</TableCell>
+            <TableCell class="font-mono text-right w-1/2">{key}</TableCell>
+            <TableCell class="w-1/2">{value}</TableCell>
           </TableRow>
         ))}
       </TableBody>

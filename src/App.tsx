@@ -11,7 +11,10 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
 import type { ScheduleFormat } from '@/types';
 import { TriangleAlertIcon } from './components/icons/TriangleAlert';
+import { WrenchIcon } from './components/icons/Wrench';
+import { ScheduleNext } from './components/ScheduleNext';
 import { ScheduleSyntax } from './components/ScheduleSyntax';
+import { Button } from './components/ui/Button';
 import { Tooltip, TooltipContent, TooltipTrigger } from './components/ui/Tooltip';
 
 const Placeholders = {
@@ -30,7 +33,7 @@ const App: Component = () => {
   );
 
   return (
-    <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-24 pb-8 flex flex-col items-center rounded-md p-4">
+    <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 pb-8 flex flex-col items-center rounded-md p-4">
       <Tabs value={format()} onChange={setFormat} class="flex flex-col w-full flex-1">
         <TabsList class="relative rounded-full mx-auto">
           <TabsTrigger value="unix" class="rounded-full cursor-pointer">
@@ -58,30 +61,31 @@ const App: Component = () => {
               placeholder={Placeholders[format()]}
               autocomplete="off"
             />
-
-            {isNonStandard() && (
-              <Tooltip>
-                <TooltipTrigger>
-                  <TriangleAlertIcon class="absolute right-4 top-4 w-8 h-8 text-yellow-500" />
-                </TooltipTrigger>
-
-                <TooltipContent>
-                  <p>This scheduling value contains a non-standard syntax. Use with caution</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
           </TextField>
 
-          <ScheduleHint format={format()} index={-1} />
+          <div class="w-full mt-4 relative">
+            <ScheduleHint format={format()} index={-1} />
 
-          <div class="grid grid-cols-2">
-            <ScheduleSyntax format={format()} index={-1} />
+            <Button
+              size="icon"
+              disabled={isNonStandard()}
+              variant="ghost"
+              class="ml-auto rounded-sm w-5 h-5 absolute right-0 top-0 ">
+              <WrenchIcon class="w-3! h-3!" />
+            </Button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 mt-8 gap-8">
             <ScheduleSyntax format={format()} index={0} />
+
+            <ScheduleNext />
           </div>
         </div>
       </Tabs>
 
-      <footer class="flex flex-col gap-2 items-center w-full mt-auto text-gray-400 text-sm">
+      <footer
+        class="flex flex-col gap-2 items-center w-full mt-auto text-gray-400 text-sm"
+        style={{ 'margin-top': '32px' }}>
         <div class="flex items-center">
           Made in 2026 with <HeartIcon class="mx-1 w-4 h-4" /> and{' '}
           <a href="https://www.solidjs.com/" target="_blank" rel="noopener noreferrer">

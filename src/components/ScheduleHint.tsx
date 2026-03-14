@@ -19,7 +19,7 @@ export function ScheduleHint(props: Readonly<ScheduleHintProps>) {
 
 function UnixCronHint(props: Omit<ScheduleHintProps, 'format'>) {
   return (
-    <div class="text-sm flex justify-center text-gray-400 gap-2 mt-2">
+    <div class="text-sm flex justify-center text-gray-400 gap-2">
       <p>Minute</p>
       <p>Hour</p>
       <p>Date</p>
@@ -31,7 +31,7 @@ function UnixCronHint(props: Omit<ScheduleHintProps, 'format'>) {
 
 function QuartzCronHint(props: Omit<ScheduleHintProps, 'format'>) {
   return (
-    <div class="text-sm flex justify-center text-gray-400 gap-2 mt-2">
+    <div class="text-sm flex justify-center text-gray-400 gap-2">
       <p>Seconds</p>
       <p>Minutes</p>
       <p>Hours</p>
@@ -45,7 +45,7 @@ function QuartzCronHint(props: Omit<ScheduleHintProps, 'format'>) {
 
 function SystemdHint(props: Omit<ScheduleHintProps, 'format'>) {
   return (
-    <div class="text-sm flex justify-center text-gray-400 gap-2 mt-2">
+    <div class="text-sm flex justify-center text-gray-400 gap-2">
       <p>Day</p>
       <p>Year-Month-Day</p>
       <p>Hour:Minute:Second</p>
