@@ -9,7 +9,7 @@ interface ScheduleHintProps {
 
 export function ScheduleHint(props: Readonly<ScheduleHintProps>) {
   const hintMap = {
-    cron: UnixCronHint,
+    unix: UnixCronHint,
     quartz: QuartzCronHint,
     systemd: SystemdHint,
   };
