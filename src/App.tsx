@@ -1,21 +1,21 @@
+import { SelectContext } from '@kobalte/core/src/select/select-context.jsx';
 import { Tooltip } from '@kobalte/core/tooltip';
-import { win32 } from 'path/win32';
 import { type Component, createSignal, type JSX } from 'solid-js';
+import { AlertIcon } from '@/components/icons/Alert';
 import { BranchIcon } from '@/components/icons/Branch';
 import { GithubIcon } from '@/components/icons/Github';
 import { HeartIcon } from '@/components/icons/Heart';
 import { NamcheeIcon } from '@/components/icons/Namchee';
 import { SolidJsIcon } from '@/components/icons/Solid';
+import { WrenchIcon } from '@/components/icons/Wrench';
 import { ScheduleHint } from '@/components/ScheduleHint';
+import { ScheduleNext } from '@/components/ScheduleNext';
+import { ScheduleSyntax } from '@/components/ScheduleSyntax';
+import { Button } from '@/components/ui/Button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
+import { TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
 import type { ScheduleFormat } from '@/types';
-import { AlertIcon } from './components/icons/Alert';
-import { WrenchIcon } from './components/icons/Wrench';
-import { ScheduleNext } from './components/ScheduleNext';
-import { ScheduleSyntax } from './components/ScheduleSyntax';
-import { Button } from './components/ui/Button';
-import { TooltipContent, TooltipTrigger } from './components/ui/Tooltip';
 
 const Placeholders = {
   unix: '* * * * *',
@@ -35,24 +35,54 @@ const App: Component = () => {
   );
 
   const onInput: JSX.EventHandler<HTMLInputElement, InputEvent> = event => {
-    const { value } = event.currentTarget;
+    const { value, selectionStart } = event.currentTarget;
     setValue(value);
 
     if (value.length === 0) {
       setCaret(-1);
-
       return;
     }
 
     if (value.startsWith('@')) {
       setCaret(-2);
+      return;
+    }
+
+    const head = value.slice(0, selectionStart || 0);
+    const tokensInHead = head.match(/\S+/g) || [];
+    const isAtTrailingSpace = /\s$/.test(head);
+
+    const activeIdx = isAtTrailingSpace
+      ? tokensInHead.length
+      : Math.max(0, tokensInHead.length - 1);
+
+    setCaret(activeIdx);
+  };
+
+  const onCaretMovement: JSX.EventHandler<HTMLInputElement, InputEvent> = event => {
+    const { value, selectionStart } = event.currentTarget;
+
+    if (selectionStart === null) {
+      return;
+    }
+
+    if (value.trim().length === 0) {
+      setCaret(-1);
 
       return;
     }
 
-    const tokens = value.split(/\s+/);
+    const textBeforeCaret = value.slice(0, selectionStart);
 
-    setCaret(tokens.length - 1);
+    const tokensBefore = textBeforeCaret.match(/\S+/g) || [];
+
+    const isAtTrailingSpace = /\s$/.test(textBeforeCaret);
+
+    const currentSectionIdx = isAtTrailingSpace
+      ? tokensBefore.length
+      : Math.max(0, tokensBefore.length - 1);
+
+    setCaret(currentSectionIdx);
   };
 
   return (
@@ -80,6 +110,9 @@ const App: Component = () => {
               class="font-mono text-2xl h-16 w-full text-center"
               value={value()}
               onInput={onInput}
+              onSelect={onCaretMovement}
+              onKeyUp={onCaretMovement}
+              onClick={onCaretMovement}
               spellcheck={false}
               placeholder={Placeholders[format()]}
               autocomplete="off"

@@ -3,6 +3,7 @@ import { defineConfig, presetWind4 } from 'unocss';
 import { presetAnimations } from 'unocss-preset-animations';
 
 export default defineConfig({
+  // @ts-expect-error
   presets: [presetWind4(), presetAnimations()],
   variants: [
     matcher => {
