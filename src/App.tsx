@@ -113,6 +113,7 @@ const App: Component = () => {
               onSelect={onCaretMovement}
               onKeyUp={onCaretMovement}
               onClick={onCaretMovement}
+              onBlur={() => setCaret(-1)}
               spellcheck={false}
               placeholder={Placeholders[format()]}
               autocomplete="off"
