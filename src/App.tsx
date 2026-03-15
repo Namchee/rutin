@@ -1,21 +1,20 @@
+import { Tooltip } from '@kobalte/core/tooltip';
 import { type Component, createSignal } from 'solid-js';
-
 import { BranchIcon } from '@/components/icons/Branch';
 import { GithubIcon } from '@/components/icons/Github';
 import { HeartIcon } from '@/components/icons/Heart';
 import { NamcheeIcon } from '@/components/icons/Namchee';
 import { SolidJsIcon } from '@/components/icons/Solid';
 import { ScheduleHint } from '@/components/ScheduleHint';
-
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
 import type { ScheduleFormat } from '@/types';
-import { TriangleAlertIcon } from './components/icons/TriangleAlert';
+import { AlertIcon } from './components/icons/Alert';
 import { WrenchIcon } from './components/icons/Wrench';
 import { ScheduleNext } from './components/ScheduleNext';
 import { ScheduleSyntax } from './components/ScheduleSyntax';
 import { Button } from './components/ui/Button';
-import { Tooltip, TooltipContent, TooltipTrigger } from './components/ui/Tooltip';
+import { TooltipContent, TooltipTrigger } from './components/ui/Tooltip';
 
 const Placeholders = {
   unix: '* * * * *',
@@ -27,6 +26,8 @@ const App: Component = () => {
   const [format, setFormat] = createSignal<ScheduleFormat>('unix');
   const [isNonStandard, setNonStandard] = createSignal(true);
   const [value, setValue] = createSignal('');
+
+  const [caret, setCaret] = createSignal(-1);
 
   const [descriptor, setDescriptor] = createSignal(
     'At minute 30 past every hour from 22 through 23 and every hour from 0 through 2 on every day-of-week from Monday through Friday.',
@@ -61,10 +62,22 @@ const App: Component = () => {
               placeholder={Placeholders[format()]}
               autocomplete="off"
             />
+
+            {isNonStandard() && (
+              <Tooltip placement="top" gutter={4}>
+                <TooltipTrigger class="w-fit absolute top-4 right-4">
+                  <AlertIcon class="w-8 h-8 text-foreground/25" />
+                </TooltipTrigger>
+
+                <TooltipContent class="max-w-md">
+                  Non-standard syntax. Click the wrench icon to normalize.
+                </TooltipContent>
+              </Tooltip>
+            )}
           </TextField>
 
           <div class="w-full mt-4 relative">
-            <ScheduleHint format={format()} index={-1} />
+            <ScheduleHint format={format()} index={caret()} />
 
             <Button
               size="icon"
@@ -76,7 +89,7 @@ const App: Component = () => {
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 mt-8 gap-8">
-            <ScheduleSyntax format={format()} index={0} />
+            <ScheduleSyntax format={format()} index={caret()} />
 
             <ScheduleNext />
           </div>
