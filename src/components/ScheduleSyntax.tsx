@@ -3,6 +3,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 
 const Syntaxes: Record<ScheduleFormat, Record<string, Record<string, string>>> = {
   unix: {
+    '-2': {
+      '@yearly': 'Every year',
+      '@annually': 'Every year',
+      '@monthly': 'Every month',
+      '@weekly': 'Every week',
+      '@daily': 'Every day',
+      '@hourly': 'Every hour',
+      '@reboot': 'After reboot',
+    },
     '-1': {
       '*': 'Every...',
       ',': 'Only on...',
@@ -43,7 +52,7 @@ const Syntaxes: Record<ScheduleFormat, Record<string, Record<string, string>>> =
       '-': 'From ... through ...',
       '/': 'In increments of...',
       '1 - 12': 'Month value',
-      'JAN - DEC': 'Alternative month value',
+      'JAN - DEC': 'Month value (alt.)',
     },
     '4': {
       '*': 'Every...',
@@ -51,10 +60,19 @@ const Syntaxes: Record<ScheduleFormat, Record<string, Record<string, string>>> =
       '-': 'From ... through ...',
       '/': 'In increments of...',
       '0 - 6': 'Weekday value',
-      'SUN - SAT': 'Alternative weekday value',
+      'SUN - SAT': 'Weekday value (alt.)',
     },
   },
   quartz: {
+    '-2': {
+      '@yearly': 'Every year (macro)',
+      '@annually': 'Every year (macro)',
+      '@monthly': 'Every month (macro)',
+      '@weekly': 'Every week (macro)',
+      '@daily': 'Every day (macro)',
+      '@hourly': 'Every hour (macro)',
+      '@reboot': 'After reboot (macro)',
+    },
     '-1': {
       '*': 'Every...',
       ',': 'Only on...',
@@ -166,7 +184,7 @@ interface ScheduleSyntaxProps {
 }
 
 export function ScheduleSyntax(props: Readonly<ScheduleSyntaxProps>) {
-  const dict = Syntaxes[props.format][props.index.toString()];
+  const dict = () => Syntaxes[props.format][props.index.toString()];
 
   return (
     <Table class="text-foreground/70">
@@ -177,7 +195,7 @@ export function ScheduleSyntax(props: Readonly<ScheduleSyntaxProps>) {
       </TableHeader>
 
       <TableBody>
-        {Object.entries(dict).map(([key, value]) => (
+        {Object.entries(dict()).map(([key, value]) => (
           <TableRow>
             <TableCell class="font-mono text-right w-1/2">{key}</TableCell>
             <TableCell class="w-1/2">{value}</TableCell>

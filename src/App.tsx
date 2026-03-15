@@ -35,15 +35,24 @@ const App: Component = () => {
   );
 
   const onInput: JSX.EventHandler<HTMLInputElement, InputEvent> = event => {
-    const { selectionStart, value } = event.currentTarget;
+    const { value } = event.currentTarget;
     setValue(value);
 
-    if (selectionStart) {
-      const caret = Math.floor(selectionStart / 2);
-      setCaret(caret);
-    } else {
+    if (value.length === 0) {
       setCaret(-1);
+
+      return;
     }
+
+    if (value.startsWith('@')) {
+      setCaret(-2);
+
+      return;
+    }
+
+    const tokens = value.split(/\s+/);
+
+    setCaret(tokens.length - 1);
   };
 
   return (
@@ -83,7 +92,7 @@ const App: Component = () => {
                 </TooltipTrigger>
 
                 <TooltipContent class="max-w-md">
-                  Non-standard syntax. Click the wrench icon to normalize.
+                  Macros detected. Click 🔧 to normalize.
                 </TooltipContent>
               </Tooltip>
             )}
