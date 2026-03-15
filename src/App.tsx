@@ -1,4 +1,3 @@
-import { SelectContext } from '@kobalte/core/src/select/select-context.jsx';
 import { Tooltip } from '@kobalte/core/tooltip';
 import { type Component, createSignal, type JSX } from 'solid-js';
 import { AlertIcon } from '@/components/icons/Alert';
@@ -24,6 +23,8 @@ const Placeholders = {
 };
 
 const App: Component = () => {
+  let input!: HTMLInputElement;
+
   const [format, setFormat] = createSignal<ScheduleFormat>('unix');
   const [isNonStandard, setNonStandard] = createSignal(true);
   const [value, setValue] = createSignal('');
@@ -34,11 +35,12 @@ const App: Component = () => {
     'At minute 30 past every hour from 22 through 23 and every hour from 0 through 2 on every day-of-week from Monday through Friday.',
   );
 
-  const onInput: JSX.EventHandler<HTMLInputElement, InputEvent> = event => {
-    const { value, selectionStart } = event.currentTarget;
-    setValue(value);
+  const updateCaretIndex = (el: HTMLInputElement) => {
+    const { value, selectionStart } = el;
 
-    if (value.length === 0) {
+    if (selectionStart === null) return;
+
+    if (value.trim().length === 0) {
       setCaret(-1);
       return;
     }
@@ -48,34 +50,8 @@ const App: Component = () => {
       return;
     }
 
-    const head = value.slice(0, selectionStart || 0);
-    const tokensInHead = head.match(/\S+/g) || [];
-    const isAtTrailingSpace = /\s$/.test(head);
-
-    const activeIdx = isAtTrailingSpace
-      ? tokensInHead.length
-      : Math.max(0, tokensInHead.length - 1);
-
-    setCaret(activeIdx);
-  };
-
-  const onCaretMovement: JSX.EventHandler<HTMLInputElement, InputEvent> = event => {
-    const { value, selectionStart } = event.currentTarget;
-
-    if (selectionStart === null) {
-      return;
-    }
-
-    if (value.trim().length === 0) {
-      setCaret(-1);
-
-      return;
-    }
-
     const textBeforeCaret = value.slice(0, selectionStart);
-
     const tokensBefore = textBeforeCaret.match(/\S+/g) || [];
-
     const isAtTrailingSpace = /\s$/.test(textBeforeCaret);
 
     const currentSectionIdx = isAtTrailingSpace
@@ -83,6 +59,19 @@ const App: Component = () => {
       : Math.max(0, tokensBefore.length - 1);
 
     setCaret(currentSectionIdx);
+  };
+
+  const onInput: JSX.EventHandler<HTMLInputElement, InputEvent> = event => {
+    setValue(event.currentTarget.value);
+    updateCaretIndex(event.currentTarget);
+  };
+
+  const onCaretMovement: JSX.EventHandler<HTMLInputElement, Event> = event => {
+    updateCaretIndex(event.currentTarget);
+  };
+
+  const onHintSelect = (idx: number) => {
+    setCaret(idx);
   };
 
   return (
@@ -97,6 +86,9 @@ const App: Component = () => {
           </TabsTrigger>
           <TabsTrigger value="systemd" class="rounded-full cursor-pointer">
             Systemd
+          </TabsTrigger>
+          <TabsTrigger value="human" class="rounded-full cursor-pointer hidden">
+            Human*
           </TabsTrigger>
         </TabsList>
 
@@ -133,7 +125,7 @@ const App: Component = () => {
           </TextField>
 
           <div class="w-full mt-2 relative">
-            <ScheduleHint format={format()} index={caret()} />
+            <ScheduleHint format={format()} index={caret()} onHintSelect={onHintSelect} />
 
             <Button
               size="icon"

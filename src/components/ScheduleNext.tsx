@@ -8,7 +8,7 @@ export function ScheduleNext() {
       </p>
 
       <Switch class="flex gap-2 h-10 items-center mx-auto mt-1">
-        <SwitchLabel class="font-medium">Local Time</SwitchLabel>
+        <SwitchLabel class="font-medium">Local Timezone</SwitchLabel>
 
         <SwitchControl>
           <SwitchThumb />
