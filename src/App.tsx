@@ -1,5 +1,6 @@
 import { Tooltip } from '@kobalte/core/tooltip';
-import { type Component, createSignal } from 'solid-js';
+import { win32 } from 'path/win32';
+import { type Component, createSignal, type JSX } from 'solid-js';
 import { BranchIcon } from '@/components/icons/Branch';
 import { GithubIcon } from '@/components/icons/Github';
 import { HeartIcon } from '@/components/icons/Heart';
@@ -33,6 +34,18 @@ const App: Component = () => {
     'At minute 30 past every hour from 22 through 23 and every hour from 0 through 2 on every day-of-week from Monday through Friday.',
   );
 
+  const onInput: JSX.EventHandler<HTMLInputElement, InputEvent> = event => {
+    const { selectionStart, value } = event.currentTarget;
+    setValue(value);
+
+    if (selectionStart) {
+      const caret = Math.floor(selectionStart / 2);
+      setCaret(caret);
+    } else {
+      setCaret(-1);
+    }
+  };
+
   return (
     <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 pb-8 flex flex-col items-center rounded-md p-4">
       <Tabs value={format()} onChange={setFormat} class="flex flex-col w-full flex-1">
@@ -57,7 +70,7 @@ const App: Component = () => {
             <TextFieldInput
               class="font-mono text-2xl h-16 w-full text-center"
               value={value()}
-              onInput={e => setValue(e.currentTarget.value)}
+              onInput={onInput}
               spellcheck={false}
               placeholder={Placeholders[format()]}
               autocomplete="off"
@@ -76,7 +89,7 @@ const App: Component = () => {
             )}
           </TextField>
 
-          <div class="w-full mt-4 relative">
+          <div class="w-full mt-2 relative">
             <ScheduleHint format={format()} index={caret()} />
 
             <Button
