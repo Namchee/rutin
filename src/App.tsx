@@ -1,5 +1,6 @@
 import { Tooltip } from '@kobalte/core/tooltip';
-import { type Component, createSignal, type JSX } from 'solid-js';
+import { type Component, createComputed, createSignal, type JSX } from 'solid-js';
+
 import { AlertIcon } from '@/components/icons/Alert';
 import { BranchIcon } from '@/components/icons/Branch';
 import { GithubIcon } from '@/components/icons/Github';
@@ -14,6 +15,7 @@ import { Button } from '@/components/ui/Button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
 import { TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
+
 import type { ScheduleFormat } from '@/types';
 
 const Placeholders = {
@@ -28,12 +30,43 @@ const App: Component = () => {
   const [format, setFormat] = createSignal<ScheduleFormat>('unix');
   const [isNonStandard, setNonStandard] = createSignal(true);
   const [value, setValue] = createSignal('');
+  const [filled, setFilled] = createSignal<[number, number][]>([]);
 
   const [caret, setCaret] = createSignal(-1);
 
   const [descriptor, setDescriptor] = createSignal(
     'At minute 30 past every hour from 22 through 23 and every hour from 0 through 2 on every day-of-week from Monday through Friday.',
   );
+
+  const updateFilledPosition = (value: string) => {
+    const tokens = value.split('');
+
+    const filledTokens: [number, number][] = [];
+
+    let flag = false;
+    let start = -1;
+
+    for (let i = 0; i < tokens.length; i++) {
+      if (/\s/.test(tokens[i])) {
+        if (flag) {
+          filledTokens.push([start, i]);
+          start = -1;
+          flag = false;
+        }
+      } else {
+        if (!flag) {
+          flag = true;
+          start = i;
+        }
+      }
+    }
+
+    if (flag) {
+      filledTokens.push([start, tokens.length]);
+    }
+
+    setFilled(filledTokens);
+  };
 
   const updateCaretIndex = (el: HTMLInputElement) => {
     const { value, selectionStart } = el;
@@ -63,6 +96,7 @@ const App: Component = () => {
 
   const onInput: JSX.EventHandler<HTMLInputElement, InputEvent> = event => {
     setValue(event.currentTarget.value);
+    updateFilledPosition(event.currentTarget.value);
     updateCaretIndex(event.currentTarget);
   };
 
@@ -71,7 +105,7 @@ const App: Component = () => {
   };
 
   const onHintSelect = (idx: number) => {
-    setCaret(idx);
+    const pos = [];
   };
 
   return (
@@ -125,7 +159,12 @@ const App: Component = () => {
           </TextField>
 
           <div class="w-full mt-2 relative">
-            <ScheduleHint format={format()} index={caret()} onHintSelect={onHintSelect} />
+            <ScheduleHint
+              format={format()}
+              index={caret()}
+              filled={filled().map((_, idx) => idx)}
+              onHintSelect={onHintSelect}
+            />
 
             <Button
               size="icon"

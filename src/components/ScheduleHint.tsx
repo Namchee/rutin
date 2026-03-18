@@ -10,6 +10,7 @@ const Hints = {
 interface ScheduleHintProps {
   format: ScheduleFormat;
   index: number;
+  filled: number[];
 
   onHintSelect: (idx: number) => void;
 }
@@ -24,6 +25,7 @@ export function ScheduleHint(props: Readonly<ScheduleHintProps>) {
           class={cn('px-0.5 transition-colors ', {
             'bg-foreground/10 text-foreground': props.index === idx,
             'bg-transparent text-foreground/50 cursor-pointer': props.index !== idx,
+            underline: props.filled.includes(idx),
           })}>
           {hint}
         </button>
