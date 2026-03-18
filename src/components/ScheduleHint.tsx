@@ -1,4 +1,5 @@
 import { cn } from '@/lib/css';
+
 import type { ScheduleFormat } from '@/types';
 
 const Hints = {
@@ -21,10 +22,17 @@ export function ScheduleHint(props: Readonly<ScheduleHintProps>) {
       {Hints[props.format].map((hint, idx) => (
         <button
           type="button"
-          onClick={() => props.onHintSelect(idx)}
-          class={cn('px-0.5 transition-colors ', {
+          onClick={() => {
+            if (props.filled.includes(idx)) {
+              props.onHintSelect(idx);
+            }
+          }}
+          disabled={!props.filled.includes(idx)}
+          class={cn('px-0.5 transition-colors', {
             'bg-foreground/10 text-foreground': props.index === idx,
-            'bg-transparent text-foreground/50 cursor-pointer': props.index !== idx,
+            'bg-transparent text-foreground/50': props.index !== idx,
+            'cursor-pointer': props.filled.includes(idx) && props.index !== idx,
+            'active-hint': props.filled.includes(idx),
             underline: props.filled.includes(idx),
           })}>
           {hint}

@@ -1,6 +1,6 @@
+import { FocusOutsideEvent } from '@kobalte/core';
 import { Tooltip } from '@kobalte/core/tooltip';
 import { type Component, createComputed, createSignal, type JSX } from 'solid-js';
-
 import { AlertIcon } from '@/components/icons/Alert';
 import { BranchIcon } from '@/components/icons/Branch';
 import { GithubIcon } from '@/components/icons/Github';
@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/Button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
 import { TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
-
 import type { ScheduleFormat } from '@/types';
 
 const Placeholders = {
@@ -69,6 +68,7 @@ const App: Component = () => {
   };
 
   const updateCaretIndex = (el: HTMLInputElement) => {
+    console.log(el);
     const { value, selectionStart } = el;
 
     if (selectionStart === null) return;
@@ -105,7 +105,24 @@ const App: Component = () => {
   };
 
   const onHintSelect = (idx: number) => {
-    const pos = [];
+    const segments = filled();
+
+    if (idx >= segments.length) {
+      return;
+    }
+
+    if (input) {
+      input.focus();
+      input.setSelectionRange(segments[idx][0], segments[idx][1]);
+    }
+  };
+
+  const onBlur: JSX.EventHandler<HTMLInputElement, FocusEvent> = event => {
+    const target = event.relatedTarget;
+
+    if (!target || !(target instanceof HTMLElement) || !target.classList.contains('active-hint')) {
+      setCaret(-1);
+    }
   };
 
   return (
@@ -139,10 +156,11 @@ const App: Component = () => {
               onSelect={onCaretMovement}
               onKeyUp={onCaretMovement}
               onClick={onCaretMovement}
-              onBlur={() => setCaret(-1)}
+              onBlur={onBlur}
               spellcheck={false}
               placeholder={Placeholders[format()]}
               autocomplete="off"
+              ref={input}
             />
 
             {isNonStandard() && (
