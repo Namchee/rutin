@@ -31,8 +31,7 @@ export function ScheduleHint(props: Readonly<ScheduleHintProps>) {
           class={cn('px-0.5 transition-colors', {
             'bg-foreground/10 text-foreground': props.index === idx,
             'bg-transparent text-foreground/50': props.index !== idx,
-            'cursor-pointer': props.filled.includes(idx) && props.index !== idx,
-            'active-hint': props.filled.includes(idx),
+            'cursor-pointer active-hint': props.filled.includes(idx),
             underline: props.filled.includes(idx),
           })}>
           {hint}
