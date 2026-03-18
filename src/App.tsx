@@ -147,7 +147,7 @@ const App: Component = () => {
 
             {isNonStandard() && (
               <Tooltip placement="top" gutter={4}>
-                <TooltipTrigger class="w-fit absolute top-4 right-4">
+                <TooltipTrigger class="w-fit absolute top-4 right-4" tabIndex={-1}>
                   <AlertIcon class="w-8 h-8 text-foreground/25" />
                 </TooltipTrigger>
 
