@@ -2,25 +2,65 @@ import cronstrue from 'cronstrue';
 import type { ScheduleFormat } from '@/types';
 import { createTokenValidator } from './shared';
 
-const Macros = {
-  '@yearly': '0 0 1 1 *',
-  '@annually': '0 0 1 1 *',
-  '@monthly': '0 0 1 * *',
-  '@weekly': '0 0 * * 0',
-  '@daily': '0 0 * * *',
-  '@midnight': '0 0 * * *',
-  '@hourly': '0 * * * *',
-};
-
-const Validator: ((token: string) => boolean)[] = [
-  createTokenValidator(/[^0-9*,\-/]/, 0, 59),
-  createTokenValidator(/[^0-9*,\-/]/, 0, 23),
-  createTokenValidator(/[^0-9*,\-/]/, 1, 31),
-  createTokenValidator(/[^0-9*,\-/]/, 1, 12),
-  createTokenValidator(/[^0-9*,\-/]/, 0, 6),
-];
-
 const UnixCRON = {
+  Macros: {
+    '@yearly': '0 0 1 1 *',
+    '@annually': '0 0 1 1 *',
+    '@monthly': '0 0 1 * *',
+    '@weekly': '0 0 * * 0',
+    '@daily': '0 0 * * *',
+    '@midnight': '0 0 * * *',
+    '@hourly': '0 * * * *',
+  },
+
+  MonthToNumber: {
+    jan: 1,
+    feb: 2,
+    mar: 3,
+    apr: 4,
+    may: 5,
+    jun: 6,
+    jul: 7,
+    aug: 8,
+    sep: 9,
+    oct: 10,
+    nov: 11,
+    dec: 12,
+  },
+
+  DayToNumber: {
+    sun: 0,
+    mon: 1,
+    tue: 2,
+    wed: 3,
+    thu: 4,
+    fri: 5,
+    sat: 6,
+  },
+
+  Validator: [
+    createTokenValidator(/[^0-9*,\-/]/, 0, 59),
+    createTokenValidator(/[^0-9*,\-/]/, 0, 23),
+    createTokenValidator(/[^0-9*,\-/]/, 1, 31),
+    createTokenValidator(/[^0-9*,\-/]/, 1, 12, (token: string): string => {
+      return Object.entries(UnixCRON.MonthToNumber as Record<string, number>).reduce(
+        (acc, curr) => {
+          const regex = new RegExp(curr[0], 'i');
+
+          return acc.replaceAll(regex, curr[1].toString());
+        },
+        token,
+      );
+    }),
+    createTokenValidator(/[^0-9*,\-/]/, 0, 6, (token: string): string => {
+      return Object.entries(UnixCRON.DayToNumber as Record<string, number>).reduce((acc, curr) => {
+        const regex = new RegExp(curr[0], 'i');
+
+        return acc.replaceAll(regex, curr[1].toString());
+      }, token);
+    }),
+  ],
+
   *parse(expr: string) {
     const tokens = expr.split(/\s+/);
 
@@ -36,7 +76,7 @@ const UnixCRON = {
     const errorIdx: number[] = [];
 
     for (let idx = 0; idx < tokens.length; idx++) {
-      if (!Validator[idx](tokens[idx])) {
+      if (!UnixCRON.Validator[idx](tokens[idx])) {
         errorIdx.push(idx);
       }
     }
@@ -50,12 +90,14 @@ const UnixCRON = {
       return true;
     }
 
-    return Object.keys(Macros).includes(expr.trim());
+    return Object.keys(UnixCRON.Macros).includes(expr.trim());
   },
   normalize(expr: string): string {
     const normalExpr = expr.trim().replaceAll(/[^\S ]|\s{2,}/, ' ');
 
-    return normalExpr in Macros ? Macros[normalExpr as keyof typeof Macros] : normalExpr;
+    return normalExpr in UnixCRON.Macros
+      ? UnixCRON.Macros[normalExpr as keyof typeof UnixCRON.Macros]
+      : normalExpr;
   },
   convert(expr: string, format: ScheduleFormat): string {
     switch (format) {

@@ -72,8 +72,15 @@ export function isValidStep(expr: string, min: number, max: number): boolean {
   return !Number.isNaN(step) && step > 0;
 }
 
-export function createTokenValidator(regex: RegExp, min: number, max: number) {
+export function createTokenValidator(
+  regex: RegExp,
+  min: number,
+  max: number,
+  preprocess?: (token: string) => string,
+) {
   return (token: string) => {
+    token = preprocess ? preprocess(token) : token;
+
     const badToken = regex.test(token);
     if (badToken) {
       return false;
