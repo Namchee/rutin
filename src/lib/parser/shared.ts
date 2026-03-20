@@ -71,3 +71,40 @@ export function isValidStep(expr: string, min: number, max: number): boolean {
 
   return !Number.isNaN(step) && step > 0;
 }
+
+export function createTokenValidator(regex: RegExp, min: number, max: number) {
+  return (token: string) => {
+    const badToken = regex.test(token);
+    if (badToken) {
+      return false;
+    }
+
+    const subToken = token.split(',');
+
+    for (const t of subToken) {
+      const isRange = t.includes('-');
+
+      if (isRange && !isValidRange(t, min, max)) {
+        return false;
+      }
+
+      const isStep = t.includes('/');
+
+      if (isStep && !isValidStep(t, min, max)) {
+        return false;
+      }
+
+      const singular = Number(t);
+
+      if (Number.isNaN(singular)) {
+        return false;
+      }
+
+      if (singular < min || singular > max) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+}

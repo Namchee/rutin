@@ -1,7 +1,6 @@
 import cronstrue from 'cronstrue';
-
 import type { ScheduleFormat } from '@/types';
-import { isValidRange, isValidStep } from './shared';
+import { createTokenValidator } from './shared';
 
 const Macros = {
   '@yearly': '0 0 1 1 *',
@@ -14,40 +13,11 @@ const Macros = {
 };
 
 const Validator: ((token: string) => boolean)[] = [
-  token => {
-    const badToken = /[^0-9*,\-/]/.test(token);
-    if (badToken) {
-      return false;
-    }
-
-    const subToken = token.split(',');
-
-    for (const t of subToken) {
-      const isRange = t.includes('-');
-
-      if (isRange && !isValidRange(t, 0, 59)) {
-        return false;
-      }
-
-      const isStep = t.includes('/');
-
-      if (isStep && !isValidStep(t, 0, 59)) {
-        return false;
-      }
-
-      const singular = Number(t);
-
-      if (Number.isNaN(singular)) {
-        return false;
-      }
-
-      if (singular < 0 || singular > 59) {
-        return false;
-      }
-    }
-
-    return true;
-  },
+  createTokenValidator(/[^0-9*,\-/]/, 0, 59),
+  createTokenValidator(/[^0-9*,\-/]/, 0, 23),
+  createTokenValidator(/[^0-9*,\-/]/, 1, 31),
+  createTokenValidator(/[^0-9*,\-/]/, 1, 12),
+  createTokenValidator(/[^0-9*,\-/]/, 0, 6),
 ];
 
 const UnixCRON = {
@@ -61,8 +31,17 @@ const UnixCRON = {
 
     yield;
   },
-  validate(expr: string): boolean {
-    const tokens = expr;
+  validate(expr: string): { error: number[] } {
+    const tokens = expr.split(/\s+/);
+    const errorIdx: number[] = [];
+
+    for (let idx = 0; idx < tokens.length; idx++) {
+      if (!Validator[idx](tokens[idx])) {
+        errorIdx.push(idx);
+      }
+    }
+
+    return { error: errorIdx };
   },
   isNonStandard(expr: string): boolean {
     const multiWhitespace = /[^\S ]|\s{2,}/;
