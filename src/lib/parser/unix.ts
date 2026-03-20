@@ -1,6 +1,7 @@
 import cronstrue from 'cronstrue';
 
 import type { ScheduleFormat } from '@/types';
+import { isValidRange } from './shared';
 
 const Macros = {
   '@yearly': '0 0 1 1 *',
@@ -12,19 +13,57 @@ const Macros = {
   '@hourly': '0 * * * *',
 };
 
+const Validator: ((token: string) => boolean)[] = [
+  token => {
+    const badToken = /[^0-9*,\-/]/.test(token);
+    if (badToken) {
+      return false;
+    }
+
+    const subToken = token.split(',');
+
+    for (const t of subToken) {
+      const isRange = t.includes('-');
+
+      if (isRange && !isValidRange(t, 0, 59)) {
+        return false;
+      }
+
+      const isStep = t.includes('/');
+
+      if (isStep && !isValidStep()) {
+        return false;
+      }
+
+      const singular = Number(t);
+
+      if (Number.isNaN(singular)) {
+        return false;
+      }
+
+      if (singular < 0 || singular > 59) {
+        return false;
+      }
+    }
+
+    return true;
+  },
+];
+
 export class UnixCRON {
   private constructor(private readonly expr: string) {}
 
   static parse(expr: string): UnixCRON | undefined {
     const tokens = expr.split(/\s+/);
 
+    // to be parsed, the expression must be complete
     if (tokens.length !== 5) {
       return undefined;
     }
   }
 
   static validate(expr: string) {
-    throw new Error('Invalid');
+    const tokens = expr;
   }
 
   static isNonStandard(expr: string): boolean {

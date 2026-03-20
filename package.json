@@ -1,6 +1,7 @@
 {
   "name": "rutin",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "keywords": [],
   "license": "MIT",
@@ -16,7 +17,8 @@
     "serve": "vite preview",
     "lint": "biome lint ./src",
     "lint:fix": "biome lint ./src --write",
-    "format": "biome format --write ./src"
+    "format": "biome format --write ./src",
+    "test": "node --experimental-strip-types --test './src/**/*.test.*'"
   },
   "dependencies": {
     "@kobalte/core": "^0.13.11",
