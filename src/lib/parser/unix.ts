@@ -1,7 +1,7 @@
 import cronstrue from 'cronstrue';
 
 import type { ScheduleFormat } from '@/types';
-import { isValidRange } from './shared';
+import { isValidRange, isValidStep } from './shared';
 
 const Macros = {
   '@yearly': '0 0 1 1 *',
@@ -31,7 +31,7 @@ const Validator: ((token: string) => boolean)[] = [
 
       const isStep = t.includes('/');
 
-      if (isStep && !isValidStep()) {
+      if (isStep && !isValidStep(t, 0, 59)) {
         return false;
       }
 
@@ -50,23 +50,21 @@ const Validator: ((token: string) => boolean)[] = [
   },
 ];
 
-export class UnixCRON {
-  private constructor(private readonly expr: string) {}
-
-  static parse(expr: string): UnixCRON | undefined {
+const UnixCRON = {
+  *parse(expr: string) {
     const tokens = expr.split(/\s+/);
 
     // to be parsed, the expression must be complete
     if (tokens.length !== 5) {
       return undefined;
     }
-  }
 
-  static validate(expr: string) {
+    yield;
+  },
+  validate(expr: string): boolean {
     const tokens = expr;
-  }
-
-  static isNonStandard(expr: string): boolean {
+  },
+  isNonStandard(expr: string): boolean {
     const multiWhitespace = /[^\S ]|\s{2,}/;
 
     if (multiWhitespace.test(expr)) {
@@ -74,15 +72,13 @@ export class UnixCRON {
     }
 
     return Object.keys(Macros).includes(expr.trim());
-  }
-
-  static normalize(expr: string): string {
+  },
+  normalize(expr: string): string {
     const normalExpr = expr.trim().replaceAll(/[^\S ]|\s{2,}/, ' ');
 
     return normalExpr in Macros ? Macros[normalExpr as keyof typeof Macros] : normalExpr;
-  }
-
-  static convert(expr: string, format: ScheduleFormat): string {
+  },
+  convert(expr: string, format: ScheduleFormat): string {
     switch (format) {
       case 'unix': {
         return UnixCRON.normalize(expr);
@@ -112,9 +108,8 @@ export class UnixCRON {
         throw new Error('Unsupported scheduling format');
       }
     }
-  }
-
-  toString(): string {
-    return cronstrue.toString(this.expr);
-  }
-}
+  },
+  toString(expr: string): string {
+    return cronstrue.toString(expr);
+  },
+};
