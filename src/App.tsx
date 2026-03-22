@@ -1,6 +1,5 @@
-import { FocusOutsideEvent } from '@kobalte/core';
-import { Tooltip } from '@kobalte/core/tooltip';
-import { type Component, createComputed, createSignal, type JSX } from 'solid-js';
+import { type Component, createSignal, type JSX } from 'solid-js';
+
 import { AlertIcon } from '@/components/icons/Alert';
 import { BranchIcon } from '@/components/icons/Branch';
 import { GithubIcon } from '@/components/icons/Github';
@@ -14,7 +13,8 @@ import { ScheduleSyntax } from '@/components/ScheduleSyntax';
 import { Button } from '@/components/ui/Button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
-import { TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
+
 import type { ScheduleFormat } from '@/types';
 
 const Placeholders = {

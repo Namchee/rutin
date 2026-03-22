@@ -89,25 +89,37 @@ export function createTokenValidator(
     const subToken = token.split(',');
 
     for (const t of subToken) {
-      const isRange = t.includes('-');
-
-      if (isRange && !isValidRange(t, min, max)) {
+      if (!t) {
         return false;
+      }
+
+      if (t === '*') {
+        continue;
       }
 
       const isStep = t.includes('/');
 
-      if (isStep && !isValidStep(t, min, max)) {
+      if (isStep) {
+        if (isValidStep(t, min, max)) {
+          continue;
+        }
+
+        return false;
+      }
+
+      const isRange = t.includes('-');
+
+      if (isRange) {
+        if (isValidRange(t, min, max)) {
+          continue;
+        }
+
         return false;
       }
 
       const singular = Number(t);
 
-      if (Number.isNaN(singular)) {
-        return false;
-      }
-
-      if (singular < min || singular > max) {
+      if (Number.isNaN(singular) || singular < min || singular > max) {
         return false;
       }
     }

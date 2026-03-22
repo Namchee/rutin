@@ -43,25 +43,22 @@ const UnixCRON = {
     createTokenValidator(/[^0-9*,\-/]/, 0, 23),
     createTokenValidator(/[^0-9*,\-/]/, 1, 31),
     createTokenValidator(/[^0-9*,\-/]/, 1, 12, (token: string): string => {
-      return Object.entries(UnixCRON.MonthToNumber as Record<string, number>).reduce(
-        (acc, curr) => {
-          const regex = new RegExp(curr[0], 'i');
-
-          return acc.replaceAll(regex, curr[1].toString());
-        },
-        token,
+      const monthRegex = new RegExp(Object.keys(UnixCRON.MonthToNumber).join('|'), 'gi');
+      return token.replace(monthRegex, matched =>
+        UnixCRON.MonthToNumber[
+          matched.toUpperCase() as keyof typeof UnixCRON.MonthToNumber
+        ].toString(),
       );
     }),
     createTokenValidator(/[^0-9*,\-/]/, 0, 6, (token: string): string => {
-      return Object.entries(UnixCRON.DayToNumber as Record<string, number>).reduce((acc, curr) => {
-        const regex = new RegExp(curr[0], 'i');
-
-        return acc.replaceAll(regex, curr[1].toString());
-      }, token);
+      const dayRegex = new RegExp(Object.keys(UnixCRON.DayToNumber).join('|'), 'gi');
+      return token.replace(dayRegex, matched =>
+        UnixCRON.DayToNumber[matched.toUpperCase() as keyof typeof UnixCRON.DayToNumber].toString(),
+      );
     }),
   ],
 
-  *parse(expr: string) {
+  *iterate(expr: string, start: Date) {
     const tokens = expr.split(/\s+/);
 
     // to be parsed, the expression must be complete
