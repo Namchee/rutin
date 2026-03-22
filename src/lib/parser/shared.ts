@@ -72,12 +72,22 @@ export function isValidStep(expr: string, min: number, max: number): boolean {
   return !Number.isNaN(step) && step > 0;
 }
 
+/**
+ * Create a reusable token validator, that includes range, wildcard, and step support
+ *
+ * @param {string} regex Allowed expression for the token
+ * @param {number} min Numeric lower bound of the token
+ * @param {number} max Numeric upper bound of the token
+ * @param {(string) => string} preprocess Preprocessing step for the token before checked
+ * for validity. Optional
+ * @returns {(string) => boolean} A function that returns a boolean indicating the validity of the token.
+ */
 export function createTokenValidator(
   regex: RegExp,
   min: number,
   max: number,
   preprocess?: (token: string) => string,
-) {
+): (token: string) => boolean {
   return (token: string) => {
     token = preprocess ? preprocess(token) : token;
 
@@ -126,4 +136,77 @@ export function createTokenValidator(
 
     return true;
   };
+}
+
+/**
+ * Get possible numerical range from a schedule token which may
+ * exist in steps or range
+ *
+ * @param {string} token Expression token
+ * @param {number} min Numeric lower bound of the token
+ * @param {number} max Numeric upper bound of the token
+ * @returns {number[]} Valid numerical range of the token
+ */
+export function getNumericRange(token: string, min: number, max: number): number[] {
+  const ranges = new Set<number>();
+
+  const subTokens = token.split(',');
+
+  for (const t of subTokens) {
+    // it's a number, just push it
+    if (!Number.isNaN(Number(t))) {
+      ranges.add(Number(t));
+
+      continue;
+    }
+
+    // wildcard, return all
+    if (token === '*') {
+      for (let i = min; i <= max; i++) {
+        ranges.add(i);
+      }
+
+      continue;
+    }
+
+    if (isValidStep(token, min, max)) {
+      const [possiblyRange, step] = token.split('/');
+      const s = Number(step);
+
+      if (isValidRange(possiblyRange, min, max)) {
+        const [lo, hi] = possiblyRange.split('-');
+        let start = Number(lo);
+        const end = Number(hi);
+
+        while (start <= end) {
+          ranges.add(start);
+
+          start += s;
+        }
+      } else {
+        for (let i = min; i <= max; i += s) {
+          ranges.add(i);
+        }
+      }
+
+      continue;
+    }
+
+    if (isValidRange(token, min, max)) {
+      const [lo, hi] = token.split('-');
+      let start = Number(lo);
+      const end = Number(hi);
+
+      while (start <= end) {
+        ranges.add(start);
+        start++;
+      }
+
+      continue;
+    }
+
+    throw new Error('Schedule expression is not valid!');
+  }
+
+  return [...ranges];
 }

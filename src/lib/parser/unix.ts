@@ -66,6 +66,10 @@ const UnixCRON = {
       return undefined;
     }
 
+    const ranges = {
+      0: tokens[0]
+    }
+
     yield;
   },
   validate(expr: string): { error: number[] } {

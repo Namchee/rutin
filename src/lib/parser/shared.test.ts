@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
-import { isValidRange, isValidStep } from './shared';
+import { createTokenValidator } from './shared';
 
-describe('isValidRange', () => {
+describe('createTokenValidator', () => {
   it('should return false when there are multiple range', () => {
     const input = '0-94-3';
     const min = 0;
     const max = 59;
 
     const expected = false;
-    const actual = isValidRange(input, min, max);
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
 
     expect(actual).toBe(expected);
   });
@@ -20,7 +20,7 @@ describe('isValidRange', () => {
     const max = 59;
 
     const expected = false;
-    const actual = isValidRange(input, min, max);
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
 
     expect(actual).toBe(expected);
   });
@@ -31,7 +31,7 @@ describe('isValidRange', () => {
     const max = 59;
 
     const expected = false;
-    const actual = isValidRange(input, min, max);
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
 
     expect(actual).toBe(expected);
   });
@@ -42,7 +42,7 @@ describe('isValidRange', () => {
     const max = 3;
 
     const expected = false;
-    const actual = isValidRange(input, min, max);
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
 
     expect(actual).toBe(expected);
   });
@@ -53,7 +53,7 @@ describe('isValidRange', () => {
     const max = 59;
 
     const expected = false;
-    const actual = isValidRange(input, min, max);
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
 
     expect(actual).toBe(expected);
   });
@@ -64,13 +64,11 @@ describe('isValidRange', () => {
     const max = 59;
 
     const expected = true;
-    const actual = isValidRange(input, min, max);
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
 
     expect(actual).toBe(expected);
   });
-});
 
-describe('isValidStep', () => {
   it('should return false when there are multiple steps', () => {
     const input = '1/2/3';
 
@@ -78,7 +76,7 @@ describe('isValidStep', () => {
     const max = 59;
 
     const expected = false;
-    const actual = isValidStep(input, min, max);
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
 
     expect(actual).toBe(expected);
   });
@@ -90,7 +88,7 @@ describe('isValidStep', () => {
     const max = 59;
 
     const expected = false;
-    const actual = isValidStep(input, min, max);
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
 
     expect(actual).toBe(expected);
   });
@@ -102,7 +100,7 @@ describe('isValidStep', () => {
     const max = 59;
 
     const expected = false;
-    const actual = isValidStep(input, min, max);
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
 
     expect(actual).toBe(expected);
   });
@@ -114,7 +112,7 @@ describe('isValidStep', () => {
     const max = 59;
 
     const expected = false;
-    const actual = isValidStep(input, min, max);
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
 
     expect(actual).toBe(expected);
   });
@@ -126,7 +124,7 @@ describe('isValidStep', () => {
     const max = 59;
 
     const expected = false;
-    const actual = isValidStep(input, min, max);
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
 
     expect(actual).toBe(expected);
   });
@@ -138,7 +136,7 @@ describe('isValidStep', () => {
     const max = 59;
 
     const expected = false;
-    const actual = isValidStep(input, min, max);
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
 
     expect(actual).toBe(expected);
   });
@@ -150,7 +148,7 @@ describe('isValidStep', () => {
     const max = 59;
 
     const expected = true;
-    const actual = isValidStep(input, min, max);
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
 
     expect(actual).toBe(expected);
   });
@@ -162,7 +160,7 @@ describe('isValidStep', () => {
     const max = 59;
 
     const expected = true;
-    const actual = isValidStep(input, min, max);
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
 
     expect(actual).toBe(expected);
   });
@@ -174,7 +172,43 @@ describe('isValidStep', () => {
     const max = 59;
 
     const expected = false;
-    const actual = isValidStep(input, min, max);
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
+
+    expect(actual).toBe(expected);
+  });
+
+  it('should allow comma-separated values', () => {
+    const input = '1,2,3';
+
+    const min = 0;
+    const max = 59;
+
+    const expected = true;
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
+
+    expect(actual).toBe(expected);
+  });
+
+  it('should not allow comma-separated values with empties', () => {
+    const input = '1,,3';
+
+    const min = 0;
+    const max = 59;
+
+    const expected = false;
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
+
+    expect(actual).toBe(expected);
+  });
+
+  it('should allow number literals', () => {
+    const input = '1';
+
+    const min = 0;
+    const max = 59;
+
+    const expected = true;
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
 
     expect(actual).toBe(expected);
   });
