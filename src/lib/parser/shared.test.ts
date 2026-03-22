@@ -270,6 +270,17 @@ describe('getNumericRange', () => {
     expect(actual).toEqual(expected);
   });
 
+  it('should return steps range correctly starting from a specific value', () => {
+    const token = '5/10';
+    const min = 0;
+    const max = 59;
+
+    const expected = [5, 15, 25, 35, 45, 55];
+    const actual = getNumericRange(token, min, max);
+
+    expect(actual).toEqual(expected);
+  });
+
   it('should be able to parse range within steps', () => {
     const token = '10-30/5';
     const min = 0;

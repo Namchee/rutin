@@ -164,7 +164,7 @@ export function getNumericRange(token: string, min: number, max: number): number
     }
 
     // wildcard, return all
-    if (token === '*') {
+    if (t === '*') {
       for (let i = min; i <= max; i++) {
         ranges.add(i);
       }
@@ -172,8 +172,8 @@ export function getNumericRange(token: string, min: number, max: number): number
       continue;
     }
 
-    if (isValidStep(token, min, max)) {
-      const [possiblyRange, step] = token.split('/');
+    if (isValidStep(t, min, max)) {
+      const [possiblyRange, step] = t.split('/');
       const s = Number(step);
 
       let start = min;
@@ -184,6 +184,8 @@ export function getNumericRange(token: string, min: number, max: number): number
         const [lo, hi] = possiblyRange.split('-');
         start = Number(lo);
         end = Number(hi);
+      } else if (!Number.isNaN(Number(possiblyRange))) {
+        start = Number(possiblyRange);
       }
 
       while (start <= end) {
@@ -194,8 +196,8 @@ export function getNumericRange(token: string, min: number, max: number): number
       continue;
     }
 
-    if (isValidRange(token, min, max)) {
-      const [lo, hi] = token.split('-');
+    if (isValidRange(t, min, max)) {
+      const [lo, hi] = t.split('-');
       let start = Number(lo);
       const end = Number(hi);
 
@@ -210,5 +212,5 @@ export function getNumericRange(token: string, min: number, max: number): number
     throw new Error('Schedule expression is not valid!');
   }
 
-  return [...ranges];
+  return Array.from(ranges).sort((a, b) => a - b);
 }
