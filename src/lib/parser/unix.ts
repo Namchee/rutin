@@ -1,6 +1,6 @@
 import cronstrue from 'cronstrue';
 import type { ScheduleFormat } from '@/types';
-import { createTokenValidator } from './shared';
+import { createTokenValidator, getNumericRange } from './shared';
 
 const UnixCRON = {
   Macros: {
@@ -66,9 +66,18 @@ const UnixCRON = {
       return undefined;
     }
 
-    const ranges = {
-      0: tokens[0]
-    }
+    const ranges = [
+      getNumericRange(tokens[0], 0, 59),
+      getNumericRange(tokens[1], 1, 23),
+      getNumericRange(tokens[2], 1, 31),
+      getNumericRange(tokens[3], 1, 12),
+    ];
+    const index = [
+      ranges[0].find(r => r > start.getMinutes()),
+      ranges[1].find(r => r > start.getHours()),
+      ranges[2].find(r => r > start.getDate()),
+      ranges[3].find(r => r > start.getMonth()),
+    ];
 
     yield;
   },
