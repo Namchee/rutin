@@ -173,20 +173,19 @@ export function getNumericRange(token: string, min: number, max: number): number
       const [possiblyRange, step] = token.split('/');
       const s = Number(step);
 
+      let start = min;
+      let end = max;
+
+      // if the first token is range, use that as lower-upper bound
       if (isValidRange(possiblyRange, min, max)) {
         const [lo, hi] = possiblyRange.split('-');
-        let start = Number(lo);
-        const end = Number(hi);
+        start = Number(lo);
+        end = Number(hi);
+      }
 
-        while (start <= end) {
-          ranges.add(start);
-
-          start += s;
-        }
-      } else {
-        for (let i = min; i <= max; i += s) {
-          ranges.add(i);
-        }
+      while (start <= end) {
+        ranges.add(start);
+        start += s;
       }
 
       continue;
