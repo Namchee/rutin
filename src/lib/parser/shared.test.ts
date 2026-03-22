@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { createTokenValidator } from './shared';
+import { createTokenValidator, getNumericRange } from './shared';
 
 describe('createTokenValidator', () => {
   it('should return false when there are multiple range', () => {
@@ -211,5 +211,73 @@ describe('createTokenValidator', () => {
     const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
 
     expect(actual).toBe(expected);
+  });
+});
+
+describe('getNumericRange', () => {
+  it('should return only one value', () => {
+    const token = '1';
+    const min = 0;
+    const max = 59;
+
+    const expected = [1];
+    const actual = getNumericRange(token, min, max);
+
+    expect(actual).toEqual(expected);
+  });
+
+  it('should return list separated values', () => {
+    const token = '1,2,3';
+    const min = 0;
+    const max = 59;
+
+    const expected = [1, 2, 3];
+    const actual = getNumericRange(token, min, max);
+
+    expect(actual).toEqual(expected);
+  });
+
+  it('should return range', () => {
+    const token = '0-50';
+    const min = 0;
+    const max = 59;
+
+    const expected = Array.from({ length: 51 }, (_, i) => i);
+    const actual = getNumericRange(token, min, max);
+
+    expect(actual).toEqual(expected);
+  });
+
+  it('should return all valid ranges if the value is a wildcard', () => {
+    const token = '*';
+    const min = 0;
+    const max = 59;
+
+    const expected = Array.from({ length: 60 }, (_, i) => i);
+    const actual = getNumericRange(token, min, max);
+
+    expect(actual).toEqual(expected);
+  });
+
+  it('should return steps range correctly', () => {
+    const token = '*/10';
+    const min = 0;
+    const max = 59;
+
+    const expected = [0, 10, 20, 30, 40, 50];
+    const actual = getNumericRange(token, min, max);
+
+    expect(actual).toEqual(expected);
+  });
+
+  it('should be able to parse range within steps', () => {
+    const token = '10-30/5';
+    const min = 0;
+    const max = 59;
+
+    const expected = [10, 15, 20, 25, 30];
+    const actual = getNumericRange(token, min, max);
+
+    expect(actual).toEqual(expected);
   });
 });

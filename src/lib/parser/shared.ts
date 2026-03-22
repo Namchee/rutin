@@ -140,7 +140,10 @@ export function createTokenValidator(
 
 /**
  * Get possible numerical range from a schedule token which may
- * exist in steps or range
+ * exist in steps or range.
+ *
+ * Do note that this function doesn't check if the token is valid or not, it just assumes that
+ * it's valid. If it's somehow invalid, it will throw an Error object with unfriendly message.
  *
  * @param {string} token Expression token
  * @param {number} min Numeric lower bound of the token
