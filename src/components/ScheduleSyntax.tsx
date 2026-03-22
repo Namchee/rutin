@@ -46,9 +46,16 @@ const Syntaxes: Record<ScheduleFormat, Record<string, Record<string, string>>> =
     '0': { ...CommonOperators, '0 - 59': 'Second value' },
     '1': MinuteField,
     '2': HourField,
-    '3': DateField,
+    '3': { ...DateField, L: 'Last ... (date)' },
     '4': { ...CommonOperators, '1 - 12': 'Month value', 'JAN - DEC': 'Month value (alt.)' },
-    '5': { ...CommonOperators, '0 - 6': 'Weekday value', 'SUN - SAT': 'Weekday value (alt.)' },
+    '5': {
+      ...CommonOperators,
+      '0 - 6': 'Weekday value',
+      'SUN - SAT': 'Weekday value (alt.)',
+      L: 'Last ... (day)',
+      W: 'Weekdays',
+      '#': 'N-th weekday',
+    },
     '6': { ...CommonOperators, '1970 - 2199': 'Year value' },
   },
   systemd: {
