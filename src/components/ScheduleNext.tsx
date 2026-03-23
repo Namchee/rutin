@@ -2,6 +2,7 @@ import { createSignal, For, onCleanup, onMount } from 'solid-js';
 
 import { Switch, SwitchControl, SwitchLabel, SwitchThumb } from '@/components/ui/Switch';
 import { cn } from '@/lib/css';
+
 import type { ScheduleGenerator } from '@/types';
 
 interface ScheduleNextProps {
@@ -16,34 +17,40 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
   const [observer, setObserver] = createSignal<IntersectionObserver | null>(null);
 
   const loadNextIteration = () => {
-    for (let ct = 0; ct < 10; ct++) {
-      setNext(prev => [...prev, props.expr?.next().value as Date]);
+    if (props.expr) {
+      const values: Date[] = [];
+
+      for (const d of props.expr.take(10)) {
+        values.push(d);
+      }
+
+      setNext(prev => [...prev, ...values]);
     }
   };
 
-  onMount(() => {
-    console.log(props);
+  if (props.expr) {
+    const values: Date[] = [];
 
-    if (props.expr) {
-      for (let ct = 0; ct < 20; ct++) {
-        setNext(prev => [...prev, props.expr?.next().value as Date]);
-      }
+    for (const d of props.expr.take(20)) {
+      values.push(d);
     }
 
-    if (anchor) {
-      const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            loadNextIteration();
-          }
-        });
+    setNext(prev => [...prev, ...values]);
+  }
+
+  if (anchor) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          loadNextIteration();
+        }
       });
+    });
 
-      setObserver(observer);
+    setObserver(observer);
 
-      observer.observe(anchor);
-    }
-  });
+    observer.observe(anchor);
+  }
 
   onCleanup(() => {
     const activeObserver = observer();

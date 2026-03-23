@@ -59,7 +59,7 @@ export const UnixCRON = {
   ],
 
   *iterate(expr: string, start: Date) {
-    const tokens = expr.split(/\s+/);
+    const tokens = expr.trim().split(/\s+/);
 
     // to be parsed, the expression must be complete
     if (tokens.length !== 5) {

@@ -102,18 +102,19 @@ const App: Component = () => {
   };
 
   const validateAndParseSchedule = (expr: string) => {
+    setDescriptor('');
     const parser = Parsers[format()];
 
     const validation = parser.validate(expr);
     setErrors(validation.error);
 
     if (validation.error.length === 0) {
-      const generator = parser.iterate(expr, new Date());
+      const tokens = expr.trim().split(/\s+/);
 
-      if (generator) {
+      if (tokens.length === 5) {
         setDescriptor(parser.toString(expr));
 
-        setExpr(generator);
+        setExpr(parser.iterate(expr, new Date()));
       }
     }
   };
