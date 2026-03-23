@@ -125,7 +125,7 @@ export const UnixCRON = {
     }
   },
   validate(expr: string): { error: number[] } {
-    const tokens = expr.split(/\s+/);
+    const tokens = expr.trim().split(/\s+/);
     const errorIdx: number[] = [];
 
     for (let idx = 0; idx < tokens.length; idx++) {

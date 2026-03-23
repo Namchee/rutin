@@ -12,6 +12,7 @@ interface ScheduleHintProps {
   format: ScheduleFormat;
   index: number;
   filled: number[];
+  errors: number[];
 
   onHintSelect: (idx: number) => void;
 }
@@ -29,9 +30,11 @@ export function ScheduleHint(props: Readonly<ScheduleHintProps>) {
           }}
           disabled={!props.filled.includes(idx)}
           class={cn('px-0.5 transition-colors', {
-            'bg-foreground/10 text-foreground': props.index === idx,
-            'bg-transparent text-foreground/50': props.index !== idx,
+            'bg-foreground/10 text-foreground': props.index === idx && !props.errors.includes(idx),
+            'bg-transparent text-foreground/50': props.index !== idx && !props.errors.includes(idx),
             'cursor-pointer active-hint': props.filled.includes(idx),
+            'text-destructive': props.errors.includes(idx),
+            'bg-destructive/25': props.errors.includes(idx) && props.index === idx,
             underline: props.filled.includes(idx),
           })}>
           {hint}

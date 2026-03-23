@@ -35,7 +35,7 @@ const App: Component = () => {
   const [caret, setCaret] = createSignal(-1);
 
   const [descriptor, setDescriptor] = createSignal('');
-  const [errors, setErrors] = createSignal<number[]>();
+  const [errors, setErrors] = createSignal<number[]>([]);
 
   const updateFilledPosition = (value: string) => {
     const tokens = value.split('');
@@ -98,7 +98,8 @@ const App: Component = () => {
     updateFilledPosition(event.currentTarget.value);
     updateCaretIndex(event.currentTarget);
 
-    const iterator = UnixCRON.iterate();
+    const validation = UnixCRON.validate(event.currentTarget.value);
+    setErrors(validation.error);
   };
 
   const onCaretMovement: JSX.EventHandler<HTMLInputElement, Event> = event => {
@@ -182,6 +183,7 @@ const App: Component = () => {
               format={format()}
               index={caret()}
               filled={filled().map((_, idx) => idx)}
+              errors={errors()}
               onHintSelect={onHintSelect}
             />
 
