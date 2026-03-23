@@ -15,7 +15,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
 
-import type { ScheduleFormat } from '@/types';
+import type { ScheduleFormat, ScheduleGenerator } from '@/types';
 import { UnixCRON } from './lib/parser/unix';
 
 const Placeholders = {
@@ -35,6 +35,8 @@ const App: Component = () => {
   const [caret, setCaret] = createSignal(-1);
 
   const [descriptor, setDescriptor] = createSignal('');
+  const [expr, setExpr] = createSignal<ScheduleGenerator>();
+
   const [errors, setErrors] = createSignal<number[]>([]);
 
   const updateFilledPosition = (value: string) => {
@@ -199,7 +201,7 @@ const App: Component = () => {
           <div class="grid grid-cols-1 md:grid-cols-2 mt-8 gap-8">
             <ScheduleSyntax format={format()} index={caret()} />
 
-            <ScheduleNext />
+            <ScheduleNext expr={expr()} />
           </div>
         </div>
       </Tabs>
