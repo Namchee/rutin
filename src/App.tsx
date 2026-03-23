@@ -16,6 +16,7 @@ import { TextField, TextFieldInput } from '@/components/ui/TextField';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
 
 import type { ScheduleFormat } from '@/types';
+import { UnixCRON } from './lib/parser/unix';
 
 const Placeholders = {
   unix: '* * * * *',
@@ -33,9 +34,8 @@ const App: Component = () => {
 
   const [caret, setCaret] = createSignal(-1);
 
-  const [descriptor, setDescriptor] = createSignal(
-    'At minute 30 past every hour from 22 through 23 and every hour from 0 through 2 on every day-of-week from Monday through Friday.',
-  );
+  const [descriptor, setDescriptor] = createSignal('');
+  const [errors, setErrors] = createSignal<number[]>();
 
   const updateFilledPosition = (value: string) => {
     const tokens = value.split('');
@@ -68,7 +68,6 @@ const App: Component = () => {
   };
 
   const updateCaretIndex = (el: HTMLInputElement) => {
-    console.log(el);
     const { value, selectionStart } = el;
 
     if (selectionStart === null) return;
@@ -98,6 +97,8 @@ const App: Component = () => {
     setValue(event.currentTarget.value);
     updateFilledPosition(event.currentTarget.value);
     updateCaretIndex(event.currentTarget);
+
+    const iterator = UnixCRON.iterate();
   };
 
   const onCaretMovement: JSX.EventHandler<HTMLInputElement, Event> = event => {

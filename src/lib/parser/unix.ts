@@ -2,7 +2,7 @@ import cronstrue from 'cronstrue';
 import type { ScheduleFormat } from '@/types';
 import { createTokenValidator, getNumericRange } from './shared';
 
-const UnixCRON = {
+export const UnixCRON = {
   Macros: {
     '@yearly': '0 0 1 1 *',
     '@annually': '0 0 1 1 *',
@@ -71,15 +71,58 @@ const UnixCRON = {
       getNumericRange(tokens[1], 1, 23),
       getNumericRange(tokens[2], 1, 31),
       getNumericRange(tokens[3], 1, 12),
-    ];
-    const index = [
-      ranges[0].find(r => r > start.getMinutes()),
-      ranges[1].find(r => r > start.getHours()),
-      ranges[2].find(r => r > start.getDate()),
-      ranges[3].find(r => r > start.getMonth()),
+      getNumericRange(tokens[4], 0, 6),
     ];
 
-    yield;
+    const isDomWild = tokens[2] === '*';
+    const isDowWild = tokens[4] === '*';
+
+    const curr = new Date(start.getTime());
+    curr.setSeconds(0);
+
+    curr.setMinutes(curr.getMinutes() + 1);
+
+    while (true) {
+      if (!ranges[3].includes(curr.getMonth() + 1)) {
+        const nextMonth = ranges[3].find(m => m > curr.getMonth() + 1) || ranges[3][0];
+        if (nextMonth <= curr.getMonth() + 1) curr.setFullYear(curr.getFullYear() + 1);
+
+        curr.setMonth(nextMonth - 1, 1); // Reset to 1st of month
+        curr.setHours(0, 0, 0);
+        continue;
+      }
+
+      const domMatch = ranges[2].includes(curr.getDate());
+      const dowMatch = ranges[4].includes(curr.getDay());
+      const dateValid = isDomWild || isDowWild ? domMatch && dowMatch : domMatch || dowMatch;
+
+      if (!dateValid) {
+        curr.setDate(curr.getDate() + 1);
+        curr.setHours(0, 0, 0);
+        continue;
+      }
+
+      if (!ranges[1].includes(curr.getHours())) {
+        const nextHour = ranges[1].find(h => h > curr.getHours()) || ranges[1][0];
+        if (nextHour <= curr.getHours()) curr.setDate(curr.getDate() + 1);
+
+        curr.setHours(nextHour, 0, 0);
+        continue;
+      }
+
+      if (!ranges[0].includes(curr.getMinutes())) {
+        const nextMin = ranges[0].find(m => m > curr.getMinutes()) || ranges[0][0];
+        if (nextMin <= curr.getMinutes()) curr.setHours(curr.getHours() + 1);
+
+        curr.setMinutes(nextMin, 0);
+        continue;
+      }
+
+      yield new Date(curr.getTime());
+
+      // Prepare for next iteration
+      curr.setMinutes(curr.getMinutes() + 1);
+    }
   },
   validate(expr: string): { error: number[] } {
     const tokens = expr.split(/\s+/);
