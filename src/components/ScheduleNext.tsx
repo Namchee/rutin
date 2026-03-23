@@ -9,6 +9,7 @@ interface ScheduleNextProps {
 }
 
 export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
+  const [isUtc, setIsUtc] = createSignal(false);
   const [next, setNext] = createSignal<Date[]>([]);
 
   let anchor!: HTMLDivElement;
@@ -53,12 +54,15 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
   });
 
   return (
-    <div class="text-foreground/70 flex flex-col items-center w-full text-sm h-md overflow-hidden">
+    <div class="text-foreground/70 flex flex-col items-center w-full text-sm h-[450px] overflow-hidden">
       <p class="h-10 grid place-items-center font-medium text-muted-foreground shrink-0">
         Execution Time
       </p>
 
-      <Switch class="flex gap-2 h-10 items-center mx-auto shrink-0">
+      <Switch
+        class="flex gap-2 h-10 items-center mx-auto shrink-0"
+        checked={isUtc()}
+        onChange={val => setIsUtc(val)}>
         <SwitchLabel class="font-medium">Local Timezone</SwitchLabel>
 
         <SwitchControl>

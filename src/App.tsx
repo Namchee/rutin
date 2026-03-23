@@ -24,6 +24,12 @@ const Placeholders = {
   systemd: '* *-*-* *:*:*',
 };
 
+const Parsers = {
+  unix: UnixCRON,
+  quartz: UnixCRON,
+  systemd: UnixCRON,
+};
+
 const App: Component = () => {
   let input!: HTMLInputElement;
 
@@ -95,13 +101,31 @@ const App: Component = () => {
     setCaret(currentSectionIdx);
   };
 
+  const validateAndParseSchedule = (expr: string) => {
+    const parser = Parsers[format()];
+
+    const validation = parser.validate(expr);
+    setErrors(validation.error);
+
+    if (validation.error.length === 0) {
+      const generator = parser.iterate(expr, new Date());
+
+      if (generator) {
+        setDescriptor(parser.toString(expr));
+
+        setExpr(generator);
+      }
+    }
+  };
+
   const onInput: JSX.EventHandler<HTMLInputElement, InputEvent> = event => {
-    setValue(event.currentTarget.value);
-    updateFilledPosition(event.currentTarget.value);
+    const value = event.currentTarget.value;
+
+    setValue(value);
+    updateFilledPosition(value);
     updateCaretIndex(event.currentTarget);
 
-    const validation = UnixCRON.validate(event.currentTarget.value);
-    setErrors(validation.error);
+    validateAndParseSchedule(value);
   };
 
   const onCaretMovement: JSX.EventHandler<HTMLInputElement, Event> = event => {
