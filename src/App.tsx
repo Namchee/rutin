@@ -103,19 +103,23 @@ const App: Component = () => {
 
   const validateAndParseSchedule = (expr: string) => {
     setDescriptor('');
+    setExpr(undefined);
+
     const parser = Parsers[format()];
 
     const validation = parser.validate(expr);
     setErrors(validation.error);
 
-    if (validation.error.length === 0) {
-      const tokens = expr.trim().split(/\s+/);
+    if (validation.error.length > 0) {
+      return;
+    }
 
-      if (tokens.length === 5) {
-        setDescriptor(parser.toString(expr));
+    const tokens = expr.trim().split(/\s+/);
 
-        setExpr(parser.iterate(expr, new Date()));
-      }
+    if (tokens.length === 5) {
+      setDescriptor(parser.toString(expr));
+
+      setExpr(parser.iterate(expr, new Date()));
     }
   };
 

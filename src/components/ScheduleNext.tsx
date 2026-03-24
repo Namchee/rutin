@@ -14,44 +14,56 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
   const [next, setNext] = createSignal<Date[]>([]);
 
   let anchor!: HTMLDivElement;
+  let container!: HTMLDivElement;
+
   const [observer, setObserver] = createSignal<IntersectionObserver | null>(null);
 
   const loadNextIteration = () => {
-    if (props.expr) {
-      const values: Date[] = [];
-
-      for (const d of props.expr.take(10)) {
-        values.push(d);
-      }
-
-      setNext(prev => [...prev, ...values]);
+    if (!props.expr) {
+      return;
     }
+
+    const values: Date[] = [];
+
+    for (const d of props.expr.take(10)) {
+      values.push(d);
+    }
+
+    setNext(prev => [...prev, ...values]);
   };
 
   createEffect(() => {
-    if (props.expr) {
-      const values: Date[] = [];
+    setNext([]);
 
-      for (const d of props.expr.take(20)) {
-        values.push(d);
-      }
-
-      setNext(prev => [...prev, ...values]);
+    if (!props.expr || !anchor || !container) {
+      return;
     }
 
-    if (anchor) {
-      const observer = new IntersectionObserver(entries => {
+    const values: Date[] = [];
+
+    for (const d of props.expr.take(20)) {
+      values.push(d);
+    }
+
+    setNext(prev => [...prev, ...values]);
+
+    const observer = new IntersectionObserver(
+      entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             loadNextIteration();
           }
         });
-      });
+      },
+      {
+        root: container,
+        threshold: 1.0,
+      },
+    );
 
-      setObserver(observer);
+    setObserver(observer);
 
-      observer.observe(anchor);
-    }
+    observer.observe(anchor);
   });
 
   onCleanup(() => {
@@ -82,6 +94,7 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
       </Switch>
 
       <div
+        ref={container}
         class={cn(
           'h-full text-muted-foreground mt-4 w-full overflow-auto no-scrollbar fade-bottom',
           {
@@ -111,13 +124,16 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
               </p>
 
               <p>
-                {new Intl.RelativeTimeFormat('en-GB', { numeric: 'auto' }).format(5, 'minutes')}
+                {new Intl.RelativeTimeFormat('en-GB', { numeric: 'auto' }).format(
+                  Math.ceil((date.getTime() - Date.now()) / 60_000),
+                  'minutes',
+                )}
               </p>
             </div>
           )}
         </For>
 
-        <div ref={anchor}></div>
+        <div ref={anchor}>yes</div>
       </div>
     </div>
   );
