@@ -3,10 +3,11 @@ import { createEffect, createSignal, For, onCleanup } from 'solid-js';
 import { Switch, SwitchControl, SwitchLabel, SwitchThumb } from '@/components/ui/Switch';
 import { cn } from '@/lib/css';
 
-import type { ScheduleGenerator } from '@/types';
+import type { ScheduleFormat, ScheduleGenerator } from '@/types';
 
 interface ScheduleNextProps {
   expr: ScheduleGenerator;
+  format: ScheduleFormat;
 }
 
 export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
@@ -18,18 +19,20 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
 
   const [observer, setObserver] = createSignal<IntersectionObserver | null>(null);
 
-  const loadNextIteration = () => {
+  const loadNextIteration = (count: number = 10) => {
     if (!props.expr) {
       return;
     }
 
-    const values: Date[] = [];
+    const newDates = Array.from(props.expr.take(count));
 
-    for (const d of props.expr.take(10)) {
-      values.push(d);
+    // 2. If no new dates, exit
+    if (newDates.length === 0) {
+      console.warn('No more dates found in expression');
+      return;
     }
 
-    setNext(prev => [...prev, ...values]);
+    setNext(prev => [...prev, ...newDates]);
   };
 
   const formatRelativeTime = (date: Date): string => {
@@ -54,7 +57,7 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
       }
     }
 
-    return 'just now';
+    return 'Just now';
   };
 
   createEffect(() => {
@@ -64,13 +67,7 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
       return;
     }
 
-    const values: Date[] = [];
-
-    for (const d of props.expr.take(20)) {
-      values.push(d);
-    }
-
-    setNext(prev => [...prev, ...values]);
+    loadNextIteration(20);
 
     const observer = new IntersectionObserver(
       entries => {
@@ -82,7 +79,6 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
       },
       {
         root: container,
-        threshold: 1.0,
       },
     );
 
@@ -140,11 +136,12 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
                 {date.toLocaleDateString('en-GB', {
                   weekday: 'short',
                   year: 'numeric',
-                  month: 'numeric',
-                  day: 'numeric',
-                  hour: 'numeric',
-                  minute: 'numeric',
-                  second: 'numeric',
+                  month: 'short',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  ...(isUtc() ? { timeZone: 'UTC' } : {}),
+                  ...(props.format !== 'unix' ? { seconds: '2-digit' } : {}),
                 })}
               </p>
 

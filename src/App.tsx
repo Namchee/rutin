@@ -230,7 +230,7 @@ const App: Component = () => {
           <div class="grid grid-cols-1 md:grid-cols-2 mt-8 gap-8">
             <ScheduleSyntax format={format()} index={caret()} />
 
-            <ScheduleNext expr={expr()} />
+            <ScheduleNext expr={expr()} format={format()} />
           </div>
         </div>
       </Tabs>
