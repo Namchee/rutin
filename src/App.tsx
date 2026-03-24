@@ -16,6 +16,7 @@ import { TextField, TextFieldInput } from '@/components/ui/TextField';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
 
 import type { ScheduleFormat, ScheduleGenerator } from '@/types';
+
 import { UnixCRON } from './lib/parser/unix';
 
 const Placeholders = {
@@ -115,7 +116,7 @@ const App: Component = () => {
     }
 
     setDescriptor(parser.toString(expr));
-    setExpr(parser.iterate(expr, new Date()));
+    setExpr(parser.iterate);
   };
 
   const onInput: JSX.EventHandler<HTMLInputElement, InputEvent> = event => {

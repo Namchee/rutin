@@ -1,8 +1,7 @@
 import { createEffect, createSignal, For, onCleanup } from 'solid-js';
 
 import { Switch, SwitchControl, SwitchLabel, SwitchThumb } from '@/components/ui/Switch';
-import { cn } from '@/lib/css';
-
+import { formatDate, formatRelativeTime } from '@/lib/date';
 import type { ScheduleFormat, ScheduleGenerator } from '@/types';
 
 interface ScheduleNextProps {
@@ -33,31 +32,6 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
     }
 
     setNext(prev => [...prev, ...newDates]);
-  };
-
-  const formatRelativeTime = (date: Date): string => {
-    const diffInMs = date.getTime() - Date.now();
-    const diffInMinutes = Math.round(diffInMs / 60_000);
-    const absMinutes = Math.abs(diffInMinutes);
-
-    const THRESHOLDS: Record<string, number> = {
-      year: 365 * 24 * 60,
-      month: 30 * 24 * 60,
-      day: 24 * 60,
-      hour: 60,
-      minute: 1,
-    };
-
-    const formatter = new Intl.RelativeTimeFormat('en-GB', { numeric: 'auto' });
-
-    for (const [unit, mins] of Object.entries(THRESHOLDS)) {
-      if (absMinutes >= mins || unit === 'minute') {
-        const value = Math.round(diffInMs / (mins * 60_000));
-        return formatter.format(value, unit as Intl.RelativeTimeFormatUnit);
-      }
-    }
-
-    return 'Just now';
   };
 
   createEffect(() => {
@@ -133,24 +107,18 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
           {date => (
             <div class="flex items-center justify-between">
               <p>
-                {date.toLocaleDateString('en-GB', {
-                  weekday: 'short',
-                  year: 'numeric',
-                  month: 'short',
-                  day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit',
+                {formatDate(date, {
                   ...(isUtc() ? { timeZone: 'UTC' } : {}),
                   ...(props.format !== 'unix' ? { seconds: '2-digit' } : {}),
                 })}
               </p>
 
-              <p>{formatRelativeTime(date)}</p>
+              <p>{formatRelativeTime(date, new Date())}</p>
             </div>
           )}
         </For>
 
-        <div ref={anchor}>yes</div>
+        <div ref={anchor}></div>
       </div>
     </div>
   );
