@@ -173,8 +173,8 @@ const App: Component = () => {
         </TabsList>
 
         <div style={{ 'margin-top': '32px' }}>
-          <div class="text-xl grid place-items-center mb-4 text-balance line-clamp-2 h-[56px]">
-            <p class="text-center">{descriptor()}</p>
+          <div class="text-xl grid place-items-center mb-4 h-[56px]">
+            <p class="text-center line-clamp-2 text-balance">{descriptor()}</p>
           </div>
 
           <TextField class="w-full relative">

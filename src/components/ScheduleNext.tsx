@@ -1,4 +1,4 @@
-import { createSignal, For, onCleanup, onMount } from 'solid-js';
+import { createSignal, For, onCleanup } from 'solid-js';
 
 import { Switch, SwitchControl, SwitchLabel, SwitchThumb } from '@/components/ui/Switch';
 import { cn } from '@/lib/css';
