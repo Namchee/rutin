@@ -1,6 +1,7 @@
 import { createEffect, createSignal, For, onCleanup } from 'solid-js';
 
 import { Switch, SwitchControl, SwitchLabel, SwitchThumb } from '@/components/ui/Switch';
+import { cn } from '@/lib/css';
 import { formatDate, formatRelativeTime } from '@/lib/date';
 import type { ScheduleFormat, ScheduleGenerator } from '@/types';
 
@@ -23,12 +24,16 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
       return;
     }
 
-    const newDates = Array.from(props.expr.take(count));
+    const newDates: Date[] = [];
 
-    // 2. If no new dates, exit
-    if (newDates.length === 0) {
-      console.warn('No more dates found in expression');
-      return;
+    for (let ct = 0; ct < count; ct++) {
+      const nextExec = props.expr.next();
+
+      if (!nextExec.done) {
+        newDates.push(nextExec.value);
+      } else {
+        console.log('It is finished?');
+      }
     }
 
     setNext(prev => [...prev, ...newDates]);
