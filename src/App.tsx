@@ -116,7 +116,8 @@ const App: Component = () => {
     }
 
     setDescriptor(parser.toString(expr));
-    setExpr(parser.iterate);
+    console.log(expr);
+    setExpr(parser.iterate(expr, new Date()));
   };
 
   const onInput: JSX.EventHandler<HTMLInputElement, InputEvent> = event => {
