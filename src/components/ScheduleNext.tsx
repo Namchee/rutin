@@ -1,4 +1,4 @@
-import { createSignal, For, onCleanup } from 'solid-js';
+import { createEffect, createSignal, For, onCleanup } from 'solid-js';
 
 import { Switch, SwitchControl, SwitchLabel, SwitchThumb } from '@/components/ui/Switch';
 import { cn } from '@/lib/css';
@@ -28,29 +28,31 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
     }
   };
 
-  if (props.expr) {
-    const values: Date[] = [];
+  createEffect(() => {
+    if (props.expr) {
+      const values: Date[] = [];
 
-    for (const d of props.expr.take(20)) {
-      values.push(d);
+      for (const d of props.expr.take(20)) {
+        values.push(d);
+      }
+
+      setNext(prev => [...prev, ...values]);
     }
 
-    setNext(prev => [...prev, ...values]);
-  }
-
-  if (anchor) {
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          loadNextIteration();
-        }
+    if (anchor) {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            loadNextIteration();
+          }
+        });
       });
-    });
 
-    setObserver(observer);
+      setObserver(observer);
 
-    observer.observe(anchor);
-  }
+      observer.observe(anchor);
+    }
+  });
 
   onCleanup(() => {
     const activeObserver = observer();
