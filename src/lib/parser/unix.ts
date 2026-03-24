@@ -1,6 +1,8 @@
 import cronstrue from 'cronstrue';
-import type { ScheduleFormat } from '@/types';
+
 import { createTokenValidator, getNumericRange } from './shared';
+
+import type { ScheduleFormat } from '@/types';
 
 export const UnixCRON = {
   Macros: {
@@ -57,7 +59,6 @@ export const UnixCRON = {
       );
     }),
   ],
-
   *iterate(expr: string, start: Date) {
     const tokens = expr.trim().split(/\s+/);
 

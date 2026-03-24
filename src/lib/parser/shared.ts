@@ -12,7 +12,7 @@
  * @returns {boolean} `true` if the range is valid. `false` otherwise.
  */
 export function isValidRange(expr: string, min: number, max: number): boolean {
-  const tokens = expr.split('-');
+  const tokens = expr.split('-').filter(Boolean);
 
   if (tokens.length !== 2) {
     return false;
@@ -45,7 +45,7 @@ export function isValidRange(expr: string, min: number, max: number): boolean {
  * @returns {boolean} `true` if the range is valid. `false` otherwise.
  */
 export function isValidStep(expr: string, min: number, max: number): boolean {
-  const tokens = expr.split('/');
+  const tokens = expr.split('/').filter(Boolean);
 
   if (tokens.length !== 2) {
     return false;

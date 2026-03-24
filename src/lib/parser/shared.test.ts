@@ -14,6 +14,17 @@ describe('createTokenValidator', () => {
     expect(actual).toBe(expected);
   });
 
+  it('should return false when there are only one token', () => {
+    const input = '0-';
+    const min = 0;
+    const max = 59;
+
+    const expected = false;
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
+
+    expect(actual).toBe(expected);
+  });
+
   it('should return false when the separated tokens are not numbers', () => {
     const input = 'foo-2';
     const min = 0;
