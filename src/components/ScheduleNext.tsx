@@ -32,6 +32,31 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
     setNext(prev => [...prev, ...values]);
   };
 
+  const formatRelativeTime = (date: Date): string => {
+    const diffInMs = date.getTime() - Date.now();
+    const diffInMinutes = Math.round(diffInMs / 60_000);
+    const absMinutes = Math.abs(diffInMinutes);
+
+    const THRESHOLDS: Record<string, number> = {
+      year: 365 * 24 * 60,
+      month: 30 * 24 * 60,
+      day: 24 * 60,
+      hour: 60,
+      minute: 1,
+    };
+
+    const formatter = new Intl.RelativeTimeFormat('en-GB', { numeric: 'auto' });
+
+    for (const [unit, mins] of Object.entries(THRESHOLDS)) {
+      if (absMinutes >= mins || unit === 'minute') {
+        const value = Math.round(diffInMs / (mins * 60_000));
+        return formatter.format(value, unit as Intl.RelativeTimeFormatUnit);
+      }
+    }
+
+    return 'just now';
+  };
+
   createEffect(() => {
     setNext([]);
 
@@ -123,12 +148,7 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
                 })}
               </p>
 
-              <p>
-                {new Intl.RelativeTimeFormat('en-GB', { numeric: 'auto' }).format(
-                  Math.ceil((date.getTime() - Date.now()) / 60_000),
-                  'minutes',
-                )}
-              </p>
+              <p>{formatRelativeTime(date)}</p>
             </div>
           )}
         </For>
