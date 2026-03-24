@@ -58,7 +58,7 @@ export const UnixCRON = {
     }),
   ],
   *iterate(expr: string, start: Date) {
-    const tokens = expr.trim().split(/\s+/);
+    const tokens = UnixCRON.normalize(expr).trim().split(/\s+/);
 
     // to be parsed, the expression must be complete
     if (tokens.length !== 5) {
@@ -124,8 +124,13 @@ export const UnixCRON = {
     }
   },
   validate(expr: string): { error: number[]; isComplete: boolean } {
-    const tokens = expr.trim().split(/\s+/).filter(Boolean);
+    const tokens = UnixCRON.normalize(expr).trim().split(/\s+/).filter(Boolean);
     const errorIdx: number[] = [];
+
+    if (expr.startsWith('@')) {
+      // skip validation, maybe a macro
+      return { error: [], isComplete: expr.trim() in UnixCRON.Macros };
+    }
 
     for (let idx = 0; idx < tokens.length; idx++) {
       if (!UnixCRON.Validator[idx](tokens[idx])) {
@@ -145,7 +150,7 @@ export const UnixCRON = {
     return Object.keys(UnixCRON.Macros).includes(expr.trim());
   },
   normalize(expr: string): string {
-    const normalExpr = expr.trim().replaceAll(/[^\S ]|\s{2,}/, ' ');
+    const normalExpr = expr.trim().replaceAll(/[^\S ]|\s{2,}/g, ' ');
 
     return normalExpr in UnixCRON.Macros
       ? UnixCRON.Macros[normalExpr as keyof typeof UnixCRON.Macros]
@@ -183,6 +188,6 @@ export const UnixCRON = {
     }
   },
   toString(expr: string): string {
-    return cronstrue.toString(expr);
+    return cronstrue.toString(UnixCRON.normalize(expr));
   },
 };

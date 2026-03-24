@@ -35,7 +35,7 @@ const App: Component = () => {
   let input!: HTMLInputElement;
 
   const [format, setFormat] = createSignal<ScheduleFormat>('unix');
-  const [isNonStandard, setNonStandard] = createSignal(true);
+  const [isNonStandard, setNonStandard] = createSignal(false);
   const [value, setValue] = createSignal('');
   const [filled, setFilled] = createSignal<[number, number][]>([]);
 
@@ -47,6 +47,10 @@ const App: Component = () => {
   const [errors, setErrors] = createSignal<number[]>([]);
 
   const updateFilledPosition = (value: string) => {
+    if (value.startsWith('@')) {
+      return;
+    }
+
     const tokens = value.split('');
 
     const filledTokens: [number, number][] = [];
@@ -115,9 +119,16 @@ const App: Component = () => {
       return;
     }
 
+    setNonStandard(parser.isNonStandard(expr));
     setDescriptor(parser.toString(expr));
-    console.log(expr);
     setExpr(parser.iterate(expr, new Date()));
+  };
+
+  const normalizeSyntax = () => {
+    const parser = Parsers[format()];
+
+    setValue(parser.normalize(value()));
+    setNonStandard(false);
   };
 
   const onInput: JSX.EventHandler<HTMLInputElement, InputEvent> = event => {
@@ -173,7 +184,7 @@ const App: Component = () => {
           </TabsTrigger>
         </TabsList>
 
-        <div style={{ 'margin-top': '32px' }}>
+        <div class="mt-8">
           <div class="text-xl grid place-items-center mb-4 h-[56px]">
             <p class="text-center line-clamp-2 text-balance">{descriptor()}</p>
           </div>
@@ -217,7 +228,8 @@ const App: Component = () => {
 
             <Button
               size="icon"
-              disabled={isNonStandard()}
+              disabled={!isNonStandard()}
+              onClick={normalizeSyntax}
               variant="ghost"
               class="ml-auto rounded-sm w-5 h-5 absolute right-0 top-0 ">
               <WrenchIcon class="w-3! h-3!" />
@@ -232,9 +244,7 @@ const App: Component = () => {
         </div>
       </Tabs>
 
-      <footer
-        class="flex flex-col gap-2 items-center w-full mt-auto text-gray-400 text-sm"
-        style={{ 'margin-top': '32px' }}>
+      <footer class="flex flex-col gap-2 items-center w-full mt-auto text-foreground/50 text-sm mt-8">
         <div class="flex items-center">
           Made in 2026 with <HeartIcon class="mx-1 w-4 h-4" /> and{' '}
           <a href="https://www.solidjs.com/" target="_blank" rel="noopener noreferrer">
@@ -242,21 +252,23 @@ const App: Component = () => {
           </a>
           by{' '}
           <a href="https://www.namchee.dev" target="_blank" rel="noopener noreferrer">
-            <NamcheeIcon class="mt-[2px] ml-[1px] w-6 h-6 text-gray-400 transition-colors hover:text-gray-500" />
+            <NamcheeIcon class="mt-[2px] ml-[1px] w-6 h-6 text-foreground/50 transition-colors hover:text-foreground/75" />
           </a>
         </div>
 
         <div class="flex items-center gap-2">
-          <span class="font-mono flex items-center gap-1 text-gray-400 hover:text-gray-500 transition-colors">
+          <a
+            href="https://github.com/Namchee/rutin/tree/ffac537"
+            class="font-mono flex items-center gap-1 text-foreground/50 hover:text-foreground/75 transition-colors">
             <BranchIcon class="w-4 h-4" />
             ffac537
-          </span>
+          </a>
           •
           <a
             href="https://github.com/Namchee/rutin"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-gray-400 hover:text-gray-500 transition-colors">
+            class="text-foreground/50 hover: text-foreground/75 transition-colors">
             <GithubIcon class="w-4 h-4" />
           </a>
         </div>
