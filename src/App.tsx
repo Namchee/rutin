@@ -107,20 +107,15 @@ const App: Component = () => {
 
     const parser = Parsers[format()];
 
-    const validation = parser.validate(expr);
-    setErrors(validation.error);
+    const { error, isComplete } = parser.validate(expr);
+    setErrors(error);
 
-    if (validation.error.length > 0) {
+    if (error.length > 0 || !isComplete) {
       return;
     }
 
-    const tokens = expr.trim().split(/\s+/);
-
-    if (tokens.length === 5) {
-      setDescriptor(parser.toString(expr));
-
-      setExpr(parser.iterate(expr, new Date()));
-    }
+    setDescriptor(parser.toString(expr));
+    setExpr(parser.iterate(expr, new Date()));
   };
 
   const onInput: JSX.EventHandler<HTMLInputElement, InputEvent> = event => {

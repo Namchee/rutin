@@ -1,8 +1,6 @@
 import cronstrue from 'cronstrue';
-
-import { createTokenValidator, getNumericRange } from './shared';
-
 import type { ScheduleFormat } from '@/types';
+import { createTokenValidator, getNumericRange } from './shared';
 
 export const UnixCRON = {
   Macros: {
@@ -125,7 +123,7 @@ export const UnixCRON = {
       curr.setMinutes(curr.getMinutes() + 1);
     }
   },
-  validate(expr: string): { error: number[] } {
+  validate(expr: string): { error: number[]; isComplete: boolean } {
     const tokens = expr.trim().split(/\s+/);
     const errorIdx: number[] = [];
 
@@ -135,7 +133,7 @@ export const UnixCRON = {
       }
     }
 
-    return { error: errorIdx };
+    return { error: errorIdx, isComplete: tokens.length === 5 };
   },
   isNonStandard(expr: string): boolean {
     const multiWhitespace = /[^\S ]|\s{2,}/;
