@@ -76,7 +76,12 @@ function isValidL(expr: string, min: number, max: number): boolean {}
 
 function isValidW(expr: string, min: number, max: number): boolean {}
 
-function isValidHash(expr: string): boolean {}
+function isValidHash(expr: string, min: number, max: number): boolean {
+  const pattern = /\d+#\d+/;
+  if (!pattern.test(expr)) {
+    return false;
+  }
+}
 
 /**
  * Create a reusable token validator, that includes range, wildcard, and step support
@@ -133,7 +138,7 @@ export function createTokenValidator(
 
       const isHash = t.includes('#');
       if (isHash) {
-        if (isValidHash(t)) {
+        if (isValidHash(t, min, max)) {
           continue;
         }
 
