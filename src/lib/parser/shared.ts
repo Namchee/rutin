@@ -72,6 +72,12 @@ export function isValidStep(expr: string, min: number, max: number): boolean {
   return !Number.isNaN(step) && step > 0;
 }
 
+function isValidL(expr: string, min: number, max: number): boolean {}
+
+function isValidW(expr: string, min: number, max: number): boolean {}
+
+function isValidHash(expr: string): boolean {}
+
 /**
  * Create a reusable token validator, that includes range, wildcard, and step support
  *
@@ -105,6 +111,33 @@ export function createTokenValidator(
 
       if (t === '*') {
         continue;
+      }
+
+      const isL = t.includes('L');
+      if (isL) {
+        if (isValidL(t, min, max)) {
+          continue;
+        }
+
+        return false;
+      }
+
+      const isW = t.includes('W');
+      if (isW) {
+        if (isValidW(t, min, max)) {
+          continue;
+        }
+
+        return false;
+      }
+
+      const isHash = t.includes('#');
+      if (isHash) {
+        if (isValidHash(t)) {
+          continue;
+        }
+
+        return false;
       }
 
       const isStep = t.includes('/');

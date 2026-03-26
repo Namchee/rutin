@@ -41,7 +41,7 @@ export const UnixCRON = {
   Validator: [
     createTokenValidator(/[^0-9*,\-/]/, 0, 59),
     createTokenValidator(/[^0-9*,\-/]/, 0, 23),
-    createTokenValidator(/[^0-9*,\-L?/]/i, 1, 31),
+    createTokenValidator(/[^0-9*,\-LW#?/]/i, 1, 31),
     createTokenValidator(/[^0-9*,\-/]/, 1, 12, (token: string): string => {
       const monthRegex = new RegExp(Object.keys(UnixCRON.MonthToNumber).join('|'), 'gi');
       return token.replace(monthRegex, matched =>
@@ -50,7 +50,7 @@ export const UnixCRON = {
         ].toString(),
       );
     }),
-    createTokenValidator(/[^0-9*,\-/LW?#]/i, 0, 6, (token: string): string => {
+    createTokenValidator(/[^0-9*,\-LW?#]/i, 0, 6, (token: string): string => {
       const dayRegex = new RegExp(Object.keys(UnixCRON.DayToNumber).join('|'), 'gi');
       return token.replace(dayRegex, matched =>
         UnixCRON.DayToNumber[matched.toUpperCase() as keyof typeof UnixCRON.DayToNumber].toString(),
