@@ -1,5 +1,5 @@
 import type { ScheduleFormat } from '@/types';
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/Select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/Table';
 
 const CommonOperators = {
@@ -112,6 +112,17 @@ export function ScheduleSyntax(props: Readonly<ScheduleSyntaxProps>) {
           Syntaxes
         </TableHead>
       </TableHeader>
+
+      <Select
+        value="posix"
+        options={['posix', 'quartz', 'cf', 'google']}
+        itemComponent={props => <SelectItem item={props.item}>{props.item.rawValue}</SelectItem>}>
+        <SelectTrigger aria-label="Dialect" class="mx-auto h-10">
+          <SelectValue<string>>{state => state.selectedOption()}</SelectValue>
+        </SelectTrigger>
+
+        <SelectContent />
+      </Select>
 
       <TableBody>
         {Object.entries(dict()).map(([key, value]) => (
