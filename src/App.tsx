@@ -17,24 +17,24 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip
 
 import type { ScheduleFormat, ScheduleGenerator } from '@/types';
 
-import { UnixCRON } from './lib/parser/unix';
+import { POSIXCron } from './lib/parser/posix';
 
 const Placeholders = {
-  unix: '* * * * *',
+  posix: '* * * * *',
   quartz: '* * * * * * *',
   systemd: '* *-*-* *:*:*',
 };
 
 const Parsers = {
-  unix: UnixCRON,
-  quartz: UnixCRON,
-  systemd: UnixCRON,
+  posix: POSIXCron,
+  quartz: POSIXCron,
+  systemd: POSIXCron,
 };
 
 const App: Component = () => {
   let input!: HTMLInputElement;
 
-  const [format, setFormat] = createSignal<ScheduleFormat>('unix');
+  const [format, setFormat] = createSignal<ScheduleFormat>('posix');
   const [isNonStandard, setNonStandard] = createSignal(false);
   const [value, setValue] = createSignal('');
   const [filled, setFilled] = createSignal<[number, number][]>([]);
@@ -170,8 +170,8 @@ const App: Component = () => {
     <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 pb-8 flex flex-col items-center rounded-md p-4">
       <Tabs value={format()} onChange={setFormat} class="flex flex-col w-full flex-1">
         <TabsList class="relative rounded-full mx-auto">
-          <TabsTrigger value="unix" class="rounded-full cursor-pointer">
-            UNIX
+          <TabsTrigger value="posix" class="rounded-full cursor-pointer">
+            POSIX
           </TabsTrigger>
           <TabsTrigger value="quartz" class="rounded-full cursor-pointer">
             Quartz

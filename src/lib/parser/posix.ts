@@ -2,7 +2,7 @@ import cronstrue from 'cronstrue';
 import type { ScheduleFormat } from '@/types';
 import { createTokenValidator, getNumericRange } from './shared';
 
-export const UnixCRON = {
+export const POSIXCron = {
   Macros: {
     '@yearly': '0 0 1 1 *',
     '@annually': '0 0 1 1 *',
@@ -43,22 +43,24 @@ export const UnixCRON = {
     createTokenValidator(/[^0-9*,\-/]/, 0, 23),
     createTokenValidator(/[^0-9*,\-LW#?/]/i, 1, 31),
     createTokenValidator(/[^0-9*,\-/]/, 1, 12, (token: string): string => {
-      const monthRegex = new RegExp(Object.keys(UnixCRON.MonthToNumber).join('|'), 'gi');
+      const monthRegex = new RegExp(Object.keys(POSIXCron.MonthToNumber).join('|'), 'gi');
       return token.replace(monthRegex, matched =>
-        UnixCRON.MonthToNumber[
-          matched.toUpperCase() as keyof typeof UnixCRON.MonthToNumber
+        POSIXCron.MonthToNumber[
+          matched.toUpperCase() as keyof typeof POSIXCron.MonthToNumber
         ].toString(),
       );
     }),
     createTokenValidator(/[^0-9*,\-LW?#]/i, 0, 6, (token: string): string => {
-      const dayRegex = new RegExp(Object.keys(UnixCRON.DayToNumber).join('|'), 'gi');
+      const dayRegex = new RegExp(Object.keys(POSIXCron.DayToNumber).join('|'), 'gi');
       return token.replace(dayRegex, matched =>
-        UnixCRON.DayToNumber[matched.toUpperCase() as keyof typeof UnixCRON.DayToNumber].toString(),
+        POSIXCron.DayToNumber[
+          matched.toUpperCase() as keyof typeof POSIXCron.DayToNumber
+        ].toString(),
       );
     }),
   ],
   *iterate(expr: string, start: Date) {
-    const tokens = UnixCRON.normalize(expr).trim().split(/\s+/);
+    const tokens = POSIXCron.normalize(expr).trim().split(/\s+/);
 
     // to be parsed, the expression must be complete
     if (tokens.length !== 5) {
@@ -124,16 +126,16 @@ export const UnixCRON = {
     }
   },
   validate(expr: string): { error: number[]; isComplete: boolean } {
-    const tokens = UnixCRON.normalize(expr).trim().split(/\s+/).filter(Boolean);
+    const tokens = POSIXCron.normalize(expr).trim().split(/\s+/).filter(Boolean);
     const errorIdx: number[] = [];
 
     if (expr.startsWith('@')) {
       // skip validation, maybe a macro
-      return { error: [], isComplete: expr.trim() in UnixCRON.Macros };
+      return { error: [], isComplete: expr.trim() in POSIXCron.Macros };
     }
 
     for (let idx = 0; idx < tokens.length; idx++) {
-      if (!UnixCRON.Validator[idx](tokens[idx])) {
+      if (!POSIXCron.Validator[idx](tokens[idx])) {
         errorIdx.push(idx);
       }
     }
@@ -147,19 +149,19 @@ export const UnixCRON = {
       return true;
     }
 
-    return Object.keys(UnixCRON.Macros).includes(expr.trim());
+    return Object.keys(POSIXCron.Macros).includes(expr.trim());
   },
   normalize(expr: string): string {
     const normalExpr = expr.trim().replaceAll(/[^\S ]|\s{2,}/g, ' ');
 
-    return normalExpr in UnixCRON.Macros
-      ? UnixCRON.Macros[normalExpr as keyof typeof UnixCRON.Macros]
+    return normalExpr in POSIXCron.Macros
+      ? POSIXCron.Macros[normalExpr as keyof typeof POSIXCron.Macros]
       : normalExpr;
   },
   convert(expr: string, format: ScheduleFormat): string {
     switch (format) {
-      case 'unix': {
-        return UnixCRON.normalize(expr);
+      case 'posix': {
+        return POSIXCron.normalize(expr);
       }
 
       case 'quartz': {
@@ -188,6 +190,6 @@ export const UnixCRON = {
     }
   },
   toString(expr: string): string {
-    return cronstrue.toString(UnixCRON.normalize(expr));
+    return cronstrue.toString(POSIXCron.normalize(expr));
   },
 };

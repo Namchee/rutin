@@ -114,7 +114,7 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
               <p>
                 {formatDate(date, {
                   ...(isUtc() ? { timeZone: 'UTC' } : {}),
-                  ...(props.format !== 'unix' ? { seconds: '2-digit' } : {}),
+                  ...(props.format !== 'posix' ? { seconds: '2-digit' } : {}),
                 })}
               </p>
 

@@ -3,7 +3,7 @@ import { cn } from '@/lib/css';
 import type { ScheduleFormat } from '@/types';
 
 const Hints = {
-  unix: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
+  posix: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
   quartz: ['Second', 'Minute', 'Hour', 'Date', 'Month', 'Day', '[Year]'],
   systemd: ['Day', 'Year-Month-Day', 'Hour:Minute:Second'],
 };

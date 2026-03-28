@@ -47,7 +47,7 @@ const MonthField = {
 };
 
 const Syntaxes: Record<ScheduleFormat, Record<string, Record<string, string>>> = {
-  unix: {
+  posix: {
     '-2': Object.fromEntries(
       Object.entries(Macros).map(([k, v]) => [k, v.replace(' (macro)', '')]),
     ),
