@@ -1,11 +1,6 @@
 import { type Component, createSignal, type JSX } from 'solid-js';
 
 import { AlertIcon } from '@/components/icons/Alert';
-import { BranchIcon } from '@/components/icons/Branch';
-import { GithubIcon } from '@/components/icons/Github';
-import { HeartIcon } from '@/components/icons/Heart';
-import { NamcheeIcon } from '@/components/icons/Namchee';
-import { SolidJsIcon } from '@/components/icons/Solid';
 import { WrenchIcon } from '@/components/icons/Wrench';
 import { ScheduleHint } from '@/components/ScheduleHint';
 import { ScheduleNext } from '@/components/ScheduleNext';
@@ -16,9 +11,15 @@ import { TextField, TextFieldInput } from '@/components/ui/TextField';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
 
 import type { Dialect, ScheduleFormat, ScheduleGenerator } from '@/types';
-
+import { CopyIcon } from './components/icons/Copy';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './components/ui/Select';
 import { POSIXCron } from './lib/parser/posix';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './components/ui/Select';
 
 const DialectLabel: Record<Dialect, string> = {
   posix: 'POSIX',
@@ -177,21 +178,45 @@ const App: Component = () => {
       <Tabs value={format()} onChange={setFormat} class="flex flex-col w-full flex-1">
         <TabsList class="relative rounded-full mx-auto">
           <TabsTrigger value="posix" class="rounded-full cursor-pointer">
-            POSIX
+            CRON
           </TabsTrigger>
-          <TabsTrigger value="systemd" class="rounded-full cursor-pointer">
-            Systemd
-          </TabsTrigger>
-          <TabsTrigger value="human" class="rounded-full cursor-pointer hidden">
+          <TabsTrigger value="human" class="rounded-full cursor-pointer">
             Human*
           </TabsTrigger>
         </TabsList>
 
-        <div class="mt-8">
-          <div class="text-xl grid place-items-center mb-4 h-[56px]">
-            <p class="text-center line-clamp-2 text-balance">{descriptor()}</p>
+        <div class="mt-8 w-full flex justify-between items-center">
+          <div class="text-sm flex items-center gap-2">
+            <p>Dialect:</p>
+
+            <Select<Dialect>
+              value="posix"
+              options={['posix', 'quartz']}
+              itemComponent={props => (
+                <SelectItem item={props.item}>{DialectLabel[props.item.rawValue]}</SelectItem>
+              )}>
+              <SelectTrigger aria-label="Dialect" class="w-40 h-8">
+                <SelectValue<string>>
+                  {state => DialectLabel[state.selectedOption() as Dialect]}
+                </SelectValue>
+              </SelectTrigger>
+
+              <SelectContent />
+            </Select>
           </div>
 
+          <div class="flex gap-2 items-center">
+            <Button size="icon" class="w-8 h-8" disabled>
+              <CopyIcon />
+            </Button>
+
+            <Button size="icon" class="w-8 h-8">
+              <WrenchIcon />
+            </Button>
+          </div>
+        </div>
+
+        <div class="mt-2">
           <TextField class="w-full relative">
             <TextFieldInput
               class="font-mono text-2xl h-16 w-full text-center"
@@ -230,35 +255,8 @@ const App: Component = () => {
             />
           </div>
 
-          <div class="mt-4 w-full flex justify-between items-center">
-            <div class="text-sm flex items-center gap-2">
-              <p>Dialect:</p>
-
-              <Select<Dialect>
-                value="posix"
-                options={['posix', 'quartz']}
-                itemComponent={props => (
-                  <SelectItem item={props.item}>{DialectLabel[props.item.rawValue]}</SelectItem>
-                )}>
-                <SelectTrigger aria-label="Dialect" class="w-40 h-8">
-                  <SelectValue<string>>
-                    {state => DialectLabel[state.selectedOption() as Dialect]}
-                  </SelectValue>
-                </SelectTrigger>
-
-                <SelectContent />
-              </Select>
-            </div>
-
-            <div class="flex gap-2 items-center">
-              <Button size="icon" class="w-8 h-8">
-                <WrenchIcon />
-              </Button>
-
-              <Button size="icon" class="w-8 h-8">
-                <WrenchIcon />
-              </Button>
-            </div>
+          <div class="text-xl grid place-items-center mt-8 h-[56px]">
+            <p class="text-center line-clamp-2 text-balance">{descriptor()}</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 mt-8 gap-8">
@@ -268,36 +266,6 @@ const App: Component = () => {
           </div>
         </div>
       </Tabs>
-
-      <footer class="flex flex-col gap-2 items-center w-full mt-auto text-foreground/50 text-sm mt-8">
-        <div class="flex items-center">
-          Made in 2026 with <HeartIcon class="mx-1 w-4 h-4" /> and{' '}
-          <a href="https://www.solidjs.com/" target="_blank" rel="noopener noreferrer">
-            <SolidJsIcon class="mx-1 w-4 h-4 opacity-80 transition-opacity hover:opacity-100" />
-          </a>
-          by{' '}
-          <a href="https://www.namchee.dev" target="_blank" rel="noopener noreferrer">
-            <NamcheeIcon class="mt-[2px] ml-[1px] w-6 h-6 text-foreground/50 transition-colors hover:text-foreground/75" />
-          </a>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <a
-            href="https://github.com/Namchee/rutin/tree/ffac537"
-            class="font-mono flex items-center gap-1 text-foreground/50 hover:text-foreground/75 transition-colors">
-            <BranchIcon class="w-4 h-4" />
-            ffac537
-          </a>
-          •
-          <a
-            href="https://github.com/Namchee/rutin"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-foreground/50 hover: text-foreground/75 transition-colors">
-            <GithubIcon class="w-4 h-4" />
-          </a>
-        </div>
-      </footer>
     </div>
   );
 };
