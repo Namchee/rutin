@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from './components/ui/Select';
+import { Toaster } from './components/ui/Toast';
 import { POSIXCron } from './lib/parser/posix';
 
 const DialectLabel: Record<Dialect, string> = {
@@ -48,7 +49,7 @@ const App: Component = () => {
 
   const [caret, setCaret] = createSignal(-1);
 
-  const [descriptor, setDescriptor] = createSignal('Every minute');
+  const [descriptor, setDescriptor] = createSignal('');
   const [expr, setExpr] = createSignal<ScheduleGenerator>();
 
   const [errors, setErrors] = createSignal<number[]>([]);
@@ -175,6 +176,8 @@ const App: Component = () => {
 
   return (
     <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 pb-8 flex flex-col items-center rounded-md p-4">
+      <Toaster />
+
       <Tabs value={format()} onChange={setFormat} class="flex flex-col w-full flex-1">
         <TabsList class="relative rounded-full mx-auto">
           <TabsTrigger value="posix" class="rounded-full cursor-pointer">
@@ -206,11 +209,15 @@ const App: Component = () => {
           </div>
 
           <div class="flex gap-2 items-center">
-            <Button size="icon" class="w-8 h-8" disabled>
+            <Button size="icon" class="w-8 h-8" disabled={value().length <= 0}>
               <CopyIcon />
             </Button>
 
-            <Button size="icon" class="w-8 h-8">
+            <Button
+              size="icon"
+              class="w-8 h-8"
+              disabled={!isNonStandard()}
+              onClick={normalizeSyntax}>
               <WrenchIcon />
             </Button>
           </div>
@@ -231,18 +238,6 @@ const App: Component = () => {
               autocomplete="off"
               ref={input}
             />
-
-            {isNonStandard() && (
-              <Tooltip placement="top" gutter={4}>
-                <TooltipTrigger class="w-fit absolute top-4 right-4" tabIndex={-1}>
-                  <AlertIcon class="w-8 h-8 text-foreground/25" />
-                </TooltipTrigger>
-
-                <TooltipContent class="max-w-md">
-                  Macros detected. Click 🔧 to normalize.
-                </TooltipContent>
-              </Tooltip>
-            )}
           </TextField>
 
           <div class="w-full mt-2">
