@@ -47,7 +47,7 @@ const App: Component = () => {
 
   const [caret, setCaret] = createSignal(-1);
 
-  const [descriptor, setDescriptor] = createSignal('');
+  const [descriptor, setDescriptor] = createSignal('Every minute');
   const [expr, setExpr] = createSignal<ScheduleGenerator>();
 
   const [errors, setErrors] = createSignal<number[]>([]);

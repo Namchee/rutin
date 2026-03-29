@@ -97,10 +97,6 @@ const Syntaxes: Record<ScheduleFormat, Record<string, Record<string, string>>> =
   },
 };
 
-const DialectLabel: Record<Dialect, string> = {
-  posix: 'POSIX',
-  quartz: 'Quartz',
-};
 
 interface ScheduleSyntaxProps {
   format: ScheduleFormat;
