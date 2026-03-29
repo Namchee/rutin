@@ -15,9 +15,15 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
 
-import type { ScheduleFormat, ScheduleGenerator } from '@/types';
+import type { Dialect, ScheduleFormat, ScheduleGenerator } from '@/types';
 
 import { POSIXCron } from './lib/parser/posix';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './components/ui/Select';
+
+const DialectLabel: Record<Dialect, string> = {
+  posix: 'POSIX',
+  quartz: 'Quartz',
+};
 
 const Placeholders = {
   posix: '* * * * *',
@@ -173,9 +179,6 @@ const App: Component = () => {
           <TabsTrigger value="posix" class="rounded-full cursor-pointer">
             POSIX
           </TabsTrigger>
-          <TabsTrigger value="quartz" class="rounded-full cursor-pointer">
-            Quartz
-          </TabsTrigger>
           <TabsTrigger value="systemd" class="rounded-full cursor-pointer">
             Systemd
           </TabsTrigger>
@@ -217,7 +220,7 @@ const App: Component = () => {
             )}
           </TextField>
 
-          <div class="w-full mt-2 relative">
+          <div class="w-full mt-2">
             <ScheduleHint
               format={format()}
               index={caret()}
@@ -225,15 +228,37 @@ const App: Component = () => {
               errors={errors()}
               onHintSelect={onHintSelect}
             />
+          </div>
 
-            <Button
-              size="icon"
-              disabled={!isNonStandard()}
-              onClick={normalizeSyntax}
-              variant="ghost"
-              class="ml-auto rounded-sm w-5 h-5 absolute right-0 top-0 ">
-              <WrenchIcon class="w-3! h-3!" />
-            </Button>
+          <div class="mt-4 w-full flex justify-between items-center">
+            <div class="text-sm flex items-center gap-2">
+              <p>Dialect:</p>
+
+              <Select<Dialect>
+                value="posix"
+                options={['posix', 'quartz']}
+                itemComponent={props => (
+                  <SelectItem item={props.item}>{DialectLabel[props.item.rawValue]}</SelectItem>
+                )}>
+                <SelectTrigger aria-label="Dialect" class="w-40 h-8">
+                  <SelectValue<string>>
+                    {state => DialectLabel[state.selectedOption() as Dialect]}
+                  </SelectValue>
+                </SelectTrigger>
+
+                <SelectContent />
+              </Select>
+            </div>
+
+            <div class="flex gap-2 items-center">
+              <Button size="icon" class="w-8 h-8">
+                <WrenchIcon />
+              </Button>
+
+              <Button size="icon" class="w-8 h-8">
+                <WrenchIcon />
+              </Button>
+            </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 mt-8 gap-8">

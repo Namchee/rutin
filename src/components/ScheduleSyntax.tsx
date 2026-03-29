@@ -1,4 +1,4 @@
-import type { ScheduleFormat } from '@/types';
+import type { Dialect, ScheduleFormat } from '@/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/Select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/Table';
 
@@ -97,6 +97,11 @@ const Syntaxes: Record<ScheduleFormat, Record<string, Record<string, string>>> =
   },
 };
 
+const DialectLabel: Record<Dialect, string> = {
+  posix: 'POSIX',
+  quartz: 'Quartz',
+};
+
 interface ScheduleSyntaxProps {
   format: ScheduleFormat;
   index: number;
@@ -106,32 +111,22 @@ export function ScheduleSyntax(props: Readonly<ScheduleSyntaxProps>) {
   const dict = () => Syntaxes[props.format][props.index.toString()];
 
   return (
-    <Table class="text-foreground/70">
-      <TableHeader>
-        <TableHead class="text-center font-medium" colSpan={2}>
-          Syntaxes
-        </TableHead>
-      </TableHeader>
+    <div class="flex flex-col">
+      <p class="text-center font-medium h-10 text-sm text-foreground/70 grid place-items-center">
+        Syntaxes
+      </p>
 
-      <Select
-        value="posix"
-        options={['posix', 'quartz', 'cf', 'google']}
-        itemComponent={props => <SelectItem item={props.item}>{props.item.rawValue}</SelectItem>}>
-        <SelectTrigger aria-label="Dialect" class="mx-auto h-10">
-          <SelectValue<string>>{state => state.selectedOption()}</SelectValue>
-        </SelectTrigger>
 
-        <SelectContent />
-      </Select>
-
-      <TableBody>
-        {Object.entries(dict()).map(([key, value]) => (
-          <TableRow>
-            <TableCell class="font-mono text-right w-1/2">{key}</TableCell>
-            <TableCell class="w-1/2">{value}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+      <Table class="text-foreground/70 mt-2">
+        <TableBody>
+          {Object.entries(dict()).map(([key, value]) => (
+            <TableRow>
+              <TableCell class="font-mono text-right w-1/2">{key}</TableCell>
+              <TableCell class="w-1/2">{value}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
