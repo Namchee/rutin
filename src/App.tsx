@@ -21,6 +21,7 @@ import {
 } from './components/ui/Select';
 import { Toaster } from './components/ui/Toast';
 import { POSIXCron } from './lib/parser/posix';
+import { Footer } from './components/Footer';
 
 const DialectLabel: Record<Dialect, string> = {
   posix: 'POSIX',
@@ -261,6 +262,8 @@ const App: Component = () => {
           </div>
         </div>
       </Tabs>
+
+      <Footer />
     </div>
   );
 };
