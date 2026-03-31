@@ -179,7 +179,7 @@ const App: Component = () => {
     <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 pb-8 flex flex-col items-center rounded-md p-4">
       <Toaster />
 
-      <Tabs value={format()} onChange={setFormat} class="flex flex-col w-full flex-1">
+      <Tabs value={format()} onChange={setFormat} class="flex flex-col w-full flex-1" style={{ 'margin-bottom': '32px' }}>
         <TabsList class="relative rounded-full mx-auto">
           <TabsTrigger value="posix" class="rounded-full cursor-pointer">
             CRON
@@ -189,7 +189,7 @@ const App: Component = () => {
           </TabsTrigger>
         </TabsList>
 
-        <div class="mt-8 w-full flex justify-between items-center">
+        <div class="w-full flex justify-between items-center" style={{ 'margin-top': '32px' }}>
           <div class="text-sm flex items-center gap-2">
             <p>Dialect:</p>
 
