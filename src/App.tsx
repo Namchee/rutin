@@ -11,6 +11,8 @@ import { TextField, TextFieldInput } from '@/components/ui/TextField';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
 
 import type { Dialect, ScheduleFormat, ScheduleGenerator } from '@/types';
+import { Footer } from './components/Footer';
+import { FormatSelector } from './components/FormatSelector';
 import { CopyIcon } from './components/icons/Copy';
 import {
   Select,
@@ -21,7 +23,6 @@ import {
 } from './components/ui/Select';
 import { Toaster } from './components/ui/Toast';
 import { POSIXCron } from './lib/parser/posix';
-import { Footer } from './components/Footer';
 
 const DialectLabel: Record<Dialect, string> = {
   posix: 'POSIX',
@@ -176,55 +177,17 @@ const App: Component = () => {
   };
 
   return (
-    <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 pb-8 flex flex-col items-center rounded-md p-4">
+    <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 pb-8 flex flex-col items-center rounded-md">
       <Toaster />
 
-      <Tabs value={format()} onChange={setFormat} class="flex flex-col w-full flex-1" style={{ 'margin-bottom': '32px' }}>
-        <TabsList class="relative rounded-full mx-auto">
-          <TabsTrigger value="posix" class="rounded-full cursor-pointer">
-            CRON
-          </TabsTrigger>
-          <TabsTrigger value="human" class="rounded-full cursor-pointer">
-            Human*
-          </TabsTrigger>
-        </TabsList>
+      <Tabs
+        value={format()}
+        onChange={setFormat}
+        class="flex flex-col w-full flex-1"
+        style={{ 'margin-bottom': '32px' }}>
+        <FormatSelector />
 
-        <div class="w-full flex justify-between items-center" style={{ 'margin-top': '32px' }}>
-          <div class="text-sm flex items-center gap-2">
-            <p>Dialect:</p>
-
-            <Select<Dialect>
-              value="posix"
-              options={['posix', 'quartz']}
-              itemComponent={props => (
-                <SelectItem item={props.item}>{DialectLabel[props.item.rawValue]}</SelectItem>
-              )}>
-              <SelectTrigger aria-label="Dialect" class="w-40 h-8">
-                <SelectValue<string>>
-                  {state => DialectLabel[state.selectedOption() as Dialect]}
-                </SelectValue>
-              </SelectTrigger>
-
-              <SelectContent />
-            </Select>
-          </div>
-
-          <div class="flex gap-2 items-center">
-            <Button size="icon" class="w-8 h-8" disabled={value().length <= 0}>
-              <CopyIcon />
-            </Button>
-
-            <Button
-              size="icon"
-              class="w-8 h-8"
-              disabled={!isNonStandard()}
-              onClick={normalizeSyntax}>
-              <WrenchIcon />
-            </Button>
-          </div>
-        </div>
-
-        <div class="mt-2">
+        <div class="mt-2 px-4">
           <TextField class="w-full relative">
             <TextFieldInput
               class="font-mono text-2xl h-16 w-full text-center"
