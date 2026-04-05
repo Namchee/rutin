@@ -13,7 +13,7 @@ const FormatLabel: Record<ScheduleFormat, string> = {
 
 export function FormatSelector() {
   return (
-    <div class="max-w-full  overflow-x-auto mx-auto px-8 no-scrollbar">
+    <div class="max-w-full overflow-x-auto mx-auto px-8 no-scrollbar">
       <TabsList class="rounded-full">
         <For each={Object.entries(FormatLabel)}>
           {([value, label]) => (

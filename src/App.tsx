@@ -10,29 +10,21 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
 
-import type { Dialect, ScheduleFormat, ScheduleGenerator } from '@/types';
+import type { ScheduleFormat, ScheduleGenerator } from '@/types';
 import { Footer } from './components/Footer';
 import { FormatSelector } from './components/FormatSelector';
 import { CopyIcon } from './components/icons/Copy';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './components/ui/Select';
+import { Select } from './components/ui/Select';
 import { Toaster } from './components/ui/Toast';
 import { POSIXCron } from './lib/parser/posix';
 
-const DialectLabel: Record<Dialect, string> = {
-  posix: 'POSIX',
-  quartz: 'Quartz',
-};
-
-const Placeholders = {
+const Placeholders: Record<ScheduleFormat, string> = {
   posix: '* * * * *',
   quartz: '* * * * * * *',
   systemd: '* *-*-* *:*:*',
+  'cf-workers': '* * * * *',
+  cloudwatch: '* * * * *',
+  human: '',
 };
 
 const Parsers = {
@@ -187,41 +179,57 @@ const App: Component = () => {
         style={{ 'margin-bottom': '32px' }}>
         <FormatSelector />
 
-        <div class="mt-2 px-4">
-          <TextField class="w-full relative">
-            <TextFieldInput
-              class="font-mono text-2xl h-16 w-full text-center"
-              value={value()}
-              onInput={onInput}
-              onSelect={onCaretMovement}
-              onKeyUp={onCaretMovement}
-              onClick={onCaretMovement}
-              onBlur={onBlur}
-              spellcheck={false}
-              placeholder={Placeholders[format()]}
-              autocomplete="off"
-              ref={input}
-            />
-          </TextField>
+        <div class="px-4 mt-8">
+          <div class="flex flex-col gap-2">
+            <div class="flex justify-between">
+              <div></div>
 
-          <div class="w-full mt-2">
-            <ScheduleHint
-              format={format()}
-              index={caret()}
-              filled={filled().map((_, idx) => idx)}
-              errors={errors()}
-              onHintSelect={onHintSelect}
-            />
+              <div>
+                <Button variant="ghost" class="w-8 h-8 p-0">
+                  <CopyIcon class="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+
+            <TextField class="w-full flex items-center">
+              <TextFieldInput
+                class="font-mono text-xl md:text-2xl h-16 w-full text-center"
+                value={value()}
+                onInput={onInput}
+                onSelect={onCaretMovement}
+                onKeyUp={onCaretMovement}
+                onClick={onCaretMovement}
+                onBlur={onBlur}
+                spellcheck={false}
+                placeholder={Placeholders[format()]}
+                autocomplete="off"
+                ref={input}
+              />
+            </TextField>
+
+            <div class="w-full">
+              <ScheduleHint
+                format={format()}
+                index={caret()}
+                filled={filled().map((_, idx) => idx)}
+                errors={errors()}
+                onHintSelect={onHintSelect}
+              />
+            </div>
           </div>
 
-          <div class="text-xl grid place-items-center mt-8 h-[56px]">
-            <p class="text-center line-clamp-2 text-balance">{descriptor()}</p>
-          </div>
+          <div class="flex flex-col gap-4 mt-8">
+            <div class="text-lg md:text-xl grid place-items-center h-[56px]">
+              <p class="text-center line-clamp-2 text-balance">
+                {descriptor() ?? 'Describe your syntax here...'}
+              </p>
+            </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 mt-8 gap-8">
-            <ScheduleSyntax format={format()} index={caret()} />
+            <div class="grid grid-cols-1 md:grid-cols-2">
+              <ScheduleSyntax format={format()} index={caret()} />
 
-            <ScheduleNext expr={expr()} format={format()} />
+              <ScheduleNext expr={expr()} format={format()} />
+            </div>
           </div>
         </div>
       </Tabs>

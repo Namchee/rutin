@@ -97,7 +97,6 @@ const Syntaxes: Record<ScheduleFormat, Record<string, Record<string, string>>> =
   },
 };
 
-
 interface ScheduleSyntaxProps {
   format: ScheduleFormat;
   index: number;
@@ -107,11 +106,10 @@ export function ScheduleSyntax(props: Readonly<ScheduleSyntaxProps>) {
   const dict = () => Syntaxes[props.format][props.index.toString()];
 
   return (
-    <div class="flex flex-col">
+    <div class="flex flex-col basis-3/5">
       <p class="text-center font-medium h-10 text-sm text-foreground/70 grid place-items-center">
         Syntaxes
       </p>
-
 
       <Table class="text-foreground/70 mt-2">
         <TableBody>
