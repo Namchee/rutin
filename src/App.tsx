@@ -182,7 +182,17 @@ const App: Component = () => {
         <div class="px-4 mt-8">
           <div class="flex flex-col gap-2">
             <div class="flex justify-between">
-              <div></div>
+              <div class="flex items-center gap-2">
+                <Button variant="ghost" class="w-8 h-8 p-0">
+                  <CopyIcon class="w-4 h-4" />
+                  {/* Library */}
+                </Button>
+
+                <Button variant="ghost" class="w-8 h-8 p-0">
+                  <CopyIcon class="w-4 h-4" />
+                  {/* Saved schedule */}
+                </Button>
+              </div>
 
               <div>
                 <Button variant="ghost" class="w-8 h-8 p-0">
