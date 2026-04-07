@@ -15,6 +15,7 @@ import { Footer } from './components/Footer';
 import { FormatSelector } from './components/FormatSelector';
 import { CopyIcon } from './components/icons/Copy';
 import { Select } from './components/ui/Select';
+import { Switch, SwitchControl, SwitchLabel, SwitchThumb } from './components/ui/Switch';
 import { Toaster } from './components/ui/Toast';
 import { POSIXCron } from './lib/parser/posix';
 
@@ -172,11 +173,7 @@ const App: Component = () => {
     <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 pb-8 flex flex-col items-center rounded-md">
       <Toaster />
 
-      <Tabs
-        value={format()}
-        onChange={setFormat}
-        class="flex flex-col w-full flex-1"
-        style={{ 'margin-bottom': '32px' }}>
+      <Tabs value={format()} onChange={setFormat} class="flex flex-col w-full flex-1 mb-8">
         <FormatSelector />
 
         <div class="px-4 mt-8">
@@ -230,9 +227,7 @@ const App: Component = () => {
 
           <div class="flex flex-col gap-4 mt-8">
             <div class="text-lg md:text-xl grid place-items-center h-[56px]">
-              <p class="text-center line-clamp-2 text-balance">
-                {descriptor() ?? 'Describe your syntax here...'}
-              </p>
+              <p class="text-center line-clamp-2 text-balance w-full">{descriptor()}</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2">

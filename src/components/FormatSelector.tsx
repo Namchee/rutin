@@ -8,7 +8,6 @@ const FormatLabel: Record<ScheduleFormat, string> = {
   systemd: 'Systemd',
   'cf-workers': 'Workers',
   cloudwatch: 'Cloudwatch',
-  human: 'Human*',
 };
 
 export function FormatSelector() {
