@@ -1,4 +1,5 @@
 import { For } from 'solid-js';
+
 import type { ScheduleFormat } from '@/types';
 import { TabsList, TabsTrigger } from './ui/Tabs';
 

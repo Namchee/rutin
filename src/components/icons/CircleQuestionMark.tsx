@@ -1,9 +1,11 @@
 import type { JSX } from 'solid-js';
 
-export function WrenchIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+export function CircleQuestionMark(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -11,7 +13,9 @@ export function WrenchIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
       stroke-linecap="round"
       stroke-linejoin="round"
       {...props}>
-      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z" />
+      <circle cx="12" cy="12" r="10" />
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+      <path d="M12 17h.01" />
     </svg>
   );
 }

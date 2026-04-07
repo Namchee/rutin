@@ -1,22 +1,20 @@
 import { type Component, createSignal, type JSX } from 'solid-js';
 
-import { AlertIcon } from '@/components/icons/Alert';
-import { WrenchIcon } from '@/components/icons/Wrench';
 import { ScheduleHint } from '@/components/ScheduleHint';
 import { ScheduleNext } from '@/components/ScheduleNext';
 import { ScheduleSyntax } from '@/components/ScheduleSyntax';
 import { Button } from '@/components/ui/Button';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
+import { Tabs } from '@/components/ui/Tabs';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
 
 import type { ScheduleFormat, ScheduleGenerator } from '@/types';
 import { Footer } from './components/Footer';
 import { FormatSelector } from './components/FormatSelector';
+import { CircleQuestionMark } from './components/icons/CircleQuestionMark';
 import { CopyIcon } from './components/icons/Copy';
-import { Select } from './components/ui/Select';
-import { Switch, SwitchControl, SwitchLabel, SwitchThumb } from './components/ui/Switch';
+import { WrenchIcon } from './components/icons/Wrench';
 import { Toaster } from './components/ui/Toast';
+import { Tooltip, TooltipContent, TooltipTrigger } from './components/ui/Tooltip';
 import { POSIXCron } from './lib/parser/posix';
 
 const Placeholders: Record<ScheduleFormat, string> = {
@@ -177,24 +175,39 @@ const App: Component = () => {
         <FormatSelector />
 
         <div class="px-4 mt-8">
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-1">
             <div class="flex justify-between">
               <div class="flex items-center gap-2">
-                <Button variant="ghost" class="w-8 h-8 p-0">
-                  <CopyIcon class="w-4 h-4" />
-                  {/* Library */}
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger class="w-[28px] h-[28px] transition-colors rounded-md grid place-items-center hover:bg-accent hover:text-accent-foreground">
+                    <CircleQuestionMark class="w-[14px] h-[14px]" />
+                  </TooltipTrigger>
 
-                <Button variant="ghost" class="w-8 h-8 p-0">
-                  <CopyIcon class="w-4 h-4" />
+                  <TooltipContent>Info</TooltipContent>
+                </Tooltip>
+
+                <Button variant="ghost" class="w-8 h-8 p-0 hidden">
+                  <CopyIcon class="w-4 h-4 text-primary/50" />
                   {/* Saved schedule */}
                 </Button>
               </div>
 
-              <div>
-                <Button variant="ghost" class="w-8 h-8 p-0">
-                  <CopyIcon class="w-4 h-4" />
-                </Button>
+              <div class="flex items-center gap-1">
+                <Tooltip>
+                  <TooltipTrigger class="w-[28px] h-[28px] transition-colors rounded-md grid place-items-center hover:bg-accent hover:text-accent-foreground">
+                    <CopyIcon class="w-[14px] h-[14px]" />
+                  </TooltipTrigger>
+
+                  <TooltipContent>Copy</TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger class="w-[28px] h-[28px] transition-colors rounded-md grid place-items-center hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                    <WrenchIcon class="w-[14px] h-[14px]" />
+                  </TooltipTrigger>
+
+                  <TooltipContent>Normalize</TooltipContent>
+                </Tooltip>
               </div>
             </div>
 

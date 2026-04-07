@@ -1,6 +1,5 @@
-import type { Dialect, ScheduleFormat } from '@/types';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/Select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/Table';
+import type { ScheduleFormat } from '@/types';
+import { Table, TableBody, TableCell, TableRow } from './ui/Table';
 
 const CommonOperators = {
   '*': 'Every...',
