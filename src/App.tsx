@@ -3,18 +3,17 @@ import { type Component, createSignal, type JSX } from 'solid-js';
 import { ScheduleHint } from '@/components/ScheduleHint';
 import { ScheduleNext } from '@/components/ScheduleNext';
 import { ScheduleSyntax } from '@/components/ScheduleSyntax';
-import { Button } from '@/components/ui/Button';
-import { Tabs } from '@/components/ui/Tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
 
 import type { ScheduleFormat, ScheduleGenerator } from '@/types';
 import { Footer } from './components/Footer';
 import { FormatSelector } from './components/FormatSelector';
-import { CircleQuestionMark } from './components/icons/CircleQuestionMark';
 import { CopyIcon } from './components/icons/Copy';
 import { WrenchIcon } from './components/icons/Wrench';
 import { Toaster } from './components/ui/Toast';
 import { Tooltip, TooltipContent, TooltipTrigger } from './components/ui/Tooltip';
+import { RutinContextProvider } from './context';
 import { POSIXCron } from './lib/parser/posix';
 
 const Placeholders: Record<ScheduleFormat, string> = {
@@ -168,28 +167,15 @@ const App: Component = () => {
   };
 
   return (
-    <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 pb-8 flex flex-col items-center rounded-md">
-      <Toaster />
+    <RutinContextProvider>
+      <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 pb-8 flex flex-col items-center rounded-md">
+        <Toaster />
 
-      <Tabs value={format()} onChange={setFormat} class="flex flex-col w-full flex-1 mb-8">
-        <FormatSelector />
-
-        <div class="px-4 mt-8">
-          <div class="flex flex-col gap-1">
+        <div class="w-full px-4 flex flex-col gap-8 mt-8">
+          <div class="flex flex-col gap-2">
             <div class="flex justify-between">
               <div class="flex items-center gap-2">
-                <Tooltip>
-                  <TooltipTrigger class="w-[28px] h-[28px] transition-colors rounded-md grid place-items-center hover:bg-accent hover:text-accent-foreground">
-                    <CircleQuestionMark class="w-[14px] h-[14px]" />
-                  </TooltipTrigger>
-
-                  <TooltipContent>Info</TooltipContent>
-                </Tooltip>
-
-                <Button variant="ghost" class="w-8 h-8 p-0 hidden">
-                  <CopyIcon class="w-4 h-4 text-primary/50" />
-                  {/* Saved schedule */}
-                </Button>
+                <FormatSelector />
               </div>
 
               <div class="flex items-center gap-1">
@@ -238,22 +224,20 @@ const App: Component = () => {
             </div>
           </div>
 
-          <div class="flex flex-col gap-4 mt-8">
-            <div class="text-lg md:text-xl grid place-items-center h-[56px]">
-              <p class="text-center line-clamp-2 text-balance w-full">{descriptor()}</p>
-            </div>
+          <div class="text-lg md:text-xl grid place-items-center h-[56px]">
+            <p class="text-center line-clamp-2 text-balance w-full">{descriptor()}</p>
+          </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2">
-              <ScheduleSyntax format={format()} index={caret()} />
+          <div class="grid grid-cols-1 md:grid-cols-2">
+            <ScheduleSyntax format={format()} index={caret()} />
 
-              <ScheduleNext expr={expr()} format={format()} />
-            </div>
+            <ScheduleNext expr={expr()} format={format()} />
           </div>
         </div>
-      </Tabs>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </RutinContextProvider>
   );
 };
 

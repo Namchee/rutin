@@ -1,33 +1,25 @@
-import { createContext, type JSX, useContext } from 'solid-js';
-import { createStore } from 'solid-js/store';
+import { createContext, createSignal, type JSXElement, useContext } from 'solid-js';
 
 import type { ScheduleFormat } from './types';
 
-const INITIAL_CONTEXT_VALUE = {
-  format: 'posix',
-};
+function createRutinContext() {
+  const [format, setFormat] = createSignal<ScheduleFormat>('posix');
 
-export const ScheduleContext = createContext();
-
-export function ScheduleContextProvider(props: { children: JSX.Element }) {
-  const [value, setValue] = createStore(INITIAL_CONTEXT_VALUE);
-
-  const store = [
-    value,
-    {
-      setFormat(format: ScheduleFormat) {
-        setValue('format', format);
-      },
-    },
-  ];
-
-  return <ScheduleContext.Provider value={store}>{props.children}</ScheduleContext.Provider>;
+  return [{ format }, { setFormat }] as const;
 }
 
-export function useScheduleStore() {
-  const store = useContext(ScheduleContext);
+export const RutinContext = createContext<ReturnType<typeof createRutinContext>>();
+
+export function RutinContextProvider(props: { children: JSXElement }) {
+  return (
+    <RutinContext.Provider value={createRutinContext()}>{props.children}</RutinContext.Provider>
+  );
+}
+
+export function useRutinContext() {
+  const store = useContext(RutinContext);
   if (!store) {
-    throw new Error('useScheduleStore must be used within ScheduleContext');
+    throw new Error('useRutinContext must be used within RutinContextProvider');
   }
 
   return store;
