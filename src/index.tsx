@@ -5,6 +5,7 @@ import './assets/styles/fonts.css';
 import { render } from 'solid-js/web';
 
 import App from './App';
+import { RutinContextProvider } from './context';
 
 const root = document.getElementById('root');
 
@@ -14,5 +15,11 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
-// biome-ignore lint/style/noNonNullAssertion: Legit code
-render(() => <App />, root!);
+render(
+  () => (
+    <RutinContextProvider>
+      <App />
+    </RutinContextProvider>
+  ),
+  root!,
+);

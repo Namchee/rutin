@@ -13,7 +13,7 @@ import { CopyIcon } from './components/icons/Copy';
 import { WrenchIcon } from './components/icons/Wrench';
 import { Toaster } from './components/ui/Toast';
 import { Tooltip, TooltipContent, TooltipTrigger } from './components/ui/Tooltip';
-import { RutinContextProvider } from './context';
+import { RutinContextProvider, useRutinContext } from './context';
 import { POSIXCron } from './lib/parser/posix';
 
 const Placeholders: Record<ScheduleFormat, string> = {
@@ -34,7 +34,7 @@ const Parsers = {
 const App: Component = () => {
   let input!: HTMLInputElement;
 
-  const [format, setFormat] = createSignal<ScheduleFormat>('posix');
+  const [{ format }] = useRutinContext();
   const [isNonStandard, setNonStandard] = createSignal(false);
   const [value, setValue] = createSignal('');
   const [filled, setFilled] = createSignal<[number, number][]>([]);
@@ -167,77 +167,75 @@ const App: Component = () => {
   };
 
   return (
-    <RutinContextProvider>
-      <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 pb-8 flex flex-col items-center rounded-md">
-        <Toaster />
+    <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 pb-8 flex flex-col items-center rounded-md">
+      <Toaster />
 
-        <div class="w-full px-4 flex flex-col gap-8 mt-8">
-          <div class="flex flex-col gap-2">
-            <div class="flex justify-between">
-              <div class="flex items-center gap-2">
-                <FormatSelector />
-              </div>
-
-              <div class="flex items-center gap-1">
-                <Tooltip>
-                  <TooltipTrigger class="w-[28px] h-[28px] transition-colors rounded-md grid place-items-center hover:bg-accent hover:text-accent-foreground">
-                    <CopyIcon class="w-[14px] h-[14px]" />
-                  </TooltipTrigger>
-
-                  <TooltipContent>Copy</TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger class="w-[28px] h-[28px] transition-colors rounded-md grid place-items-center hover:bg-accent hover:text-accent-foreground cursor-pointer">
-                    <WrenchIcon class="w-[14px] h-[14px]" />
-                  </TooltipTrigger>
-
-                  <TooltipContent>Normalize</TooltipContent>
-                </Tooltip>
-              </div>
+      <div class="w-full px-4 flex flex-col gap-8 mt-8">
+        <div class="flex flex-col gap-2">
+          <div class="flex justify-between">
+            <div class="flex items-center gap-2">
+              <FormatSelector />
             </div>
 
-            <TextField class="w-full flex items-center">
-              <TextFieldInput
-                class="font-mono text-xl md:text-2xl h-16 w-full text-center"
-                value={value()}
-                onInput={onInput}
-                onSelect={onCaretMovement}
-                onKeyUp={onCaretMovement}
-                onClick={onCaretMovement}
-                onBlur={onBlur}
-                spellcheck={false}
-                placeholder={Placeholders[format()]}
-                autocomplete="off"
-                ref={input}
-              />
-            </TextField>
+            <div class="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger class="w-[28px] h-[28px] transition-colors rounded-md grid place-items-center hover:bg-accent hover:text-accent-foreground">
+                  <CopyIcon class="w-[14px] h-[14px]" />
+                </TooltipTrigger>
 
-            <div class="w-full">
-              <ScheduleHint
-                format={format()}
-                index={caret()}
-                filled={filled().map((_, idx) => idx)}
-                errors={errors()}
-                onHintSelect={onHintSelect}
-              />
+                <TooltipContent>Copy</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger class="w-[28px] h-[28px] transition-colors rounded-md grid place-items-center hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                  <WrenchIcon class="w-[14px] h-[14px]" />
+                </TooltipTrigger>
+
+                <TooltipContent>Normalize</TooltipContent>
+              </Tooltip>
             </div>
           </div>
 
-          <div class="text-lg md:text-xl grid place-items-center h-[56px]">
-            <p class="text-center line-clamp-2 text-balance w-full">{descriptor()}</p>
-          </div>
+          <TextField class="w-full flex items-center">
+            <TextFieldInput
+              class="font-mono text-xl md:text-2xl h-16 w-full text-center"
+              value={value()}
+              onInput={onInput}
+              onSelect={onCaretMovement}
+              onKeyUp={onCaretMovement}
+              onClick={onCaretMovement}
+              onBlur={onBlur}
+              spellcheck={false}
+              placeholder={Placeholders[format()]}
+              autocomplete="off"
+              ref={input}
+            />
+          </TextField>
 
-          <div class="grid grid-cols-1 md:grid-cols-2">
-            <ScheduleSyntax format={format()} index={caret()} />
-
-            <ScheduleNext expr={expr()} format={format()} />
+          <div class="w-full">
+            <ScheduleHint
+              format={format()}
+              index={caret()}
+              filled={filled().map((_, idx) => idx)}
+              errors={errors()}
+              onHintSelect={onHintSelect}
+            />
           </div>
         </div>
 
-        <Footer />
+        <div class="text-lg md:text-xl grid place-items-center h-[56px]">
+          <p class="text-center line-clamp-2 text-balance w-full">{descriptor()}</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2">
+          <ScheduleSyntax format={format()} index={caret()} />
+
+          <ScheduleNext expr={expr()} format={format()} />
+        </div>
       </div>
-    </RutinContextProvider>
+
+      <Footer />
+    </div>
   );
 };
 
