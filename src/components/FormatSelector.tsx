@@ -51,7 +51,9 @@ export function FormatSelector() {
         </SelectValue>
       </SelectTrigger>
 
-      <SelectContent />
+      <SelectContent>
+        <p class="font-mono">Dialect</p>
+      </SelectContent>
     </Select>
   );
 }
