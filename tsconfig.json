@@ -15,7 +15,7 @@
 
     // Type Checking & Safety
     "strict": true,
-    "types": ["vite/client"],
+    "types": ["vite/client", "unplugin-icons/types/solid"],
     "baseUrl": "./",
     "paths": {
       "@/*": ["./src/*"]
