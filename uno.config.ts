@@ -100,4 +100,10 @@ export default defineConfig({
       },
     },
   },
+  rules: [
+    [
+      'no-scrollbar',
+      { 'scrollbar-width': 'none', '::-webkit-scrollbar': 'hidden', '-ms-overflow-style': 'none' },
+    ],
+  ],
 });

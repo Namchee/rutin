@@ -1,19 +1,21 @@
 import { type Component, createSignal, type JSX } from 'solid-js';
 
+import { Footer } from '@/components/Footer';
+import { FormatSelector } from '@/components/FormatSelector';
+import { CopyIcon } from '@/components/icons/Copy';
+import { WrenchIcon } from '@/components/icons/Wrench';
 import { ScheduleHint } from '@/components/ScheduleHint';
 import { ScheduleNext } from '@/components/ScheduleNext';
+
 import { ScheduleSyntax } from '@/components/ScheduleSyntax';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
+import { Toaster } from '@/components/ui/Toast';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
 
 import type { ScheduleFormat, ScheduleGenerator } from '@/types';
-import { Footer } from './components/Footer';
-import { FormatSelector } from './components/FormatSelector';
-import { CopyIcon } from './components/icons/Copy';
-import { WrenchIcon } from './components/icons/Wrench';
-import { Toaster } from './components/ui/Toast';
-import { Tooltip, TooltipContent, TooltipTrigger } from './components/ui/Tooltip';
-import { RutinContextProvider, useRutinContext } from './context';
+
+import { useRutinContext } from './context';
+
 import { POSIXCron } from './lib/parser/posix';
 
 const Placeholders: Record<ScheduleFormat, string> = {
@@ -22,7 +24,6 @@ const Placeholders: Record<ScheduleFormat, string> = {
   systemd: '* *-*-* *:*:*',
   'cf-workers': '* * * * *',
   cloudwatch: '* * * * *',
-  human: '',
 };
 
 const Parsers = {

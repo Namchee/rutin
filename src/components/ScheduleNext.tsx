@@ -96,7 +96,7 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
       <div
         ref={container}
         class={cn(
-          'h-full text-muted-foreground mt-4 w-full overflow-auto no-scrollbar fade-bottom',
+          'h-full text-muted-foreground mt-4 w-full overflow-auto no-scrollbar mask-b-from-80% mask-b-to-100%',
           {
             'grid place-items-center': next().length === 0,
             'flex flex-col gap-4': next().length > 0,
