@@ -2,8 +2,6 @@ import { type Component, createSignal, type JSX } from 'solid-js';
 
 import { Footer } from '@/components/Footer';
 import { FormatSelector } from '@/components/FormatSelector';
-import { CopyIcon } from '@/components/icons/Copy';
-import { WrenchIcon } from '@/components/icons/Wrench';
 import { ScheduleHint } from '@/components/ScheduleHint';
 import { ScheduleNext } from '@/components/ScheduleNext';
 
@@ -180,19 +178,19 @@ const App: Component = () => {
 
             <div class="flex items-center gap-1">
               <Tooltip>
-                <TooltipTrigger class="w-[28px] h-[28px] transition-colors rounded-md grid place-items-center hover:bg-accent hover:text-accent-foreground">
-                  <CopyIcon class="w-[14px] h-[14px]" />
+                <TooltipTrigger class="size-[28px] transition-colors rounded-md grid place-items-center hover:bg-accent hover:text-accent-foreground">
+                  <div class="i-lucide-copy size-[14px]" />
                 </TooltipTrigger>
 
-                <TooltipContent>Copy</TooltipContent>
+                <TooltipContent class="text-xs">Copy</TooltipContent>
               </Tooltip>
 
               <Tooltip>
-                <TooltipTrigger class="w-[28px] h-[28px] transition-colors rounded-md grid place-items-center hover:bg-accent hover:text-accent-foreground cursor-pointer">
-                  <WrenchIcon class="w-[14px] h-[14px]" />
+                <TooltipTrigger class="size-[28px] transition-colors rounded-md grid place-items-center hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                  <div class="i-lucide-wrench size-[14px]" />
                 </TooltipTrigger>
 
-                <TooltipContent>Normalize</TooltipContent>
+                <TooltipContent class="text-xs">Normalize</TooltipContent>
               </Tooltip>
             </div>
           </div>

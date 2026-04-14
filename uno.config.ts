@@ -1,10 +1,27 @@
+import fs from 'node:fs/promises';
+
+import icons from '@unocss/preset-icons';
+
 import { defineConfig, presetWind4 } from 'unocss';
 
 import { presetAnimations } from 'unocss-preset-animations';
 
 export default defineConfig({
-  // @ts-expect-error
-  presets: [presetWind4(), presetAnimations()],
+  presets: [
+    presetWind4(),
+    // @ts-expect-error
+    presetAnimations(),
+    // @ts-expect-error
+    icons({
+      collections: {
+        me: {
+          namchee: () => fs.readFile('./src/assets/icons/namchee.svg', 'utf-8'),
+          github: () => fs.readFile('./src/assets/icons/github.svg', 'utf-8'),
+          solid: () => fs.readFile('./src/assets/icons/solid.svg', 'utf-8'),
+        },
+      },
+    }),
+  ],
   variants: [
     matcher => {
       if (!matcher.startsWith('dark:')) return matcher;

@@ -1,6 +1,12 @@
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/Select';
 import { useRutinContext } from '@/context';
 import type { Format, ScheduleFormat } from '@/types';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/Select';
 
 const FormatLabel: Record<ScheduleFormat, Format> = {
   posix: {
@@ -48,9 +54,12 @@ export function FormatSelector() {
       <SelectTrigger
         aria-label="Dialect"
         class="w-56 focus:ring-accent focus:ring-offset-0 transition-shadow">
-        <SelectValue<string>>
-          {state => FormatLabel[state.selectedOption() as ScheduleFormat].label}
-        </SelectValue>
+        <div class="flex items-center gap-2">
+          <div class="i-lucide-code-2 size-4" />
+          <SelectValue<string>>
+            {state => FormatLabel[state.selectedOption() as ScheduleFormat].label}
+          </SelectValue>
+        </div>
       </SelectTrigger>
 
       <SelectContent class="border-border" />
