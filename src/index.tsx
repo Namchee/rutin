@@ -1,5 +1,7 @@
 import 'uno.css';
+
 import './assets/styles/global.css';
+import './assets/styles/anims.css';
 import './assets/styles/fonts.css';
 
 import { render } from 'solid-js/web';

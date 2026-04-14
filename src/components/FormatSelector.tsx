@@ -39,21 +39,21 @@ export function FormatSelector() {
       placeholder="Select schedule format..."
       placement="bottom-start"
       itemComponent={props => (
-        <SelectItem item={props.item} class="max-w-xs">
+        <SelectItem item={props.item} class="max-w-xs transition-colors">
           <p class="font-medium">{FormatLabel[props.item.rawValue].label}</p>
 
           <p class="text-xs opacity-70 mt-1">{FormatLabel[props.item.rawValue].description}</p>
         </SelectItem>
       )}>
-      <SelectTrigger aria-label="Fruit" class="w-56">
+      <SelectTrigger
+        aria-label="Dialect"
+        class="w-56 focus:ring-accent focus:ring-offset-0 transition-shadow">
         <SelectValue<string>>
           {state => FormatLabel[state.selectedOption() as ScheduleFormat].label}
         </SelectValue>
       </SelectTrigger>
 
-      <SelectContent>
-        <p class="font-mono">Dialect</p>
-      </SelectContent>
+      <SelectContent class="border-border" />
     </Select>
   );
 }
