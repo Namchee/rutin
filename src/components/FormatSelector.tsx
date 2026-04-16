@@ -1,3 +1,4 @@
+import { For } from 'solid-js';
 import {
   Select,
   SelectContent,
@@ -8,7 +9,8 @@ import {
 import { useRutinContext } from '@/context';
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
 import type { Format, ScheduleFormat } from '@/types';
-import { Drawer, DrawerTrigger } from './ui/Drawer';
+import { Button } from './ui/Button';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from './ui/Drawer';
 
 const FormatLabel: Record<ScheduleFormat, Format> = {
   posix: {
@@ -73,8 +75,20 @@ export function FormatSelector() {
   }
 
   return (
-    <Drawer>
-      <DrawerTrigger
+    <Select
+      value={format()}
+      onChange={setFormat}
+      options={Object.keys(FormatLabel)}
+      placeholder="Select schedule format..."
+      placement="bottom-start"
+      itemComponent={props => (
+        <SelectItem item={props.item} class="max-w-xs transition-colors">
+          <p class="font-medium">{FormatLabel[props.item.rawValue].label}</p>
+
+          <p class="text-xs opacity-70 mt-1">{FormatLabel[props.item.rawValue].description}</p>
+        </SelectItem>
+      )}>
+      <SelectTrigger
         aria-label="Dialect"
         class="w-48 focus:ring-accent focus:ring-offset-0 transition-shadow">
         <div class="flex items-center gap-2">
@@ -83,7 +97,11 @@ export function FormatSelector() {
             {state => FormatLabel[state.selectedOption() as ScheduleFormat].label}
           </SelectValue>
         </div>
-      </DrawerTrigger>
-    </Drawer>
+      </SelectTrigger>
+
+      <SelectContent class="border-border">
+        <p class="pt-3 px-3 font-mono text-xs opacity-50 uppercase">Dialect</p>
+      </SelectContent>
+    </Select>
   );
 }
