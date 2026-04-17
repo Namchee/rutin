@@ -12,6 +12,7 @@ export function useMediaQuery(query: string) {
   }
 
   function handleChange() {
+    console.log(getValue());
     setValue(getValue());
   }
 

@@ -1,4 +1,4 @@
-import { For } from 'solid-js';
+import { For, Show } from 'solid-js';
 import {
   Select,
   SelectContent,
@@ -38,13 +38,15 @@ const FormatLabel: Record<ScheduleFormat, Format> = {
   },
 };
 
+function FormatSelectorDrawer() {}
+
 export function FormatSelector() {
   const [{ format }, { setFormat }] = useRutinContext();
 
   const isNonMobile = useMediaQuery('(min-width: 768px)');
 
-  if (isNonMobile()) {
-    return (
+  return (
+    <Show when={isNonMobile()} fallback={<div>foo bar</div>}>
       <Select
         value={format()}
         onChange={setFormat}
@@ -71,37 +73,6 @@ export function FormatSelector() {
 
         <SelectContent class="border-border" />
       </Select>
-    );
-  }
-
-  return (
-    <Select
-      value={format()}
-      onChange={setFormat}
-      options={Object.keys(FormatLabel)}
-      placeholder="Select schedule format..."
-      placement="bottom-start"
-      itemComponent={props => (
-        <SelectItem item={props.item} class="max-w-xs transition-colors">
-          <p class="font-medium">{FormatLabel[props.item.rawValue].label}</p>
-
-          <p class="text-xs opacity-70 mt-1">{FormatLabel[props.item.rawValue].description}</p>
-        </SelectItem>
-      )}>
-      <SelectTrigger
-        aria-label="Dialect"
-        class="w-48 focus:ring-accent focus:ring-offset-0 transition-shadow">
-        <div class="flex items-center gap-2">
-          <div class="i-lucide-code-2 size-4" />
-          <SelectValue<string>>
-            {state => FormatLabel[state.selectedOption() as ScheduleFormat].label}
-          </SelectValue>
-        </div>
-      </SelectTrigger>
-
-      <SelectContent class="border-border">
-        <p class="pt-3 px-3 font-mono text-xs opacity-50 uppercase">Dialect</p>
-      </SelectContent>
-    </Select>
+    </Show>
   );
 }
