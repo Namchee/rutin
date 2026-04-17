@@ -11,9 +11,8 @@ import { Toaster } from '@/components/ui/Toast';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
 
 import type { ScheduleFormat, ScheduleGenerator } from '@/types';
-
+import { ScheduleTools } from './components/ScheduleTools';
 import { useRutinContext } from './context';
-
 import { POSIXCron } from './lib/parser/posix';
 
 const Placeholders: Record<ScheduleFormat, string> = {
@@ -172,27 +171,9 @@ const App: Component = () => {
       <div class="w-full px-4 flex flex-col gap-8 mt-8">
         <div class="flex flex-col gap-2">
           <div class="flex justify-between">
-            <div class="flex items-center gap-2">
-              <FormatSelector />
-            </div>
+            <FormatSelector />
 
-            <div class="flex items-center gap-1">
-              <Tooltip>
-                <TooltipTrigger class="size-[28px] transition-colors rounded-md grid place-items-center hover:bg-accent hover:text-accent-foreground">
-                  <div class="i-lucide-copy size-[14px]" />
-                </TooltipTrigger>
-
-                <TooltipContent class="text-xs">Copy</TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger class="size-[28px] transition-colors rounded-md grid place-items-center hover:bg-accent hover:text-accent-foreground cursor-pointer">
-                  <div class="i-lucide-wrench size-[14px]" />
-                </TooltipTrigger>
-
-                <TooltipContent class="text-xs">Normalize</TooltipContent>
-              </Tooltip>
-            </div>
+            <ScheduleTools />
           </div>
 
           <TextField class="w-full flex items-center">
