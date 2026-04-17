@@ -42,7 +42,7 @@ const FormatLabel: Record<ScheduleFormat, Format> = {
 function FormatSelectorDrawer() {
   const [{ format }, { setFormat }] = useRutinContext();
 
-  const [open, setOpen] = createSignal(true);
+  const [open, setOpen] = createSignal(false);
 
   function onSelect(format: ScheduleFormat) {
     setFormat(format);
