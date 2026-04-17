@@ -6,6 +6,8 @@ const Hints = {
   posix: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
   quartz: ['Second', 'Minute', 'Hour', 'Date', 'Month', 'Day', '[Year]'],
   systemd: ['Day', 'Year-Month-Day', 'Hour:Minute:Second'],
+  'cf-workers': ['Minute', 'Hour', 'Date', 'Month', 'Day'],
+  cloudwatch: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
 };
 
 interface ScheduleHintProps {

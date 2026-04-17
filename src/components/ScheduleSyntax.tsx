@@ -106,11 +106,11 @@ export function ScheduleSyntax(props: Readonly<ScheduleSyntaxProps>) {
 
   return (
     <div class="flex flex-col basis-3/5">
-      <p class="text-center font-medium h-10 text-sm text-foreground/70 grid place-items-center">
+      <p class="text-center font-medium h-10 text-sm text-muted-foreground grid place-items-center">
         Syntaxes
       </p>
 
-      <Table class="text-foreground/70 mt-2">
+      <Table class="text-muted-foreground mt-2">
         <TableBody>
           {Object.entries(dict()).map(([key, value]) => (
             <TableRow>

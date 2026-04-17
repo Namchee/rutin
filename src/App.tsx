@@ -203,7 +203,7 @@ const App: Component = () => {
           </div>
         </div>
 
-        <div class="text-lg md:text-xl grid place-items-center h-[56px]">
+        <div class="text-lg md:text-xl grid place-items-center h-[56px]" title={descriptor()}>
           <p class="text-center line-clamp-2 text-balance w-full">{descriptor()}</p>
         </div>
 
