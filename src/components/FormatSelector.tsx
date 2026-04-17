@@ -1,4 +1,4 @@
-import { For, Show } from 'solid-js';
+import { createSignal, For, Show } from 'solid-js';
 import {
   Select,
   SelectContent,
@@ -7,6 +7,7 @@ import {
   SelectValue,
 } from '@/components/ui/Select';
 import { useRutinContext } from '@/context';
+import { cn } from '@/lib/css';
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
 import type { Format, ScheduleFormat } from '@/types';
 import { Button } from './ui/Button';
@@ -38,7 +39,65 @@ const FormatLabel: Record<ScheduleFormat, Format> = {
   },
 };
 
-function FormatSelectorDrawer() {}
+function FormatSelectorDrawer() {
+  const [{ format }, { setFormat }] = useRutinContext();
+
+  const [open, setOpen] = createSignal(true);
+
+  function onSelect(format: ScheduleFormat) {
+    setFormat(format);
+
+    setOpen(false);
+  }
+
+  return (
+    <Drawer open={open()} onOpenChange={setOpen}>
+      <DrawerTrigger
+        as={Button<'button'>}
+        variant="outline"
+        class="w-48 focus:ring-accent focus:ring-offset-0 transition-shadow justify-start font-normal">
+        <div class="i-lucide-code-2 size-4" />
+        <p>{FormatLabel[format()].label}</p>
+
+        <div class="i-lucide-chevrons-up-down size-3.5 text-muted-foreground ml-auto"></div>
+      </DrawerTrigger>
+
+      <DrawerContent>
+        <div class="px-2 py-4">
+          <DrawerHeader class="px-2 pt-0 pb-2 text-left">
+            <DrawerTitle class=" text-xs font-mono uppercase font-normal text-muted-foreground">
+              Dialect
+            </DrawerTitle>
+          </DrawerHeader>
+
+          <div class="flex flex-col gap-1">
+            <For each={Object.entries(FormatLabel)}>
+              {([key, value]) => (
+                <div
+                  onPointerDown={() => onSelect(key as ScheduleFormat)}
+                  class={cn('p-2 rounded-md flex items-center gap-3', {
+                    'bg-muted': format() === key,
+                  })}>
+                  <div>
+                    <p class="font-medium">{value.label}</p>
+
+                    <p class="text-xs text-muted-foreground">{value.description}</p>
+                  </div>
+
+                  <div
+                    class={cn('i-lucide-check size-5', {
+                      invisible: format() !== key,
+                    })}
+                  />
+                </div>
+              )}
+            </For>
+          </div>
+        </div>
+      </DrawerContent>
+    </Drawer>
+  );
+}
 
 export function FormatSelector() {
   const [{ format }, { setFormat }] = useRutinContext();
@@ -46,7 +105,7 @@ export function FormatSelector() {
   const isNonMobile = useMediaQuery('(min-width: 768px)');
 
   return (
-    <Show when={isNonMobile()} fallback={<div>foo bar</div>}>
+    <Show when={isNonMobile()} fallback={<FormatSelectorDrawer />}>
       <Select
         value={format()}
         onChange={setFormat}
@@ -57,7 +116,9 @@ export function FormatSelector() {
           <SelectItem item={props.item} class="max-w-xs transition-colors">
             <p class="font-medium">{FormatLabel[props.item.rawValue].label}</p>
 
-            <p class="text-xs opacity-70 mt-1">{FormatLabel[props.item.rawValue].description}</p>
+            <p class="text-xs text-muted-foreground mt-1">
+              {FormatLabel[props.item.rawValue].description}
+            </p>
           </SelectItem>
         )}>
         <SelectTrigger
@@ -71,7 +132,11 @@ export function FormatSelector() {
           </div>
         </SelectTrigger>
 
-        <SelectContent class="border-border" />
+        <SelectContent class="border-border">
+          <p class="px-3 pt-[10px] pb-[2px] text-muted-foreground text-xs font-mono uppercase">
+            Dialect
+          </p>
+        </SelectContent>
       </Select>
     </Show>
   );
