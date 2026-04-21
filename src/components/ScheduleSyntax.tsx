@@ -50,7 +50,7 @@ const Syntaxes: Record<ScheduleFormat, Record<string, Record<string, string>>> =
     '-2': Object.fromEntries(
       Object.entries(Macros).map(([k, v]) => [k, v.replace(' (macro)', '')]),
     ),
-    '-1': { ...CommonOperators, ...Macros },
+    '-1': { ...CommonOperators, '@': 'Macro' },
     '0': MinuteField,
     '1': HourField,
     '2': DateField,
@@ -64,7 +64,7 @@ const Syntaxes: Record<ScheduleFormat, Record<string, Record<string, string>>> =
   },
   quartz: {
     '-2': Macros,
-    '-1': { ...CommonOperators, ...Macros },
+    '-1': { ...CommonOperators, '@': 'Macro' },
     '0': { ...CommonOperators, '0 - 59': 'Second value' },
     '1': MinuteField,
     '2': HourField,
@@ -83,7 +83,7 @@ const Syntaxes: Record<ScheduleFormat, Record<string, Record<string, string>>> =
   },
   systemd: {
     '-2': SystemdMacros,
-    '-1': { ...SystemdOperators, ...SystemdMacros },
+    '-1': { ...SystemdOperators, '..ly': 'Macro' },
     '0': { ...SystemdOperators, '0 - 6': 'Day value', 'Sun - Sat': 'Day value (alt.)' },
     '1': {
       ...SystemdOperators,
@@ -93,6 +93,32 @@ const Syntaxes: Record<ScheduleFormat, Record<string, Record<string, string>>> =
       '1 - 31': 'Date value',
     },
     '2': { ...SystemdOperators, '0 - 23': 'Hour value', '0 - 59': 'Second / Minute value' },
+  },
+  'cf-workers': {
+    '-1': { ...CommonOperators, ...Macros },
+    '0': MinuteField,
+    '1': HourField,
+    '2': DateField,
+    '3': MonthField,
+    '4': {
+      ...CommonOperators,
+      '0 - 7': 'Weekday value',
+      'SUN - SAT': 'Weekday value (alt.)',
+      '7': 'Sunday',
+    },
+  },
+  cloudwatch: {
+    '-1': { ...CommonOperators, ...Macros },
+    '0': MinuteField,
+    '1': HourField,
+    '2': DateField,
+    '3': MonthField,
+    '4': {
+      ...CommonOperators,
+      '0 - 7': 'Weekday value',
+      'SUN - SAT': 'Weekday value (alt.)',
+      '7': 'Sunday',
+    },
   },
 };
 

@@ -26,6 +26,8 @@ const Parsers = {
   posix: POSIXCron,
   quartz: POSIXCron,
   systemd: POSIXCron,
+  'cf-workers': POSIXCron,
+  cloudwatch: POSIXCron,
 };
 
 const App: Component = () => {
@@ -87,7 +89,7 @@ const App: Component = () => {
       return;
     }
 
-    if (value.startsWith('@')) {
+    if (value.trim().startsWith('@')) {
       setCaret(-2);
       return;
     }
@@ -202,8 +204,8 @@ const App: Component = () => {
           </div>
         </div>
 
-        <div class="text-lg md:text-xl grid place-items-center h-[56px]" title={descriptor()}>
-          <p class="text-center line-clamp-2 text-balance w-full">{descriptor()}</p>
+        <div class="text-lg md:text-xl grid place-items-center h-[84px]" title={descriptor()}>
+          <p class="text-center line-clamp-3 text-balance w-full">{descriptor()}</p>
         </div>
 
         <div class="md:grid grid-cols-1 md:grid-cols-2 hidden gap-8">
