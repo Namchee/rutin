@@ -8,7 +8,6 @@ import { ScheduleNext } from '@/components/ScheduleNext';
 import { ScheduleSyntax } from '@/components/ScheduleSyntax';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
 import { Toaster } from '@/components/ui/Toast';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
 
 import type { ScheduleFormat, ScheduleGenerator } from '@/types';
 import { ScheduleTools } from './components/ScheduleTools';
@@ -207,7 +206,7 @@ const App: Component = () => {
           <p class="text-center line-clamp-2 text-balance w-full">{descriptor()}</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2">
+        <div class="md:grid grid-cols-1 md:grid-cols-2 hidden gap-8">
           <ScheduleSyntax format={format()} index={caret()} />
 
           <ScheduleNext expr={expr()} format={format()} />

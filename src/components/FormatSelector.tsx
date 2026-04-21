@@ -55,7 +55,7 @@ function FormatSelectorDrawer() {
       <DrawerTrigger
         as={Button<'button'>}
         variant="outline"
-        class="w-48 focus:ring-accent focus:ring-offset-0 transition-shadow justify-start font-normal">
+        class="w-48 focus:ring-accent focus:ring-offset-0 transition-shadow justify-start font-normal h-9 pr-3">
         <div class="i-lucide-code-2 size-4" />
         <p>{FormatLabel[format()].label}</p>
 
@@ -123,7 +123,7 @@ export function FormatSelector() {
         )}>
         <SelectTrigger
           aria-label="Dialect"
-          class="w-48 focus:ring-accent focus:ring-offset-0 transition-shadow">
+          class="w-48 focus:ring-accent focus:ring-offset-0 transition-shadow h-9">
           <div class="flex items-center gap-2">
             <div class="i-lucide-code-2 size-4" />
             <SelectValue<string>>
