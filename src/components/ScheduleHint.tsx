@@ -6,6 +6,7 @@ const Hints = {
   posix: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
   quartz: ['Second', 'Minute', 'Hour', 'Date', 'Month', 'Day', '[Year]'],
   systemd: ['Day', 'Year-Month-Day', 'Hour:Minute:Second'],
+  node: ['[Second]', 'Minute', 'Hour', 'Date', 'Day'],
   'cf-workers': ['Minute', 'Hour', 'Date', 'Month', 'Day'],
   cloudwatch: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
 };

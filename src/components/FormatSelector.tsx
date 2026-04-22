@@ -12,6 +12,7 @@ import { useMediaQuery } from '@/lib/hooks/use-media-query';
 import type { Format, ScheduleFormat } from '@/types';
 import { Button } from './ui/Button';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from './ui/Drawer';
+import { Tabs, TabsList, TabsTrigger } from './ui/Tabs';
 
 const FormatLabel: Record<ScheduleFormat, Format> = {
   posix: {
@@ -29,12 +30,16 @@ const FormatLabel: Record<ScheduleFormat, Format> = {
     description:
       'Scheduling system integrated by systemd which is commonly found in Linux systems.',
   },
+  node: {
+    label: 'Node',
+    description: 'Foo bar',
+  },
   'cf-workers': {
-    label: 'Cloudflare Workers',
+    label: 'Workers',
     description: 'CRON-like scheduling system used exclusively by Cloudflare Workers.',
   },
   cloudwatch: {
-    label: 'Amazon Cloudwatch',
+    label: 'Cloudwatch',
     description: 'CRON-like scheduling system used exclusively by Amazon Cloudwatch.',
   },
 };
@@ -104,7 +109,7 @@ export function FormatSelector() {
 
   const isNonMobile = useMediaQuery('(min-width: 768px)');
 
-  return (
+  const a = (
     <Show when={isNonMobile()} fallback={<FormatSelectorDrawer />}>
       <Select
         value={format()}
@@ -139,5 +144,19 @@ export function FormatSelector() {
         </SelectContent>
       </Select>
     </Show>
+  );
+
+  return (
+    <Tabs class="max-w-full overflow-auto no-scrollbar md:px-4">
+      <TabsList class="rounded-full mx-12 md:mx-auto">
+        <For each={Object.entries(FormatLabel)}>
+          {([key, value]) => (
+            <TabsTrigger class="rounded-full cursor-pointer" value={key}>
+              {value.label}
+            </TabsTrigger>
+          )}
+        </For>
+      </TabsList>
+    </Tabs>
   );
 }

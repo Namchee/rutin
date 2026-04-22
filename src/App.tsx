@@ -166,14 +166,14 @@ const App: Component = () => {
   };
 
   return (
-    <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 pb-8 flex flex-col items-center rounded-md">
+    <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-24 md:pt-32 pb-8 flex flex-col items-center rounded-md">
       <Toaster />
 
-      <div class="w-full px-4 flex flex-col gap-8 mt-8">
-        <div class="flex flex-col gap-2">
-          <div class="flex justify-between">
-            <FormatSelector />
+      <div class="w-full flex flex-col gap-8">
+        <FormatSelector />
 
+        <div class="flex flex-col gap-2 px-4">
+          <div class="flex justify-between">
             <ScheduleTools />
           </div>
 

@@ -31,8 +31,6 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
 
       if (!nextExec.done) {
         newDates.push(nextExec.value);
-      } else {
-        console.log('It is finished?');
       }
     }
 
