@@ -166,14 +166,16 @@ const App: Component = () => {
   };
 
   return (
-    <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-24 md:pt-32 pb-8 flex flex-col items-center rounded-md">
+    <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-24 pb-8 flex flex-col items-center rounded-md">
       <Toaster />
 
       <div class="w-full flex flex-col gap-8">
         <FormatSelector />
 
         <div class="flex flex-col gap-2 px-4">
-          <div class="flex justify-between">
+          <div class="hidden md:flex justify-between">
+            <ScheduleTools />
+
             <ScheduleTools />
           </div>
 
@@ -204,11 +206,13 @@ const App: Component = () => {
           </div>
         </div>
 
-        <div class="text-lg md:text-xl grid place-items-center h-[84px]" title={descriptor()}>
-          <p class="text-center line-clamp-3 text-balance w-full">{descriptor()}</p>
+        <div
+          class="text-lg md:text-xl grid place-items-center md:h-[84px] px-4"
+          title={descriptor()}>
+          <p class="text-center md:line-clamp-3 text-balance w-full">{descriptor()}</p>
         </div>
 
-        <div class="md:grid grid-cols-1 md:grid-cols-2 hidden gap-8">
+        <div class="md:grid grid-cols-1 md:grid-cols-2 gap-8 px-4 hidden">
           <ScheduleSyntax format={format()} index={caret()} />
 
           <ScheduleNext expr={expr()} format={format()} />

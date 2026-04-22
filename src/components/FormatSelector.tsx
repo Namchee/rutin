@@ -147,8 +147,8 @@ export function FormatSelector() {
   );
 
   return (
-    <Tabs class="max-w-full overflow-auto no-scrollbar md:px-4">
-      <TabsList class="rounded-full mx-12 md:mx-auto">
+    <Tabs class="max-w-full overflow-auto no-scrollbar md:justify-center flex px-4">
+      <TabsList class="rounded-full">
         <For each={Object.entries(FormatLabel)}>
           {([key, value]) => (
             <TabsTrigger class="rounded-full cursor-pointer" value={key}>
