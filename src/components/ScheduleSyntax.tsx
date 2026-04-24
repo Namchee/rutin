@@ -139,7 +139,7 @@ export function ScheduleSyntax(props: Readonly<ScheduleSyntaxProps>) {
       <Table class="text-muted-foreground mt-2">
         <TableBody>
           {Object.entries(dict()).map(([key, value]) => (
-            <TableRow>
+            <TableRow class="border-none">
               <TableCell class="font-mono text-right w-1/2">{key}</TableCell>
               <TableCell class="w-1/2">{value}</TableCell>
             </TableRow>

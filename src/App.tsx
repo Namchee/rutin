@@ -10,6 +10,7 @@ import { TextField, TextFieldInput } from '@/components/ui/TextField';
 import { Toaster } from '@/components/ui/Toast';
 
 import type { ScheduleFormat, ScheduleGenerator } from '@/types';
+import { ScheduleInfo } from './components/ScheduleInfo';
 import { ScheduleTools } from './components/ScheduleTools';
 import { useRutinContext } from './context';
 import { POSIXCron } from './lib/parser/posix';
@@ -166,15 +167,19 @@ const App: Component = () => {
   };
 
   return (
-    <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-24 pb-8 flex flex-col items-center rounded-md">
+    <div class="flex-1 max-w-3xl font-sans w-full mx-auto md:pt-16 py-8 flex flex-col items-center rounded-md">
       <Toaster />
 
-      <div class="w-full flex flex-col gap-8">
+      <div class="w-full flex flex-col gap-6 md:gap-8">
         <FormatSelector />
+
+        <div class="text-lg md:text-xl grid place-items-center h-[84px] px-4" title={descriptor()}>
+          <p class="text-center line-clamp-3 text-balance w-full">{descriptor()}</p>
+        </div>
 
         <div class="flex flex-col gap-2 px-4">
           <div class="hidden md:flex justify-between">
-            <ScheduleTools />
+            <ScheduleInfo />
 
             <ScheduleTools />
           </div>
@@ -206,13 +211,7 @@ const App: Component = () => {
           </div>
         </div>
 
-        <div
-          class="text-lg md:text-xl grid place-items-center md:h-[84px] px-4"
-          title={descriptor()}>
-          <p class="text-center md:line-clamp-3 text-balance w-full">{descriptor()}</p>
-        </div>
-
-        <div class="md:grid grid-cols-1 md:grid-cols-2 gap-8 px-4 hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
           <ScheduleSyntax format={format()} index={caret()} />
 
           <ScheduleNext expr={expr()} format={format()} />
