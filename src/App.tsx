@@ -167,19 +167,19 @@ const App: Component = () => {
   };
 
   return (
-    <div class="flex-1 max-w-3xl font-sans w-full mx-auto md:pt-16 py-8 flex flex-col items-center rounded-md">
+    <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 xl:pt-32 py-8 flex flex-col items-center rounded-md">
       <Toaster />
 
       <div class="w-full flex flex-col gap-6 md:gap-8">
-        <FormatSelector />
-
-        <div class="text-lg md:text-xl grid place-items-center h-[84px] px-4" title={descriptor()}>
-          <p class="text-center line-clamp-3 text-balance w-full">{descriptor()}</p>
+        <div
+          class="text-xl md:text-2xl grid place-items-center h-[75px] md:[90px] px-4"
+          title={descriptor()}>
+          <p class="text-center line-clamp-3 text-balance w-full leading-tight">{descriptor()}</p>
         </div>
 
         <div class="flex flex-col gap-2 px-4">
-          <div class="hidden md:flex justify-between">
-            <ScheduleInfo />
+          <div class="flex justify-between">
+            <FormatSelector />
 
             <ScheduleTools />
           </div>

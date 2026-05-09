@@ -73,7 +73,7 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
   });
 
   return (
-    <div class="hidden text-foreground/70 flex flex-col items-center w-full text-sm h-[450px] overflow-hidden">
+    <div class="text-foreground/70 flex flex-col items-center w-full text-sm h-[450px] overflow-hidden">
       <p class="h-10 grid place-items-center font-medium text-muted-foreground shrink-0">
         Execution Time
       </p>

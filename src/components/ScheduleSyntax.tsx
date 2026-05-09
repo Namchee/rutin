@@ -62,6 +62,22 @@ const Syntaxes: Record<ScheduleFormat, Record<string, Record<string, string>>> =
       '7': 'Sunday',
     },
   },
+  node: {
+    '-2': Object.fromEntries(
+      Object.entries(Macros).map(([k, v]) => [k, v.replace(' (macro)', '')]),
+    ),
+    '-1': { ...CommonOperators, '@': 'Macro' },
+    '0': MinuteField,
+    '1': HourField,
+    '2': DateField,
+    '3': MonthField,
+    '4': {
+      ...CommonOperators,
+      '0 - 7': 'Weekday value',
+      'SUN - SAT': 'Weekday value (alt.)',
+      '7': 'Sunday',
+    },
+  },
   quartz: {
     '-2': Macros,
     '-1': { ...CommonOperators, '@': 'Macro' },

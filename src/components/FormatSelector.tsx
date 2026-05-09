@@ -12,13 +12,12 @@ import { useMediaQuery } from '@/lib/hooks/use-media-query';
 import type { Format, ScheduleFormat } from '@/types';
 import { Button } from './ui/Button';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from './ui/Drawer';
-import { Tabs, TabsList, TabsTrigger } from './ui/Tabs';
 
 const FormatLabel: Record<ScheduleFormat, Format> = {
   posix: {
     label: 'POSIX',
     description:
-      'Standard CRON implementation on UNIX operating system via crontab. Also known as Vixie CRON.',
+      'Standard CRON implementation on UNIX operating system via crontab like Vixie or Anacron.',
   },
   quartz: {
     label: 'Quartz',
@@ -32,15 +31,17 @@ const FormatLabel: Record<ScheduleFormat, Format> = {
   },
   node: {
     label: 'Node',
-    description: 'Foo bar',
+    description:
+      'CRON implementation of node-cron, CRON library written for Node.js with optional seconds field.',
   },
   'cf-workers': {
     label: 'Workers',
-    description: 'CRON-like scheduling system used exclusively by Cloudflare Workers.',
+    description:
+      'CRON implementation used in Cloudflare Workers. Closer to Quartz but with 5 fields.',
   },
   cloudwatch: {
     label: 'Cloudwatch',
-    description: 'CRON-like scheduling system used exclusively by Amazon Cloudwatch.',
+    description: 'CRON implementation used in Amazon Cloudwatch. Closer to CRON but with 6 fields.',
   },
 };
 
@@ -109,7 +110,7 @@ export function FormatSelector() {
 
   const isNonMobile = useMediaQuery('(min-width: 768px)');
 
-  const a = (
+  return (
     <Show when={isNonMobile()} fallback={<FormatSelectorDrawer />}>
       <Select
         value={format()}
@@ -128,7 +129,7 @@ export function FormatSelector() {
         )}>
         <SelectTrigger
           aria-label="Dialect"
-          class="w-48 focus:ring-accent focus:ring-offset-0 transition-shadow h-9">
+          class="shadow-xs w-48 focus:ring-muted focus:ring-offset-0 transition-shadow h-8 cursor-pointer">
           <div class="flex items-center gap-2">
             <div class="i-lucide-code-2 size-4" />
             <SelectValue<string>>
@@ -144,19 +145,5 @@ export function FormatSelector() {
         </SelectContent>
       </Select>
     </Show>
-  );
-
-  return (
-    <Tabs class="max-w-full overflow-auto no-scrollbar md:justify-center flex px-4">
-      <TabsList class="rounded-full">
-        <For each={Object.entries(FormatLabel)}>
-          {([key, value]) => (
-            <TabsTrigger class="rounded-full cursor-pointer" value={key}>
-              {value.label}
-            </TabsTrigger>
-          )}
-        </For>
-      </TabsList>
-    </Tabs>
   );
 }
