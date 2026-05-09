@@ -61,11 +61,10 @@ function FormatSelectorDrawer() {
       <DrawerTrigger
         as={Button<'button'>}
         variant="outline"
-        class="w-40 focus:ring-accent focus:ring-offset-0 transition-shadow justify-start font-normal h-9 pr-3 rounded-full">
-        <div class="shrink-0 i-lucide-code-2 size-4" />
-        <p class="truncate">{FormatLabel[format()].label}</p>
+        class="focus:ring-accent focus:ring-offset-0 transition-shadow justify-start font-normal h-8 border-none px-2">
+        <div class="i-lucide-code-2 size-4 text-accent-foreground/70 hover:bg-accent" />
 
-        <div class="i-lucide-chevrons-up-down size-3.5 text-muted-foreground ml-auto shrink-0"></div>
+        <div class="i-lucide-chevron-down size-3 text-accent-foreground/50 hover:bg-accent ml-auto" />
       </DrawerTrigger>
 
       <DrawerContent>
@@ -84,14 +83,14 @@ function FormatSelectorDrawer() {
                   class={cn('p-2 rounded-md flex items-center gap-3', {
                     'bg-muted': format() === key,
                   })}>
-                  <div>
+                  <div class="flex-1">
                     <p class="font-medium">{value.label}</p>
 
                     <p class="text-xs text-muted-foreground">{value.description}</p>
                   </div>
 
                   <div
-                    class={cn('i-lucide-check size-5', {
+                    class={cn('i-lucide-check size-4', {
                       invisible: format() !== key,
                     })}
                   />
