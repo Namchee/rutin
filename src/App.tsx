@@ -11,6 +11,7 @@ import { Toaster } from '@/components/ui/Toast';
 
 import type { ScheduleFormat, ScheduleGenerator } from '@/types';
 import { ScheduleInfo } from './components/ScheduleInfo';
+import { ScheduleMenu } from './components/ScheduleMenu';
 import { ScheduleTools } from './components/ScheduleTools';
 import { useRutinContext } from './context';
 import { POSIXCron } from './lib/parser/posix';
@@ -178,7 +179,7 @@ const App: Component = () => {
         </div>
 
         <div class="flex flex-col gap-2 px-4">
-          <div class="flex justify-between">
+          <div class="hidden md:flex justify-between">
             <FormatSelector />
 
             <ScheduleTools />
@@ -217,6 +218,8 @@ const App: Component = () => {
           <ScheduleNext expr={expr()} format={format()} />
         </div>
       </div>
+
+      <ScheduleMenu />
 
       <Footer />
     </div>

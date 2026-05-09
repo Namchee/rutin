@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer class="flex flex-col gap-2 items-center w-full mt-auto text-foreground/50 text-sm mt-8">
+    <footer class="hidden md:flex flex-col gap-2 items-center w-full mt-auto text-foreground/50 text-sm mt-8">
       <div class="flex items-center">
         Made in 2026 with <div class="i-lucide-heart mx-1 size-4" /> and{' '}
         <a href="https://www.solidjs.com/" target="_blank" rel="noopener noreferrer">

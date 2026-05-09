@@ -61,11 +61,11 @@ function FormatSelectorDrawer() {
       <DrawerTrigger
         as={Button<'button'>}
         variant="outline"
-        class="w-48 focus:ring-accent focus:ring-offset-0 transition-shadow justify-start font-normal h-9 pr-3">
-        <div class="i-lucide-code-2 size-4" />
-        <p>{FormatLabel[format()].label}</p>
+        class="w-40 focus:ring-accent focus:ring-offset-0 transition-shadow justify-start font-normal h-9 pr-3 rounded-full">
+        <div class="shrink-0 i-lucide-code-2 size-4" />
+        <p class="truncate">{FormatLabel[format()].label}</p>
 
-        <div class="i-lucide-chevrons-up-down size-3.5 text-muted-foreground ml-auto"></div>
+        <div class="i-lucide-chevrons-up-down size-3.5 text-muted-foreground ml-auto shrink-0"></div>
       </DrawerTrigger>
 
       <DrawerContent>

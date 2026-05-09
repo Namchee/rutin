@@ -28,7 +28,7 @@ export function ScheduleTools() {
     <div class="flex items-center gap-1">
       <Tooltip>
         <TooltipTrigger
-          class="border border-border shadow-xs size-8 transition-colors rounded-md grid place-items-center text-accent-foreground/70 hover:bg-accent hover:text-accent-foreground disabled:text-muted-foreground hover:disabled:text-muted-foreground cursor-pointer"
+          class="border border-none md:border-border md:shadow-xs size-8 transition-colors rounded-md grid place-items-center text-accent-foreground/70 hover:bg-accent hover:text-accent-foreground disabled:text-muted-foreground hover:disabled:text-muted-foreground cursor-pointer"
           onClick={onCopy}
           disabled={isCopied()}>
           <Show when={isCopied()} fallback={<div class="i-lucide-copy size-4" />}>
@@ -44,7 +44,7 @@ export function ScheduleTools() {
       </Tooltip>
 
       <Tooltip>
-        <TooltipTrigger class="border border-border shadow-xs size-8 transition-colors rounded-md grid place-items-center text-accent-foreground/70 hover:bg-accent hover:text-accent-foreground cursor-pointer">
+        <TooltipTrigger class="border border-none md:border-border md:shadow-xs size-8 transition-colors rounded-md grid place-items-center text-accent-foreground/70 hover:bg-accent hover:text-accent-foreground cursor-pointer">
           <div class="i-lucide-wrench size-4" />
         </TooltipTrigger>
 
