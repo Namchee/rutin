@@ -18,6 +18,7 @@ export default defineConfig({
           namchee: () => fs.readFile('./src/assets/icons/namchee.svg', 'utf-8'),
           github: () => fs.readFile('./src/assets/icons/github.svg', 'utf-8'),
           solid: () => fs.readFile('./src/assets/icons/solid.svg', 'utf-8'),
+          logo: () => fs.readFile('./src/assets/icons/logo.svg', 'utf-8'),
         },
       },
     }),

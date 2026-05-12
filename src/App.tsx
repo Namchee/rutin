@@ -10,6 +10,7 @@ import { TextField, TextFieldInput } from '@/components/ui/TextField';
 import { Toaster } from '@/components/ui/Toast';
 
 import type { ScheduleFormat, ScheduleGenerator } from '@/types';
+import { NavigationBar } from './components/NavigationBar';
 import { ScheduleInfo } from './components/ScheduleInfo';
 import { ScheduleMenu } from './components/ScheduleMenu';
 import { ScheduleTools } from './components/ScheduleTools';
@@ -168,60 +169,64 @@ const App: Component = () => {
   };
 
   return (
-    <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 xl:pt-32 py-8 flex flex-col items-center rounded-md">
-      <Toaster />
+    <div>
+      <NavigationBar />
 
-      <div class="w-full flex flex-col gap-6 md:gap-8">
-        <div
-          class="text-xl md:text-2xl grid place-items-center h-[75px] md:[90px] px-4"
-          title={descriptor()}>
-          <p class="text-center line-clamp-3 text-balance w-full leading-tight">{descriptor()}</p>
-        </div>
+      <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 xl:pt-32 py-8 flex flex-col items-center rounded-md">
+        <Toaster />
 
-        <div class="flex flex-col gap-2 px-4">
-          <div class="hidden md:flex justify-between">
-            <FormatSelector />
-
-            <ScheduleTools />
+        <div class="w-full flex flex-col gap-6 md:gap-8">
+          <div
+            class="text-xl md:text-2xl grid place-items-center h-[75px] md:[90px] px-4"
+            title={descriptor()}>
+            <p class="text-center line-clamp-3 text-balance w-full leading-tight">{descriptor()}</p>
           </div>
 
-          <TextField class="w-full flex items-center">
-            <TextFieldInput
-              class="font-mono text-xl md:text-2xl h-16 w-full text-center"
-              value={value()}
-              onInput={onInput}
-              onSelect={onCaretMovement}
-              onKeyUp={onCaretMovement}
-              onClick={onCaretMovement}
-              onBlur={onBlur}
-              spellcheck={false}
-              placeholder={Placeholders[format()]}
-              autocomplete="off"
-              ref={input}
-            />
-          </TextField>
+          <div class="flex flex-col gap-2 px-4">
+            <div class="hidden md:flex justify-between">
+              <FormatSelector />
 
-          <div class="w-full">
-            <ScheduleHint
-              format={format()}
-              index={caret()}
-              filled={filled().map((_, idx) => idx)}
-              errors={errors()}
-              onHintSelect={onHintSelect}
-            />
+              <ScheduleTools />
+            </div>
+
+            <TextField class="w-full flex items-center">
+              <TextFieldInput
+                class="font-mono text-xl md:text-2xl h-16 w-full text-center"
+                value={value()}
+                onInput={onInput}
+                onSelect={onCaretMovement}
+                onKeyUp={onCaretMovement}
+                onClick={onCaretMovement}
+                onBlur={onBlur}
+                spellcheck={false}
+                placeholder={Placeholders[format()]}
+                autocomplete="off"
+                ref={input}
+              />
+            </TextField>
+
+            <div class="w-full">
+              <ScheduleHint
+                format={format()}
+                index={caret()}
+                filled={filled().map((_, idx) => idx)}
+                errors={errors()}
+                onHintSelect={onHintSelect}
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
+            <ScheduleSyntax format={format()} index={caret()} />
+
+            <ScheduleNext expr={expr()} format={format()} />
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
-          <ScheduleSyntax format={format()} index={caret()} />
+        <ScheduleMenu />
 
-          <ScheduleNext expr={expr()} format={format()} />
-        </div>
+        <Footer />
       </div>
-
-      <ScheduleMenu />
-
-      <Footer />
     </div>
   );
 };
