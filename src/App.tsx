@@ -187,12 +187,6 @@ const App: Component = () => {
             </div>
 
             <div class="flex flex-col gap-2 px-4">
-              <div class="hidden md:flex justify-between">
-                <FormatSelector />
-
-                <ScheduleTools />
-              </div>
-
               <TextField class="w-full flex items-center">
                 <TextFieldInput
                   class="font-mono text-xl md:text-2xl h-16 w-full text-center"
@@ -228,8 +222,6 @@ const App: Component = () => {
           </div>
 
           <ScheduleMenu />
-
-          <Footer />
         </div>
       </div>
     </div>

@@ -128,7 +128,7 @@ export function FormatSelector() {
         )}>
         <SelectTrigger
           aria-label="Dialect"
-          class="shadow-xs w-48 focus:ring-muted focus:ring-offset-0 transition-shadow h-8 cursor-pointer">
+          class="shadow-xs w-40 focus:ring-muted focus:ring-offset-0 transition-shadow h-8 cursor-pointer border-none focus:ring-0 hover:bg-accent focus:bg-accent shadow-none transition-colors">
           <div class="flex items-center gap-2">
             <div class="i-lucide-code-2 size-4" />
             <SelectValue<string>>
