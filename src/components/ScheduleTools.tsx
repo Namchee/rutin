@@ -27,6 +27,14 @@ export function ScheduleTools() {
   return (
     <div class="flex items-center gap-1">
       <Tooltip>
+        <TooltipTrigger class="size-8 transition-colors rounded-md grid place-items-center text-accent-foreground/70 hover:bg-accent hover:text-accent-foreground cursor-pointer md:hidden">
+          <div class="i-lucide-calendar size-4" />
+        </TooltipTrigger>
+
+        <TooltipContent>Executions</TooltipContent>
+      </Tooltip>
+
+      <Tooltip>
         <TooltipTrigger
           class="size-8 transition-colors rounded-md grid place-items-center text-accent-foreground/70 hover:bg-accent hover:text-accent-foreground disabled:text-muted-foreground hover:disabled:text-muted-foreground cursor-pointer"
           onClick={onCopy}

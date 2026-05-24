@@ -1,3 +1,4 @@
+import { W } from 'node_modules/@kobalte/core/dist/index-766ec211';
 import { createSignal, For, Show } from 'solid-js';
 import {
   Select,
@@ -62,9 +63,9 @@ function FormatSelectorDrawer() {
         as={Button<'button'>}
         variant="outline"
         class="focus:ring-accent focus:ring-offset-0 transition-shadow justify-start font-normal h-8 border-none px-2">
-        <div class="i-lucide-code-2 size-4 text-accent-foreground/70 hover:bg-accent" />
-
-        <div class="i-lucide-chevron-down size-3 text-accent-foreground/50 hover:bg-accent ml-auto" />
+        <div class="i-lucide-code-2 size-4 text-accent-foreground/70" />
+        <p class="text-sm">{FormatLabel[format()].label}</p>
+        <div class="i-lucide-chevron-down size-3 text-accent-foreground/50 ml-auto" />
       </DrawerTrigger>
 
       <DrawerContent>
