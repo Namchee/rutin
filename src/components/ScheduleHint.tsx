@@ -36,7 +36,7 @@ export function ScheduleHint(props: Readonly<ScheduleHintProps>) {
             'bg-foreground/10 text-foreground': props.index === idx && !props.errors.includes(idx),
             'bg-transparent text-muted-foreground':
               props.index !== idx && !props.errors.includes(idx),
-            'cursor-pointer active-hint': props.filled.includes(idx),
+            'active-hint cursor-pointer': props.filled.includes(idx),
             'text-destructive': props.errors.includes(idx),
             'bg-destructive/25': props.errors.includes(idx) && props.index === idx,
             underline: props.filled.includes(idx),

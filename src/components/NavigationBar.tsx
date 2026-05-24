@@ -1,11 +1,34 @@
+import { Button } from './ui/Button';
+
 export function NavigationBar() {
   return (
-    <nav class="h-16 border-b border-border flex justify-between items-center px-4 md:px-6">
+    <nav class="hidden h-16 border-b border-border flex justify-between items-center px-4 md:px-6">
       <a href="/" rel="noopener noreferrer">
         <div class="i-me-logo size-8"></div>
       </a>
 
-      <div>Foo bar</div>
+      <div class="flex items-center gap-2">
+        <div class="rounded-full border border-border shadow-xs">
+          <Button variant="ghost" class="size-8 p-0 rounded-full">
+            <div class="i-lucide-sun size-4" />
+          </Button>
+
+          <Button variant="ghost" class="size-8 p-0 rounded-full">
+            <div class="i-lucide-moon size-4" />
+          </Button>
+
+          <Button variant="ghost" class="size-8 p-0 rounded-full">
+            <div class="i-lucide-monitor size-4" />
+          </Button>
+        </div>
+
+        <a
+          href="https://github.com/Namchee/rutin/tree/ffac537"
+          class="font-mono flex items-center gap-1 text-foreground/50 hover:text-foreground/75 transition-colors text-sm">
+          <div class="i-lucide-git-branch size-4" />
+          ffac537
+        </a>
+      </div>
     </nav>
   );
 }
