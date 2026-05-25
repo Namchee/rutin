@@ -28,7 +28,7 @@ const SelectTrigger = <T extends ValidComponent = 'button'>(
       )}
       {...others}>
       {local.children}
-      <div class="i-lucide-chevron-down size-3 text-muted-foreground" />
+      <div class="i-lucide-chevron-down size-[14px] text-muted-foreground" />
     </SelectPrimitive.Trigger>
   );
 };

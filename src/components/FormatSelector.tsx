@@ -62,16 +62,16 @@ function FormatSelectorDrawer() {
       <DrawerTrigger
         as={Button<'button'>}
         variant="outline"
-        class="focus:ring-accent focus:ring-offset-0 transition-shadow justify-start font-normal h-8 border-none px-2">
-        <div class="i-lucide-code-2 size-4 text-accent-foreground/70" />
-        <p class="text-sm">{FormatLabel[format()].label}</p>
-        <div class="i-lucide-chevron-down size-3 text-accent-foreground/50 ml-auto" />
+        class="focus:ring-accent focus:ring-offset-0 transition-shadow justify-start font-normal h-full border-none px-4 rounded-l-xl rounded-r-none w-40">
+        <div class="i-lucide-code-2 size-4 text-muted-foreground shrink-0" />
+        <p class="text-sm truncate">{FormatLabel[format()].label}</p>
+        <div class="i-lucide-chevron-down size-3 text-accent-foreground/50 ml-auto shrink-0" />
       </DrawerTrigger>
 
       <DrawerContent>
         <div class="px-2 py-4">
           <DrawerHeader class="px-2 pt-0 pb-2 text-left">
-            <DrawerTitle class=" text-xs font-mono uppercase font-normal text-muted-foreground">
+            <DrawerTitle class="text-xs font-mono uppercase font-normal text-muted-foreground">
               Dialect
             </DrawerTitle>
           </DrawerHeader>
@@ -129,9 +129,9 @@ export function FormatSelector() {
         )}>
         <SelectTrigger
           aria-label="Dialect"
-          class="shadow-xs w-40 focus:ring-muted focus:ring-offset-0 transition-shadow h-8 cursor-pointer border-none focus:ring-0 hover:bg-accent focus:bg-accent shadow-none transition-colors">
+          class="h-full w-40 focus:ring-muted focus:ring-offset-0 transition-shadow cursor-pointer border-none focus:ring-0 hover:bg-accent focus:bg-accent shadow-none transition-colors rounded-l-xl rounded-r-none">
           <div class="flex items-center gap-2">
-            <div class="i-lucide-code-2 size-4" />
+            <div class="i-lucide-code-2 size-4 text-muted-foreground" />
             <SelectValue<string>>
               {state => FormatLabel[state.selectedOption() as ScheduleFormat].label}
             </SelectValue>
