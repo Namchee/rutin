@@ -1,21 +1,16 @@
 import { type Component, createSignal, type JSX } from 'solid-js';
 
-import { Footer } from '@/components/Footer';
-import { FormatSelector } from '@/components/FormatSelector';
 import { ScheduleHint } from '@/components/ScheduleHint';
 import { ScheduleNext } from '@/components/ScheduleNext';
 
 import { ScheduleSyntax } from '@/components/ScheduleSyntax';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
-import { Toaster } from '@/components/ui/Toast';
 
 import type { ScheduleFormat, ScheduleGenerator } from '@/types';
 import { NavigationBar } from './components/NavigationBar';
-import { ScheduleInfo } from './components/ScheduleInfo';
 import { ScheduleMenu } from './components/ScheduleMenu';
-import { ScheduleTools } from './components/ScheduleTools';
-import { Button } from './components/ui/Button';
 import { useRutinContext } from './context';
+import { cn } from './lib/css';
 import { POSIXCron } from './lib/parser/posix';
 
 const Placeholders: Record<ScheduleFormat, string> = {
@@ -38,7 +33,7 @@ const App: Component = () => {
   let input!: HTMLInputElement;
 
   const [{ format }] = useRutinContext();
-  const [isNonStandard, setNonStandard] = createSignal(false);
+  const [_isNonStandard, setNonStandard] = createSignal(false);
   const [value, setValue] = createSignal('');
   const [filled, setFilled] = createSignal<[number, number][]>([]);
 
@@ -127,7 +122,7 @@ const App: Component = () => {
     setExpr(parser.iterate(expr, new Date()));
   };
 
-  const normalizeSyntax = () => {
+  const _normalizeSyntax = () => {
     const parser = Parsers[format()];
 
     setValue(parser.normalize(value()));
@@ -170,41 +165,27 @@ const App: Component = () => {
   };
 
   return (
-    <div>
+    <div class="text-foreground">
       <NavigationBar />
 
       <div class="flex">
-        <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 xl:pt-32 py-8 flex flex-col items-center rounded-md">
-          <Toaster />
-
-          <div class="w-full flex flex-col gap-6 md:gap-8 px-4">
-            <div class="flex flex-col gap-4">
-              <div class="shadow border border-border rounded-md grid place-items-center w-8 h-8">
-                <div class="i-lucide-code-2 size-4"></div>
-              </div>
-
-              <div>
-                <h1 class="text-2xl font-semibold">Editor</h1>
-                <p class="text-muted-foreground">
-                  Create, test, and save schedule expressions in multiple formats.
-                </p>
-              </div>
-            </div>
-
-            <div class="w-full border-t border-border"></div>
-
+        <div class="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center rounded-md py-8 pt-16 font-sans md:pt-24 xl:pt-32">
+          <div class="flex w-full flex-col gap-6 px-4 md:gap-8">
             <div
-              class="text-xl md:text-2xl grid place-items-center h-[75px] md:[90px]"
+              class="grid h-[75px] place-items-center text-lg md:text-xl md:[90px]"
               title={descriptor()}>
-              <p class="text-center line-clamp-3 text-balance w-full leading-tight">
-                {descriptor()}
+              <p
+                class={cn('line-clamp-3 w-full text-balance text-center', {
+                  'text-muted-foreground': descriptor().length === 0 || errors().length > 0,
+                })}>
+                {descriptor() || <>Human-readable expression will be shown here</>}
               </p>
             </div>
 
             <div class="flex flex-col gap-2">
-              <TextField class="w-full flex items-center">
+              <TextField class="flex w-full items-center">
                 <TextFieldInput
-                  class="font-mono text-xl md:text-2xl h-16 w-full text-center"
+                  class="h-16 w-full text-center font-mono text-xl md:text-2xl"
                   value={value()}
                   onInput={onInput}
                   onSelect={onCaretMovement}
@@ -229,7 +210,7 @@ const App: Component = () => {
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
               <ScheduleSyntax format={format()} index={caret()} />
 
               <ScheduleNext expr={expr()} format={format()} />

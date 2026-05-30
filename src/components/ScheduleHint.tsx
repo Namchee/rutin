@@ -22,7 +22,7 @@ interface ScheduleHintProps {
 
 export function ScheduleHint(props: Readonly<ScheduleHintProps>) {
   return (
-    <div class="text-sm flex justify-center gap-2">
+    <div class="flex justify-center gap-2 text-sm">
       {Hints[props.format].map((hint, idx) => (
         <button
           type="button"

@@ -1,4 +1,4 @@
-import { W } from 'node_modules/@kobalte/core/dist/index-766ec211';
+
 import { createSignal, For, Show } from 'solid-js';
 import {
   Select,
@@ -62,18 +62,18 @@ function FormatSelectorDrawer() {
       <DrawerTrigger
         as={Button<'button'>}
         variant="outline"
-        class="focus:ring-accent focus:ring-offset-0 transition-shadow justify-start font-normal h-full border-none px-4 pl-3 rounded-l-xl rounded-r-none w-48">
+        class="h-full w-48 justify-start rounded-r-none rounded-l-xl border-none px-4 pl-3 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
         <div class="flex flex-col items-start">
-          <p class="text-xs text-muted-foreground font-mono tracking-tight">Dialect</p>
-          <p class="text-sm truncate">{FormatLabel[format()].label}</p>
+          <p class="font-mono text-muted-foreground text-xs tracking-tight">Dialect</p>
+          <p class="truncate text-sm">{FormatLabel[format()].label}</p>
         </div>
-        <div class="i-lucide-chevron-down size-3 text-accent-foreground/50 ml-auto shrink-0" />
+        <div class="i-lucide-chevron-down ml-auto size-3 shrink-0 text-accent-foreground/50" />
       </DrawerTrigger>
 
       <DrawerContent>
         <div class="px-2 py-4">
           <DrawerHeader class="px-2 pt-0 pb-2 text-left">
-            <DrawerTitle class="text-xs font-mono uppercase font-normal text-muted-foreground">
+            <DrawerTitle class="font-mono font-normal text-muted-foreground text-xs uppercase">
               Dialect
             </DrawerTitle>
           </DrawerHeader>
@@ -83,13 +83,13 @@ function FormatSelectorDrawer() {
               {([key, value]) => (
                 <div
                   onPointerDown={() => onSelect(key as ScheduleFormat)}
-                  class={cn('p-2 rounded-md flex items-center gap-3', {
+                  class={cn('flex items-center gap-3 rounded-md p-2', {
                     'bg-muted': format() === key,
                   })}>
                   <div class="flex-1">
                     <p class="font-medium">{value.label}</p>
 
-                    <p class="text-xs text-muted-foreground">{value.description}</p>
+                    <p class="text-muted-foreground text-xs">{value.description}</p>
                   </div>
 
                   <div
@@ -124,16 +124,16 @@ export function FormatSelector() {
           <SelectItem item={props.item} class="max-w-xs transition-colors">
             <p class="font-medium">{FormatLabel[props.item.rawValue].label}</p>
 
-            <p class="text-xs text-muted-foreground mt-1">
+            <p class="mt-1 text-muted-foreground text-xs">
               {FormatLabel[props.item.rawValue].description}
             </p>
           </SelectItem>
         )}>
         <SelectTrigger
           aria-label="Dialect"
-          class="h-full w-48 focus:ring-muted focus:ring-offset-0 transition-shadow cursor-pointer border-none focus:ring-0 hover:bg-accent focus:bg-accent shadow-none transition-colors rounded-l-lg rounded-r-none">
-          <div class="flex flex-col items-start max-w-full overflow-hidden">
-            <p class="text-xs tracking-tight text-muted-foreground font-mono">Dialect</p>
+          class="h-full w-48 cursor-pointer rounded-r-none rounded-l-lg border-none shadow-none transition-colors transition-shadow hover:bg-accent focus:bg-accent focus:ring-0 focus:ring-muted focus:ring-offset-0">
+          <div class="flex max-w-full flex-col items-start overflow-hidden">
+            <p class="font-mono text-muted-foreground text-xs tracking-tight">Dialect</p>
             <SelectValue<string>>
               {state => (
                 <span class="truncate">

@@ -64,7 +64,7 @@ const SwitchLabel = <T extends ValidComponent = 'label'>(
   return (
     <SwitchPrimitive.Label
       class={cn(
-        'text-sm font-medium leading-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-70',
+        'font-medium text-sm leading-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-70',
         local.class,
       )}
       {...others}

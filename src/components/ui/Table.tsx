@@ -14,7 +14,7 @@ const Table: Component<ComponentProps<'table'>> = props => {
 
 const TableHeader: Component<ComponentProps<'thead'>> = props => {
   const [local, others] = splitProps(props, ['class']);
-  return <thead class={cn('[&_tr]:border-b border-muted', local.class)} {...others} />;
+  return <thead class={cn('border-muted [&_tr]:border-b', local.class)} {...others} />;
 };
 
 const TableBody: Component<ComponentProps<'tbody'>> = props => {
@@ -34,7 +34,7 @@ const TableRow: Component<ComponentProps<'tr'>> = props => {
   return (
     <tr
       class={cn(
-        'border-b border-muted transition-colors data-[state=selected]:bg-muted',
+        'border-muted border-b transition-colors data-[state=selected]:bg-muted',
         local.class,
       )}
       {...others}
@@ -64,7 +64,7 @@ const TableCell: Component<ComponentProps<'td'>> = props => {
 
 const TableCaption: Component<ComponentProps<'caption'>> = props => {
   const [local, others] = splitProps(props, ['class']);
-  return <caption class={cn('mt-4 text-sm text-muted-foreground', local.class)} {...others} />;
+  return <caption class={cn('mt-4 text-muted-foreground text-sm', local.class)} {...others} />;
 };
 
 export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption };

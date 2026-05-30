@@ -72,11 +72,11 @@ export function isValidStep(expr: string, min: number, max: number): boolean {
   return !Number.isNaN(step) && step > 0;
 }
 
-function isValidL(expr: string, min: number, max: number): boolean {}
+function isValidL(_expr: string, _min: number, _max: number): boolean {}
 
-function isValidW(expr: string, min: number, max: number): boolean {}
+function isValidW(_expr: string, _min: number, _max: number): boolean {}
 
-function isValidHash(expr: string, min: number, max: number): boolean {
+function isValidHash(expr: string, _min: number, _max: number): boolean {
   const pattern = /\d+#\d+/;
   if (!pattern.test(expr)) {
     return false;

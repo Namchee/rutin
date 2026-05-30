@@ -3,10 +3,10 @@ import { ScheduleTools } from './ScheduleTools';
 
 export function ScheduleMenu() {
   return (
-    <div class="fixed z-10 md:bottom-8 bottom-4 border border-border h-12 shadow rounded-lg bg-background flex justify-between pr-2">
+    <div class="fixed bottom-4 z-10 flex h-12 justify-between rounded-lg border border-border bg-background pr-2 shadow md:bottom-8">
       <FormatSelector />
 
-      <div class="h-full border-l border-border mr-12 md:mr-16" />
+      <div class="mr-12 h-full border-border border-l md:mr-16" />
 
       <ScheduleTools />
     </div>

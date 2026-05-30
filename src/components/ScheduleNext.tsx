@@ -81,13 +81,13 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
 
   return (
     <Show when={isNonMobile()} fallback={<ScheduleNextMobile />}>
-      <div class="hidden text-foreground/70 md:flex flex-col items-center w-full text-sm h-[450px] overflow-hidden">
-        <p class="h-10 grid place-items-center font-medium text-muted-foreground shrink-0">
+      <div class="hidden h-[450px] w-full flex-col items-center overflow-hidden text-foreground/70 text-sm md:flex">
+        <p class="grid h-10 shrink-0 place-items-center font-medium text-muted-foreground">
           Execution Time
         </p>
 
         <Switch
-          class="flex gap-2 h-10 items-center mx-auto shrink-0"
+          class="mx-auto flex h-10 shrink-0 items-center gap-2"
           checked={isUtc()}
           onChange={val => setIsUtc(val)}>
           <SwitchLabel class="font-medium">Local Timezone</SwitchLabel>
@@ -96,13 +96,13 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
             <SwitchThumb />
           </SwitchControl>
 
-          <SwitchLabel class=" font-medium">UTC</SwitchLabel>
+          <SwitchLabel class="font-medium">UTC</SwitchLabel>
         </Switch>
 
         <div
           ref={container}
           class={cn(
-            'h-full text-muted-foreground mt-4 w-full overflow-auto no-scrollbar mask-b-from-80% mask-b-to-100%',
+            'no-scrollbar mask-b-from-80% mask-b-to-100% mt-4 h-full w-full overflow-auto text-muted-foreground',
             {
               'grid place-items-center': next().length === 0,
               'flex flex-col gap-4': next().length > 0,
@@ -111,7 +111,7 @@ export function ScheduleNext(props: Readonly<ScheduleNextProps>) {
           <For
             each={next()}
             fallback={
-              <p class="text-center text-balance max-w-xs">
+              <p class="max-w-xs text-balance text-center">
                 Schedules will appear here when the syntax is valid
               </p>
             }>

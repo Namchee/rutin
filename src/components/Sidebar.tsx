@@ -2,7 +2,7 @@ import { Button } from './ui/Button';
 
 export function Sidebar() {
   return (
-    <div class="border-r border-border p-2 w-64">
+    <div class="w-64 border-border border-r p-2">
       <Button variant="ghost" class="w-full justify-start font-normal text-base">
         Editor
       </Button>

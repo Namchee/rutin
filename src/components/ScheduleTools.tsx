@@ -27,7 +27,7 @@ export function ScheduleTools() {
   return (
     <div class="flex items-center gap-1">
       <Tooltip>
-        <TooltipTrigger class="size-8 transition-colors rounded-md grid place-items-center text-accent-foreground/70 hover:bg-accent hover:text-accent-foreground cursor-pointer md:hidden">
+        <TooltipTrigger class="grid size-8 cursor-pointer place-items-center rounded-md text-accent-foreground/70 transition-colors hover:bg-accent hover:text-accent-foreground md:hidden">
           <div class="i-lucide-calendar size-4" />
         </TooltipTrigger>
 
@@ -36,7 +36,7 @@ export function ScheduleTools() {
 
       <Tooltip>
         <TooltipTrigger
-          class="size-8 transition-colors rounded-md grid place-items-center text-accent-foreground/70 hover:bg-accent hover:text-accent-foreground disabled:text-muted-foreground hover:disabled:text-muted-foreground cursor-pointer"
+          class="grid size-8 cursor-pointer place-items-center rounded-md text-accent-foreground/70 transition-colors hover:bg-accent hover:text-accent-foreground disabled:text-muted-foreground hover:disabled:text-muted-foreground"
           onClick={onCopy}
           disabled={isCopied()}>
           <Show when={isCopied()} fallback={<div class="i-lucide-copy size-4" />}>
@@ -52,7 +52,7 @@ export function ScheduleTools() {
       </Tooltip>
 
       <Tooltip>
-        <TooltipTrigger class="size-8 transition-colors rounded-md grid place-items-center text-accent-foreground/70 hover:bg-accent hover:text-accent-foreground cursor-pointer">
+        <TooltipTrigger class="grid size-8 cursor-pointer place-items-center rounded-md text-accent-foreground/70 transition-colors hover:bg-accent hover:text-accent-foreground">
           <div class="i-lucide-wrench size-4" />
         </TooltipTrigger>
 

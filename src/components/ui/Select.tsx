@@ -28,7 +28,7 @@ const SelectTrigger = <T extends ValidComponent = 'button'>(
       )}
       {...others}>
       {local.children}
-      <div class="i-lucide-chevron-down size-[14px] text-muted-foreground shrink-0" />
+      <div class="i-lucide-chevron-down size-[14px] shrink-0 text-muted-foreground" />
     </SelectPrimitive.Trigger>
   );
 };
@@ -44,7 +44,7 @@ const SelectContent = <T extends ValidComponent = 'div'>(
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         class={cn(
-          'relative z-50 min-w-32 overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md select__content focus:outline-none',
+          'select__content relative z-50 min-w-32 overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md focus:outline-none',
           local.class,
         )}
         {...others}>
@@ -68,7 +68,7 @@ const SelectItem = <T extends ValidComponent = 'li'>(
   return (
     <SelectPrimitive.Item
       class={cn(
-        'relative mt-0 flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+        'relative mt-0 flex w-full cursor-default select-none items-center rounded-sm py-1.5 pr-8 pl-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
         local.class,
       )}
       {...others}>

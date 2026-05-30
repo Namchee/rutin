@@ -83,7 +83,7 @@ const DrawerTitle = <T extends ValidComponent = 'div'>(
   const [, rest] = splitProps(props as DrawerTitleProps, ['class']);
   return (
     <DrawerPrimitive.Label
-      class={cn('text-lg font-semibold leading-none tracking-tight', props.class)}
+      class={cn('font-semibold text-lg leading-none tracking-tight', props.class)}
       {...rest}
     />
   );
@@ -99,7 +99,7 @@ const DrawerDescription = <T extends ValidComponent = 'div'>(
   const [, rest] = splitProps(props as DrawerDescriptionProps, ['class']);
   return (
     <DrawerPrimitive.Description
-      class={cn('text-sm text-muted-foreground', props.class)}
+      class={cn('text-muted-foreground text-sm', props.class)}
       {...rest}
     />
   );
