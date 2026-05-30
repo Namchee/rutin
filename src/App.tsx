@@ -177,16 +177,31 @@ const App: Component = () => {
         <div class="flex-1 max-w-3xl font-sans w-full mx-auto pt-16 md:pt-24 xl:pt-32 py-8 flex flex-col items-center rounded-md">
           <Toaster />
 
-          <div class="w-full flex flex-col gap-6 md:gap-8">
+          <div class="w-full flex flex-col gap-6 md:gap-8 px-4">
+            <div class="flex flex-col gap-4">
+              <div class="shadow border border-border rounded-md grid place-items-center w-8 h-8">
+                <div class="i-lucide-code-2 size-4"></div>
+              </div>
+
+              <div>
+                <h1 class="text-2xl font-semibold">Editor</h1>
+                <p class="text-muted-foreground">
+                  Create, test, and save schedule expressions in multiple formats.
+                </p>
+              </div>
+            </div>
+
+            <div class="w-full border-t border-border"></div>
+
             <div
-              class="text-xl md:text-2xl grid place-items-center h-[75px] md:[90px] px-4"
+              class="text-xl md:text-2xl grid place-items-center h-[75px] md:[90px]"
               title={descriptor()}>
               <p class="text-center line-clamp-3 text-balance w-full leading-tight">
                 {descriptor()}
               </p>
             </div>
 
-            <div class="flex flex-col gap-2 px-4">
+            <div class="flex flex-col gap-2">
               <TextField class="w-full flex items-center">
                 <TextFieldInput
                   class="font-mono text-xl md:text-2xl h-16 w-full text-center"
@@ -214,7 +229,7 @@ const App: Component = () => {
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
               <ScheduleSyntax format={format()} index={caret()} />
 
               <ScheduleNext expr={expr()} format={format()} />
