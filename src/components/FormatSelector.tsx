@@ -1,4 +1,3 @@
-
 import { createSignal, For, Show } from 'solid-js';
 import {
   Select,
@@ -15,34 +14,34 @@ import { Button } from './ui/Button';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from './ui/Drawer';
 
 const FormatLabel: Record<ScheduleFormat, Format> = {
-  posix: {
-    label: 'POSIX',
-    description:
-      'Standard CRON implementation on UNIX operating system via crontab like Vixie or Anacron.',
-  },
-  quartz: {
-    label: 'Quartz',
-    description:
-      'Richly-featured scheduling system commonly implemented in Java-based applications.',
-  },
-  systemd: {
-    label: 'Systemd',
-    description:
-      'Scheduling system integrated by systemd which is commonly found in Linux systems.',
-  },
-  node: {
-    label: 'Node.js',
-    description:
-      'CRON implementation of node-cron, CRON library written for Node.js with optional seconds field.',
-  },
   'cf-workers': {
-    label: 'Cloudflare Workers',
     description:
       'CRON implementation used in Cloudflare Workers. Closer to Quartz but with 5 fields.',
+    label: 'Cloudflare Workers',
   },
   cloudwatch: {
-    label: 'Amazon Cloudwatch',
     description: 'CRON implementation used in Amazon Cloudwatch. Closer to CRON but with 6 fields.',
+    label: 'Amazon Cloudwatch',
+  },
+  node: {
+    description:
+      'CRON implementation of node-cron, CRON library written for Node.js with optional seconds field.',
+    label: 'Node.js',
+  },
+  posix: {
+    description:
+      'Standard CRON implementation on UNIX operating system via crontab like Vixie or Anacron.',
+    label: 'POSIX',
+  },
+  quartz: {
+    description:
+      'Richly-featured scheduling system commonly implemented in Java-based applications.',
+    label: 'Quartz',
+  },
+  systemd: {
+    description:
+      'Scheduling system integrated by systemd which is commonly found in Linux systems.',
+    label: 'Systemd',
   },
 };
 
@@ -64,7 +63,7 @@ function FormatSelectorDrawer() {
         variant="outline"
         class="h-full w-48 justify-start rounded-r-none rounded-l-xl border-none px-4 pl-3 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
         <div class="flex flex-col items-start">
-          <p class="font-mono text-muted-foreground text-xs tracking-tight">Dialect</p>
+          <p class="text-muted-foreground text-xs tracking-tight">Dialect</p>
           <p class="truncate text-sm">{FormatLabel[format()].label}</p>
         </div>
         <div class="i-lucide-chevron-down ml-auto size-3 shrink-0 text-accent-foreground/50" />
@@ -132,14 +131,10 @@ export function FormatSelector() {
         <SelectTrigger
           aria-label="Dialect"
           class="h-full w-48 cursor-pointer rounded-r-none rounded-l-lg border-none shadow-none transition-colors transition-shadow hover:bg-accent focus:bg-accent focus:ring-0 focus:ring-muted focus:ring-offset-0">
-          <div class="flex max-w-full flex-col items-start overflow-hidden">
-            <p class="font-mono text-muted-foreground text-xs tracking-tight">Dialect</p>
+          <div class="flex max-w-full flex-col items-start">
+            <p class="text-muted-foreground text-xs">Dialect</p>
             <SelectValue<string>>
-              {state => (
-                <span class="truncate">
-                  {FormatLabel[state.selectedOption() as ScheduleFormat].label}
-                </span>
-              )}
+              {state => FormatLabel[state.selectedOption() as ScheduleFormat].label}
             </SelectValue>
           </div>
         </SelectTrigger>

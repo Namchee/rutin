@@ -1,6 +1,6 @@
 export function EditorHeader() {
   return (
-    <>
+    <div class="hidden">
       <div class="flex flex-col gap-4">
         <div class="grid size-8 place-items-center rounded-md border border-border shadow">
           <div class="i-lucide-code-2 size-4"></div>
@@ -16,6 +16,6 @@ export function EditorHeader() {
       </div>
 
       <div class="w-full border-border border-t"></div>
-    </>
+    </div>
   );
 }

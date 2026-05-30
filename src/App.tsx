@@ -7,6 +7,7 @@ import { ScheduleSyntax } from '@/components/ScheduleSyntax';
 import { TextField, TextFieldInput } from '@/components/ui/TextField';
 
 import type { ScheduleFormat, ScheduleGenerator } from '@/types';
+import { EditorHeader } from './components/header/Editor';
 import { NavigationBar } from './components/NavigationBar';
 import { ScheduleMenu } from './components/ScheduleMenu';
 import { useRutinContext } from './context';
@@ -14,19 +15,21 @@ import { cn } from './lib/css';
 import { POSIXCron } from './lib/parser/posix';
 
 const Placeholders: Record<ScheduleFormat, string> = {
+  'cf-workers': '* * * * *',
+  cloudwatch: '* * * * *',
+  node: '* * * * *',
   posix: '* * * * *',
   quartz: '* * * * * * *',
   systemd: '* *-*-* *:*:*',
-  'cf-workers': '* * * * *',
-  cloudwatch: '* * * * *',
 };
 
 const Parsers = {
+  'cf-workers': POSIXCron,
+  cloudwatch: POSIXCron,
+  node: POSIXCron,
   posix: POSIXCron,
   quartz: POSIXCron,
   systemd: POSIXCron,
-  'cf-workers': POSIXCron,
-  cloudwatch: POSIXCron,
 };
 
 const App: Component = () => {
@@ -171,6 +174,8 @@ const App: Component = () => {
       <div class="flex">
         <div class="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center rounded-md py-8 pt-16 font-sans md:pt-24 xl:pt-32">
           <div class="flex w-full flex-col gap-6 px-4 md:gap-8">
+            <EditorHeader />
+
             <div
               class="grid h-[75px] place-items-center text-lg md:text-xl md:[90px]"
               title={descriptor()}>
