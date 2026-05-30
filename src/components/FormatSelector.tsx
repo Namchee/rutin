@@ -31,17 +31,17 @@ const FormatLabel: Record<ScheduleFormat, Format> = {
       'Scheduling system integrated by systemd which is commonly found in Linux systems.',
   },
   node: {
-    label: 'Node',
+    label: 'Node.js',
     description:
       'CRON implementation of node-cron, CRON library written for Node.js with optional seconds field.',
   },
   'cf-workers': {
-    label: 'Workers',
+    label: 'Cloudflare Workers',
     description:
       'CRON implementation used in Cloudflare Workers. Closer to Quartz but with 5 fields.',
   },
   cloudwatch: {
-    label: 'Cloudwatch',
+    label: 'Amazon Cloudwatch',
     description: 'CRON implementation used in Amazon Cloudwatch. Closer to CRON but with 6 fields.',
   },
 };
@@ -62,9 +62,11 @@ function FormatSelectorDrawer() {
       <DrawerTrigger
         as={Button<'button'>}
         variant="outline"
-        class="focus:ring-accent focus:ring-offset-0 transition-shadow justify-start font-normal h-full border-none px-4 rounded-l-xl rounded-r-none w-40">
-        <div class="i-lucide-code-2 size-4 text-muted-foreground shrink-0" />
-        <p class="text-sm truncate">{FormatLabel[format()].label}</p>
+        class="focus:ring-accent focus:ring-offset-0 transition-shadow justify-start font-normal h-full border-none px-4 pl-3 rounded-l-xl rounded-r-none w-48">
+        <div class="flex flex-col items-start">
+          <p class="text-xs text-muted-foreground font-mono tracking-tight">Dialect</p>
+          <p class="text-sm truncate">{FormatLabel[format()].label}</p>
+        </div>
         <div class="i-lucide-chevron-down size-3 text-accent-foreground/50 ml-auto shrink-0" />
       </DrawerTrigger>
 
@@ -129,20 +131,20 @@ export function FormatSelector() {
         )}>
         <SelectTrigger
           aria-label="Dialect"
-          class="h-full w-40 focus:ring-muted focus:ring-offset-0 transition-shadow cursor-pointer border-none focus:ring-0 hover:bg-accent focus:bg-accent shadow-none transition-colors rounded-l-xl rounded-r-none">
-          <div class="flex items-center gap-2">
-            <div class="i-lucide-code-2 size-4 text-muted-foreground" />
+          class="h-full w-48 focus:ring-muted focus:ring-offset-0 transition-shadow cursor-pointer border-none focus:ring-0 hover:bg-accent focus:bg-accent shadow-none transition-colors rounded-l-lg rounded-r-none">
+          <div class="flex flex-col items-start max-w-full overflow-hidden">
+            <p class="text-xs tracking-tight text-muted-foreground font-mono">Dialect</p>
             <SelectValue<string>>
-              {state => FormatLabel[state.selectedOption() as ScheduleFormat].label}
+              {state => (
+                <span class="truncate">
+                  {FormatLabel[state.selectedOption() as ScheduleFormat].label}
+                </span>
+              )}
             </SelectValue>
           </div>
         </SelectTrigger>
 
-        <SelectContent class="border-border">
-          <p class="px-3 pt-[10px] pb-[2px] text-muted-foreground text-xs font-mono uppercase">
-            Dialect
-          </p>
-        </SelectContent>
+        <SelectContent class="border-border"></SelectContent>
       </Select>
     </Show>
   );

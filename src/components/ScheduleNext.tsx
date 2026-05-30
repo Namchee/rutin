@@ -3,6 +3,7 @@ import { createEffect, createSignal, For, onCleanup } from 'solid-js';
 import { Switch, SwitchControl, SwitchLabel, SwitchThumb } from '@/components/ui/Switch';
 import { cn } from '@/lib/css';
 import { formatDate, formatRelativeTime } from '@/lib/date';
+import { useMediaQuery } from '@/lib/hooks/use-media-query';
 import type { ScheduleFormat, ScheduleGenerator } from '@/types';
 
 interface ScheduleNextProps {
