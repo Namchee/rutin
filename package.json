@@ -23,6 +23,7 @@
   "dependencies": {
     "@corvu/drawer": "^0.2.4",
     "@kobalte/core": "^0.13.11",
+    "@tanstack/solid-router": "^1.170.17",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cronstrue": "^3.13.0",
@@ -33,6 +34,8 @@
   "devDependencies": {
     "@biomejs/biome": "2.4.6",
     "@iconify-json/lucide": "^1.2.102",
+    "@tanstack/router-plugin": "^1.168.19",
+    "@tanstack/solid-router-devtools": "^1.167.0",
     "@types/node": "^25.3.5",
     "@unocss/preset-icons": "^66.6.8",
     "solid-devtools": "^0.34.4",

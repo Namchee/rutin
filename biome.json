@@ -22,6 +22,7 @@
     "bracketSameLine": true,
     "bracketSpacing": true,
     "enabled": true,
+    "includes": ["!package.json"],
     "indentStyle": "space",
     "indentWidth": 2,
     "lineEnding": "lf",

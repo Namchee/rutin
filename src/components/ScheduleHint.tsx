@@ -3,12 +3,12 @@ import { cn } from '@/lib/css';
 import type { ScheduleFormat } from '@/types';
 
 const Hints = {
+  'cf-workers': ['Minute', 'Hour', 'Date', 'Month', 'Day'],
+  cloudwatch: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
+  node: ['[Second]', 'Minute', 'Hour', 'Date', 'Day'],
   posix: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
   quartz: ['Second', 'Minute', 'Hour', 'Date', 'Month', 'Day', '[Year]'],
   systemd: ['Day', 'Year-Month-Day', 'Hour:Minute:Second'],
-  node: ['[Second]', 'Minute', 'Hour', 'Date', 'Day'],
-  'cf-workers': ['Minute', 'Hour', 'Date', 'Month', 'Day'],
-  cloudwatch: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
 };
 
 interface ScheduleHintProps {
@@ -33,12 +33,12 @@ export function ScheduleHint(props: Readonly<ScheduleHintProps>) {
           }}
           disabled={!props.filled.includes(idx)}
           class={cn('px-0.5 transition-colors', {
+            'active-hint cursor-pointer': props.filled.includes(idx),
+            'bg-destructive/25': props.errors.includes(idx) && props.index === idx,
             'bg-foreground/10 text-foreground': props.index === idx && !props.errors.includes(idx),
             'bg-transparent text-muted-foreground':
               props.index !== idx && !props.errors.includes(idx),
-            'active-hint cursor-pointer': props.filled.includes(idx),
             'text-destructive': props.errors.includes(idx),
-            'bg-destructive/25': props.errors.includes(idx) && props.index === idx,
             underline: props.filled.includes(idx),
           })}>
           {hint}
