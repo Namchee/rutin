@@ -21,6 +21,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@ark-ui/solid": "^5.37.1",
     "@corvu/drawer": "^0.2.4",
     "@kobalte/core": "^0.13.11",
     "@tanstack/solid-router": "^1.170.17",
