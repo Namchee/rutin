@@ -1,22 +1,20 @@
-import "virtual:uno.css";
+import 'virtual:uno.css';
 
 import './assets/styles/global.css';
-import './assets/styles/anims.css';
 import './assets/styles/fonts.css';
 
-import { Router } from "@solidjs/router";
-import { FileRoutes } from "@solidjs/start/router";
-import { Suspense } from "solid-js";
+import { Router } from '@solidjs/router';
+import { FileRoutes } from '@solidjs/start/router';
+import { Suspense } from 'solid-js';
 
 export default function App() {
   return (
     <Router
-      root={(props) => (
+      root={props => (
         <>
           <Suspense>{props.children}</Suspense>
         </>
-      )}
-    >
+      )}>
       <FileRoutes />
     </Router>
   );
