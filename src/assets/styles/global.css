@@ -23,8 +23,7 @@
   --text-secondary: var(--grey-600);
   --text-tertiary: var(--grey-500);
 
-  --separator-primary: var(--grey-300);
-  --separator-secondary: var(--grey-200);
+  --separator: var(--grey-300);
 }
 
 html.dark {
@@ -35,8 +34,7 @@ html.dark {
   --text-secondary: var(--grey-400);
   --text-tertiary: var(--grey-500);
 
-  --separator-primary: var(--grey-700);
-  --separator-secondary: var(--grey-800);
+  --separator: var(--grey-700);
 }
 
 body {

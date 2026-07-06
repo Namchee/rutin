@@ -20,7 +20,16 @@ export default defineConfig({
     }),
   ],
   theme: {
-    colors: {},
+    colors: {
+      background: 'oklch(from var(--background) l c h / <alpha>)',
+      surface: 'oklch(from var(--surface) l c h / <alpha>)',
+      text: {
+        primary: 'oklch(from var(--text-primary) l c h / <alpha>)',
+        secondary: 'oklch(from var(--text-secondary) l c h / <alpha>)',
+        tertiary: 'oklch(from var(--text-tertiary) l c h / <alpha>)',
+      },
+      separator: 'oklch(from var(--separator) l c h / <alpha>)',
+    },
     font: {
       mono: '"Geist Mono"',
       sans: '"Geist"',
