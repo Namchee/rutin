@@ -1,11 +1,12 @@
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { tanstackRouter } from '@tanstack/router-plugin/vite';
 
+import { solidStart } from '@solidjs/start/config';
+import { nitroV2Plugin as nitro } from "@solidjs/vite-plugin-nitro-2";
+import { presetWind4 } from 'unocss';
 import uno from 'unocss/vite';
 
 import { defineConfig } from 'vite';
-import solid from 'vite-plugin-solid';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -15,12 +16,11 @@ export default defineConfig({
     target: 'esnext',
   },
   plugins: [
-    tanstackRouter({
-      autoCodeSplitting: true,
-      target: 'solid',
+    solidStart(),
+    uno({
+      presets: [presetWind4()],
     }),
-    solid(),
-    uno(),
+    nitro(),
   ],
   resolve: {
     alias: {
