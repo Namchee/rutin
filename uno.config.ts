@@ -22,16 +22,16 @@ export default defineConfig({
   ],
   theme: {
     colors: {
-      background: 'oklch(from var(--background) l c h / <alpha>)',
-      surface: 'oklch(from var(--surface) l c h / <alpha>)',
+      background: 'var(--background)',
+      surface: 'var(--surface)',
       text: {
-        primary: 'oklch(from var(--text-primary) l c h / <alpha>)',
-        secondary: 'oklch(from var(--text-secondary) l c h / <alpha>)',
-        tertiary: 'oklch(from var(--text-tertiary) l c h / <alpha>)',
+        primary: 'var(--text-primary)',
+        secondary: 'var(--text-secondary)',
+        tertiary: 'var(--text-tertiary)',
       },
       separator: {
-        primary: 'oklch(from var(--separator-primary) l c h / <alpha>)',
-        secondary: 'oklch(from var(--separator-secondary) l c h / <alpha>)',
+        primary: 'var(--separator-primary)',
+        secondary: 'var(--separator-secondary)',
       },
     },
     font: {
