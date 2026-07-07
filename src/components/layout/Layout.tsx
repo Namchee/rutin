@@ -1,4 +1,5 @@
 import type { JSX } from 'solid-js';
+
 import { Navigation } from './Sidebar';
 
 interface LayoutProps {

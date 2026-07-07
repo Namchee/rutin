@@ -25,6 +25,7 @@
     "@ark-ui/solid": "^5.37.1",
     "@corvu/drawer": "^0.2.4",
     "@kobalte/core": "^0.13.11",
+    "@solidjs/meta": "^0.29.4",
     "@solidjs/router": "^0.16.1",
     "@solidjs/start": "2.0.0-alpha.3",
     "@solidjs/vite-plugin-nitro-2": "^0.1.0",
