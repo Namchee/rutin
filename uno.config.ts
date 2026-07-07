@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 
 import icons from '@unocss/preset-icons';
+import compiler from '@unocss/transformer-compile-class';
 
 import { defineConfig, presetWind4 } from 'unocss';
 
@@ -28,7 +29,10 @@ export default defineConfig({
         secondary: 'oklch(from var(--text-secondary) l c h / <alpha>)',
         tertiary: 'oklch(from var(--text-tertiary) l c h / <alpha>)',
       },
-      separator: 'oklch(from var(--separator) l c h / <alpha>)',
+      separator: {
+        primary: 'oklch(from var(--separator-primary) l c h / <alpha>)',
+        secondary: 'oklch(from var(--separator-secondary) l c h / <alpha>)',
+      },
     },
     font: {
       mono: '"Geist Mono"',
@@ -65,4 +69,6 @@ export default defineConfig({
       },
     },
   },
+  // @ts-expect-error
+  transformers: [compiler()],
 });

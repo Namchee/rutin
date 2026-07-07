@@ -60,6 +60,9 @@ importers:
       '@unocss/preset-icons':
         specifier: ^66.6.8
         version: 66.6.8
+      '@unocss/transformer-compile-class':
+        specifier: ^66.7.5
+        version: 66.7.5
       solid-devtools:
         specifier: ^0.34.4
         version: 0.34.4(solid-js@1.9.10)(vite@7.3.6(@types/node@25.3.5)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0))
@@ -1501,6 +1504,9 @@ packages:
   '@unocss/core@66.7.4':
     resolution: {integrity: sha512-OGXh+RRsAgOrecTKRjUd4SepHR7W4v6zIf6pGtKyIIAIMnzcW/tU+afR1cDbhtb4efZMQhzaoAh3ncvkL8eEYA==}
 
+  '@unocss/core@66.7.5':
+    resolution: {integrity: sha512-UdJb8MiMywcau8QrWEVgUAz0kvoFHyR+sACwYCgmBh/BpKJGyR/zw/Ys3wvysbm0f+i/20VGBex/QQxYVlzdyQ==}
+
   '@unocss/extractor-arbitrary-variants@66.7.4':
     resolution: {integrity: sha512-0yawiWzVDDBRow8kuMeNFhzYJUwYrsKc1xclzNurkisal7tTG24haDmpqneol8j3TT2blrQOIuSQPrEgv6y4oQ==}
 
@@ -1551,6 +1557,9 @@ packages:
 
   '@unocss/transformer-compile-class@66.7.4':
     resolution: {integrity: sha512-CqagFT2ybqeEIf5YDPalK+ueKewNiI3h/a0MDH+VqDEmyl4ICgSB38VtQabiMnFG4um0kVGqThHoYKDy6qGKyg==}
+
+  '@unocss/transformer-compile-class@66.7.5':
+    resolution: {integrity: sha512-KuECgsGF7tGe808vIvKViEjI0UCUgYgneJfK+/TWBkjC7s8dLVaUtJzzcP9/r6OfGlgyn/x1YTdRqTaCENa7Xg==}
 
   '@unocss/transformer-directives@66.7.4':
     resolution: {integrity: sha512-mMS+9NWMI7riWW9LI9+XibbAs6kJuhEezqQ+99d0s40k2w+io7vJab2i+LkDDyCmdaPL5tdqcb48PXu9mzvAeQ==}
@@ -5108,6 +5117,8 @@ snapshots:
 
   '@unocss/core@66.7.4': {}
 
+  '@unocss/core@66.7.5': {}
+
   '@unocss/extractor-arbitrary-variants@66.7.4':
     dependencies:
       '@unocss/core': 66.7.4
@@ -5194,6 +5205,10 @@ snapshots:
   '@unocss/transformer-compile-class@66.7.4':
     dependencies:
       '@unocss/core': 66.7.4
+
+  '@unocss/transformer-compile-class@66.7.5':
+    dependencies:
+      '@unocss/core': 66.7.5
 
   '@unocss/transformer-directives@66.7.4':
     dependencies:
