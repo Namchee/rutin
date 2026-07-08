@@ -22,12 +22,18 @@ export default defineConfig({
   ],
   theme: {
     colors: {
-      background: 'var(--background)',
-      surface: 'var(--surface)',
-      text: {
-        primary: 'var(--text-primary)',
-        secondary: 'var(--text-secondary)',
-        tertiary: 'var(--text-tertiary)',
+      background: {
+        DEFAULT: 'var(--background)',
+        hover: 'var(--background-hover)',
+      },
+      surface: {
+        DEFAULT: 'var(--surface)',
+        hover: 'var(--surface-hover)',
+      },
+      content: {
+        primary: 'var(--content-primary)',
+        secondary: 'var(--content-secondary)',
+        tertiary: 'var(--content-tertiary)',
       },
       separator: {
         primary: 'var(--separator-primary)',

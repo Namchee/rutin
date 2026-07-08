@@ -31,17 +31,22 @@ export function Sidebar() {
       <nav class=":uno: flex flex-col gap-1">
         {Links.map(link => (
           <A
-            class=":uno: ml-[2px] flex h-8 items-center gap-2 rounded-md p-2 transition-colors hover:bg-[var(--grey-100)]"
+            class={cn(
+              ':uno: group ml-[2px] flex h-8 items-center gap-2 rounded-md p-2 transition-colors hover:bg-background-hover',
+              {
+                'bg-background-hover': location.pathname === link.href,
+              },
+            )}
             href={link.href}>
             <div
-              class={cn(':uno: size-4 stroke-1', link.icon, {
-                'text-text-secondary': location.pathname !== link.href,
+              class={cn(':uno: size-4 group-hover:text-content-primary', link.icon, {
+                'text-content-secondary': location.pathname !== link.href,
               })}
             />
 
             <span
-              class={cn(':uno: text-sm leading-none', {
-                'text-text-secondary': location.pathname !== link.href,
+              class={cn(':uno: text-sm leading-none group-hover:text-content-primary', {
+                'text-content-secondary': location.pathname !== link.href,
               })}>
               {link.name}
             </span>
