@@ -9,7 +9,7 @@ interface LayoutProps {
 
 export function Layout({ children }: Readonly<LayoutProps>) {
   return (
-    <div class=":uno: flex min-h-screen">
+    <div class=":uno: flex min-h-screen text-content-primary">
       <Sidebar />
 
       <div class=":uno: flex flex-1 flex-col">

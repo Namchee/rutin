@@ -62,7 +62,7 @@
           }
         }
       },
-      "includes": ["package.json", "uno.config.ts"]
+      "includes": ["package.json", "uno.config.ts", "tsconfig.json"]
     }
   ],
   "vcs": {
