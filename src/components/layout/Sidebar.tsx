@@ -17,13 +17,18 @@ const Links = [
     icon: 'i-lucide-archive',
     name: 'Saved Items',
   },
+  {
+    href: '/mcp',
+    icon: 'i-me-mcp',
+    name: 'MCP',
+  },
 ];
 
 export function Sidebar() {
   const location = useLocation();
 
   return (
-    <div class=":uno: flex h-screen w-60 flex-col gap-6 border-separator-secondary border-r bg-background p-4">
+    <div class=":uno: flex h-screen w-60 flex-col gap-6 p-4">
       <div class=":uno: flex px-2">
         <A href="/" class=":uno: i-me-logo size-6" />
       </div>

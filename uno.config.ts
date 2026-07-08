@@ -16,6 +16,7 @@ export default defineConfig({
           logo: () => fs.readFile('./src/assets/icons/logo.svg', 'utf-8'),
           namchee: () => fs.readFile('./src/assets/icons/namchee.svg', 'utf-8'),
           solid: () => fs.readFile('./src/assets/icons/solid.svg', 'utf-8'),
+          mcp: () => fs.readFile('./src/assets/icons/mcp.svg', 'utf-8'),
         },
       },
     }),

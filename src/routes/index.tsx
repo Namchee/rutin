@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <>
       <Title>Editor | Rutin</Title>
-      <div>Fuck you</div>
+      <div class=":uno: p-8">Test</div>
     </>
   );
 }
