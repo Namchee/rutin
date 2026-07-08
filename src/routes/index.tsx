@@ -4,6 +4,7 @@ export default function Home() {
   return (
     <>
       <Title>Editor | Rutin</Title>
+      <div>FUck you</div>
     </>
   );
 }

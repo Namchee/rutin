@@ -1,6 +1,7 @@
 import type { JSX } from 'solid-js';
 
-import { Navigation } from './Sidebar';
+import { Sidebar } from './Sidebar';
+import { Topbar } from './Topbar';
 
 interface LayoutProps {
   children: JSX.Element;
@@ -9,9 +10,12 @@ interface LayoutProps {
 export function Layout({ children }: Readonly<LayoutProps>) {
   return (
     <div class=":uno: flex min-h-screen">
-      <Navigation />
+      <Sidebar />
 
-      <main class=":uno: flex-1">{children}</main>
+      <div class=":uno: flex flex-1 flex-col">
+        <Topbar />
+        <main class=":uno: flex-1">{children}</main>
+      </div>
     </div>
   );
 }
