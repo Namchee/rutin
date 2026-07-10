@@ -1,33 +1,40 @@
-import type { PolymorphicProps } from '@kobalte/core/polymorphic';
-import * as TooltipPrimitive from '@kobalte/core/tooltip';
-import type { ValidComponent } from 'solid-js';
-import { type Component, splitProps } from 'solid-js';
+import type { HTMLArkProps } from '@ark-ui/solid';
+import { Tooltip as TooltipPrimitive } from '@ark-ui/solid';
 
+import { type Component, splitProps } from 'solid-js';
 import { cn } from '@/lib/css';
+
+const Tooltip: Component<TooltipPrimitive.RootProps> = props => {
+  const mergedPositioning = () => ({
+    gutter: 4,
+    ...props.positioning,
+  });
+
+  return <TooltipPrimitive.Root {...props} positioning={mergedPositioning()} />;
+};
 
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
-const Tooltip: Component<TooltipPrimitive.TooltipRootProps> = props => {
-  return <TooltipPrimitive.Root gutter={4} {...props} />;
-};
+type TooltipContentProps = HTMLArkProps<'div'> & { class?: string | undefined };
 
-type TooltipContentProps<T extends ValidComponent = 'div'> =
-  TooltipPrimitive.TooltipContentProps<T> & { class?: string | undefined };
+const TooltipContent: Component<TooltipContentProps> = props => {
+  const [local, others] = splitProps(props, ['class', 'children']);
 
-const TooltipContent = <T extends ValidComponent = 'div'>(
-  props: PolymorphicProps<T, TooltipContentProps<T>>,
-) => {
-  const [local, others] = splitProps(props as TooltipContentProps, ['class']);
   return (
-    <TooltipPrimitive.Portal>
+    <TooltipPrimitive.Positioner>
       <TooltipPrimitive.Content
         class={cn(
-          'fade-in-0 zoom-in-95 z-50 origin-[var(--kb-popover-content-transform-origin)] animate-in overflow-hidden rounded-md border border-border bg-primary px-3 py-1.5 text-primary-foreground text-sm shadow-md',
+          'relative z-50 rounded-lg bg-content-primary px-2 py-1 text-background text-xs shadow-md',
           local.class,
         )}
-        {...others}
-      />
-    </TooltipPrimitive.Portal>
+        {...others}>
+        <TooltipPrimitive.Arrow class="[--arrow-background:var(--content-primary)] [--arrow-size:8px]">
+          <TooltipPrimitive.ArrowTip />
+        </TooltipPrimitive.Arrow>
+
+        {local.children}
+      </TooltipPrimitive.Content>
+    </TooltipPrimitive.Positioner>
   );
 };
 

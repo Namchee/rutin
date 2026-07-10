@@ -1,6 +1,7 @@
 import 'virtual:uno.css';
 
 import './assets/styles/globals.css';
+import './assets/styles/anims.css';
 import './assets/styles/fonts.css';
 
 import { Link, MetaProvider, Title } from '@solidjs/meta';

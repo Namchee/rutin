@@ -1,0 +1,50 @@
+/* Tooltip */
+@keyframes tooltipIn {
+  from {
+    opacity: 0;
+    scale: 0.9;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes tooltipOut {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+  to {
+    opacity: 0;
+    scale: 0.9;
+  }
+}
+
+[data-part="content"] {
+  transform-origin: var(--transform-origin);
+
+  &[data-placement^="top"] {
+    transform-origin: bottom center;
+  }
+
+  &[data-placement^="bottom"] {
+    transform-origin: top center;
+  }
+
+  &[data-placement^="left"] {
+    transform-origin: right center;
+  }
+
+  &[data-placement^="right"] {
+    transform-origin: left center;
+  }
+
+  &[data-state="open"] {
+    animation: tooltipIn 0.15s ease-out;
+  }
+
+  &[data-state="closed"] {
+    animation: tooltipOut 0.1s ease-in;
+  }
+}

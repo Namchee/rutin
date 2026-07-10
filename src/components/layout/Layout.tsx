@@ -16,7 +16,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
         <Topbar />
 
         <main class=":uno: flex-1">
-          <div class=":uno: mx-auto max-w-3xl">{children}</div>
+          <div class=":uno: mx-auto max-w-5xl px-4 py-8">{children}</div>
         </main>
       </div>
     </div>
