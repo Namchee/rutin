@@ -40,6 +40,9 @@ export default defineConfig({
         primary: 'var(--separator-primary)',
         secondary: 'var(--separator-secondary)',
       },
+      foreground: {
+
+      }
     },
     font: {
       mono: '"Geist Mono"',

@@ -1,4 +1,6 @@
 import { A } from '@solidjs/router';
+
+import { ThemeSwitcher } from '../ThemeSwitcher';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
 
 export function Topbar() {
@@ -6,8 +8,8 @@ export function Topbar() {
     <div class=":uno: flex h-12 items-center justify-between p-4">
       <div class=":uno: h-full">
         <Tooltip>
-          <TooltipTrigger class=":uno: grid size-6 cursor-pointer place-items-center rounded transition-colors bg-surface hover:bg-surface-hover">
-            <div class=":uno: i-lucide-panel-right size-4" />
+          <TooltipTrigger class=":uno: group grid size-6 cursor-pointer place-items-center rounded bg-surface transition-colors hover:bg-surface-hover">
+            <div class=":uno: i-lucide-panel-right size-4 bg-content-secondary transition-colors group-hover:bg-content-primary" />
           </TooltipTrigger>
 
           <TooltipContent>Shrink Sidebar</TooltipContent>
@@ -15,9 +17,7 @@ export function Topbar() {
       </div>
 
       <div class=":uno: flex items-center gap-2">
-        <button type="button" class=":uno: size-6">
-          <div class=":uno: i-lucide-sun size-4" />
-        </button>
+        <ThemeSwitcher />
 
         <A
           href="https://www.github.com/Namchee/rutin"
