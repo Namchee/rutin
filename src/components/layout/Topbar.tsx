@@ -5,7 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
 
 export function Topbar() {
   return (
-    <div class="flex h-12 items-center justify-between p-4">
+    <div class="flex h-14 items-center justify-between p-4">
       <div>
         <Tooltip>
           <TooltipTrigger class="group grid size-6 cursor-pointer place-items-center rounded bg-surface transition-colors hover:bg-surface-hover">
@@ -16,7 +16,7 @@ export function Topbar() {
         </Tooltip>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-4">
         <ThemeSwitcher />
 
         <A

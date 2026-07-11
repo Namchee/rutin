@@ -56,7 +56,7 @@ const ToggleGroupItem = (props: ToggleGroupItemProps) => {
           size: context.size || local.size,
           variant: context.variant || local.variant,
         }),
-        'hover:bg-muted hover:text-muted-foreground data-[state=on]:bg-accent data-[state=on]:text-accent-foreground',
+        'cursor-pointer text-content-secondary hover:text-content-primary data-[state=on]:bg-background data-[state=on]:text-content-primary',
         local.class,
       )}
       {...others}
