@@ -1,7 +1,6 @@
 import fs from 'node:fs/promises';
 
 import icons from '@unocss/preset-icons';
-import compiler from '@unocss/transformer-compile-class';
 
 import { defineConfig, presetWind4 } from 'unocss';
 
@@ -36,7 +35,7 @@ export default defineConfig({
         secondary: 'var(--content-secondary)',
         tertiary: 'var(--content-tertiary)',
       },
-      separator: 'var(--separator-secondary)',
+      separator: 'var(--separator)',
       foreground: 'var(--foreground)',
     },
     font: {
@@ -74,6 +73,4 @@ export default defineConfig({
       },
     },
   },
-  // @ts-expect-error
-  transformers: [compiler()],
 });

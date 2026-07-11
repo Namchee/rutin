@@ -9,14 +9,14 @@ interface LayoutProps {
 
 export function Layout({ children }: Readonly<LayoutProps>) {
   return (
-    <div class=":uno: flex min-h-screen bg-background text-content-primary">
+    <div class="flex min-h-screen bg-background text-content-primary">
       <Sidebar />
 
-      <div class=":uno: my-2 mr-2 flex flex-1 flex-col rounded-md border border-separator-secondary bg-surface shadow-xs">
+      <div class="my-2 mr-2 flex flex-1 flex-col rounded-md border border-separator bg-surface shadow-xs">
         <Topbar />
 
-        <main class=":uno: flex-1">
-          <div class=":uno: mx-auto max-w-5xl px-4 py-8">{children}</div>
+        <main class="flex-1">
+          <div class="mx-auto max-w-5xl px-4 py-8">{children}</div>
         </main>
       </div>
     </div>
