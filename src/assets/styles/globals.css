@@ -25,8 +25,7 @@
   --content-secondary: var(--grey-600);
   --content-tertiary: var(--grey-500);
 
-  --separator-primary: var(--grey-300);
-  --separator-secondary: var(--grey-200);
+  --separator: var(--grey-200);
 }
 
 html.dark {
@@ -39,8 +38,7 @@ html.dark {
   --content-secondary: var(--grey-400);
   --content-tertiary: var(--grey-500);
 
-  --separator-primary: var(--grey-700);
-  --separator-secondary: var(--grey-800);
+  --separator: var(--grey-800);
 }
 
 body {

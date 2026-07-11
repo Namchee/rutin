@@ -36,10 +36,7 @@ export default defineConfig({
         secondary: 'var(--content-secondary)',
         tertiary: 'var(--content-tertiary)',
       },
-      separator: {
-        primary: 'var(--separator-primary)',
-        secondary: 'var(--separator-secondary)',
-      },
+      separator: 'var(--separator-secondary)',
       foreground: {
 
       }
