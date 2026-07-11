@@ -40,7 +40,7 @@ export default defineConfig({
     },
     font: {
       mono: '"Geist Mono"',
-      sans: '"Geist"',
+      sans: '"Geist", ui-sans-serif, system-ui, sans-serif',
     },
     text: {
       '2xs': {
