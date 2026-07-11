@@ -26,6 +26,8 @@
   --content-tertiary: var(--grey-500);
 
   --separator: var(--grey-200);
+
+  --foreground: oklch(from var(--grey-100) calc(l - 0.025) c h);
 }
 
 html.dark {
@@ -39,6 +41,8 @@ html.dark {
   --content-tertiary: var(--grey-500);
 
   --separator: var(--grey-800);
+
+  --foreground: oklch(from var(--grey-900) calc(l + 0.025) c h);
 }
 
 body {

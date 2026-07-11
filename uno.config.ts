@@ -37,9 +37,7 @@ export default defineConfig({
         tertiary: 'var(--content-tertiary)',
       },
       separator: 'var(--separator-secondary)',
-      foreground: {
-
-      }
+      foreground: 'var(--foreground)',
     },
     font: {
       mono: '"Geist Mono"',
