@@ -1,66 +1,63 @@
-import type {
-  ContentProps,
-  DescriptionProps,
-  DynamicProps,
-  LabelProps,
-  OverlayProps,
-} from '@corvu/drawer';
-import DrawerPrimitive from '@corvu/drawer';
+import { Dialog as DialogPrimitive, useDialogContext } from '@ark-ui/solid';
 import type { Component, ComponentProps, JSX, ValidComponent } from 'solid-js';
 import { splitProps } from 'solid-js';
 
 import { cn } from '@/lib/css';
 
-const Drawer = DrawerPrimitive;
+const Drawer = DialogPrimitive.Root;
 
-const DrawerTrigger = DrawerPrimitive.Trigger;
+const DrawerTrigger = DialogPrimitive.Trigger;
 
-const DrawerPortal = DrawerPrimitive.Portal;
+const DrawerPortal = DialogPrimitive.Portal;
 
-const DrawerClose = DrawerPrimitive.Close;
+const DrawerClose = DialogPrimitive.CloseTrigger;
 
-type DrawerOverlayProps<T extends ValidComponent = 'div'> = OverlayProps<T> & { class?: string };
+type DrawerOverlayProps<T extends ValidComponent = 'div'> = DialogPrimitive.BackdropProps & {
+  as?: T;
+  class?: string;
+};
 
-const DrawerOverlay = <T extends ValidComponent = 'div'>(
-  props: DynamicProps<T, DrawerOverlayProps<T>>,
-) => {
+const DrawerOverlay = <T extends ValidComponent = 'div'>(props: DrawerOverlayProps<T>) => {
   const [, rest] = splitProps(props as DrawerOverlayProps, ['class']);
-  const drawerContext = DrawerPrimitive.useContext();
+  const dialog = useDialogContext();
+
   return (
-    <DrawerPrimitive.Overlay
-      class={cn(
-        'fixed inset-0 z-50 data-[transitioning]:transition-colors data-[transitioning]:duration-300',
-        props.class,
-      )}
+    <DialogPrimitive.Backdrop
+      class={cn('fixed inset-0 z-50 transition-colors duration-300', props.class)}
       style={{
-        'background-color': `rgb(0 0 0 / ${0.8 * drawerContext.openPercentage()})`,
+        // Ark UI maps overlay states dynamically using custom properties
+        // or through context state signals like dialog().open
+        'background-color': dialog().open ? 'rgb(0 0 0 / 0.8)' : 'rgb(0 0 0 / 0)',
       }}
       {...rest}
     />
   );
 };
 
-type DrawerContentProps<T extends ValidComponent = 'div'> = ContentProps<T> & {
+type DrawerContentProps<T extends ValidComponent = 'div'> = DialogPrimitive.ContentProps & {
+  as?: T;
   class?: string;
   children?: JSX.Element;
 };
 
-const DrawerContent = <T extends ValidComponent = 'div'>(
-  props: DynamicProps<T, DrawerContentProps<T>>,
-) => {
+const DrawerContent = <T extends ValidComponent = 'div'>(props: DrawerContentProps<T>) => {
   const [, rest] = splitProps(props as DrawerContentProps, ['class', 'children']);
+
   return (
     <DrawerPortal>
       <DrawerOverlay />
-      <DrawerPrimitive.Content
-        class={cn(
-          'fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background after:absolute after:inset-x-0 after:top-full after:h-1/2 after:bg-inherit data-[transitioning]:transition-transform data-[transitioning]:duration-300 md:select-none',
-          props.class,
-        )}
-        {...rest}>
-        <div class="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
-        {props.children}
-      </DrawerPrimitive.Content>
+      {/* Ark UI uses Positioner to handle layout alignment and layer stack management */}
+      <DialogPrimitive.Positioner class="fixed inset-0 z-50 flex items-end justify-center">
+        <DialogPrimitive.Content
+          class={cn(
+            'data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background transition-transform duration-300 data-[state=closed]:animate-out data-[state=open]:animate-in md:select-none',
+            props.class,
+          )}
+          {...rest}>
+          <div class="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
+          {props.children}
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Positioner>
     </DrawerPortal>
   );
 };
@@ -72,33 +69,33 @@ const DrawerHeader: Component<ComponentProps<'div'>> = props => {
 
 const DrawerFooter: Component<ComponentProps<'div'>> = props => {
   const [, rest] = splitProps(props, ['class']);
-  return <div class={cn('t-auto flex flex-col gap-2 p-4', props.class)} {...rest} />;
+  return <div class={cn('mt-auto flex flex-col gap-2 p-4', props.class)} {...rest} />;
 };
 
-type DrawerTitleProps<T extends ValidComponent = 'div'> = LabelProps<T> & { class?: string };
+type DrawerTitleProps<T extends ValidComponent = 'h2'> = DialogPrimitive.TitleProps & {
+  as?: T;
+  class?: string;
+};
 
-const DrawerTitle = <T extends ValidComponent = 'div'>(
-  props: DynamicProps<T, DrawerTitleProps<T>>,
-) => {
+const DrawerTitle = <T extends ValidComponent = 'h2'>(props: DrawerTitleProps<T>) => {
   const [, rest] = splitProps(props as DrawerTitleProps, ['class']);
   return (
-    <DrawerPrimitive.Label
+    <DialogPrimitive.Title
       class={cn('font-semibold text-lg leading-none tracking-tight', props.class)}
       {...rest}
     />
   );
 };
 
-type DrawerDescriptionProps<T extends ValidComponent = 'div'> = DescriptionProps<T> & {
+type DrawerDescriptionProps<T extends ValidComponent = 'p'> = DialogPrimitive.DescriptionProps & {
+  as?: T;
   class?: string;
 };
 
-const DrawerDescription = <T extends ValidComponent = 'div'>(
-  props: DynamicProps<T, DrawerDescriptionProps<T>>,
-) => {
+const DrawerDescription = <T extends ValidComponent = 'p'>(props: DrawerDescriptionProps<T>) => {
   const [, rest] = splitProps(props as DrawerDescriptionProps, ['class']);
   return (
-    <DrawerPrimitive.Description
+    <DialogPrimitive.Description
       class={cn('text-muted-foreground text-sm', props.class)}
       {...rest}
     />

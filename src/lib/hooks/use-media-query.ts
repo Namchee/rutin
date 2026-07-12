@@ -12,7 +12,6 @@ export function useMediaQuery(query: string) {
   }
 
   function handleChange() {
-    console.log(getValue());
     setValue(getValue());
   }
 
@@ -24,6 +23,10 @@ export function useMediaQuery(query: string) {
   });
 
   onCleanup(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     const matchMedia = window.matchMedia(query);
 
     matchMedia.removeEventListener('change', handleChange);

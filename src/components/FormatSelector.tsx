@@ -1,8 +1,10 @@
+import { createListCollection } from '@ark-ui/solid';
 import { createSignal, For, Show } from 'solid-js';
 import {
   Select,
   SelectContent,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/Select';
@@ -13,7 +15,7 @@ import type { Format, ScheduleFormat } from '@/types';
 import { Button } from './ui/Button';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from './ui/Drawer';
 
-const FormatLabel: Record<ScheduleFormat, Format> = {
+const Formats: Record<ScheduleFormat, Format> = {
   'cf-workers': {
     description:
       'CRON implementation used in Cloudflare Workers. Closer to Quartz but with 5 fields.',
@@ -64,7 +66,7 @@ function FormatSelectorDrawer() {
         class="h-full w-48 justify-start rounded-r-none rounded-l-xl border-none px-4 pl-3 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
         <div class="flex flex-col items-start">
           <p class="text-muted-foreground text-xs tracking-tight">Dialect</p>
-          <p class="truncate text-sm">{FormatLabel[format()].label}</p>
+          <p class="truncate text-sm">{Formats[format()].label}</p>
         </div>
         <div class="i-lucide-chevron-down ml-auto size-3 shrink-0 text-accent-foreground/50" />
       </DrawerTrigger>
@@ -78,7 +80,7 @@ function FormatSelectorDrawer() {
           </DrawerHeader>
 
           <div class="flex flex-col gap-1">
-            <For each={Object.entries(FormatLabel)}>
+            <For each={Object.entries(Formats)}>
               {([key, value]) => (
                 <div
                   onPointerDown={() => onSelect(key as ScheduleFormat)}
@@ -111,36 +113,54 @@ export function FormatSelector() {
 
   const isNonMobile = useMediaQuery('(min-width: 768px)');
 
+  const collection = createListCollection({
+    items: Object.entries(Formats).map(([k, v]) => ({ label: v.label, value: k })),
+  });
+
   return (
-    <Show when={isNonMobile()} fallback={<FormatSelectorDrawer />}>
-      <Select
-        value={format()}
-        onChange={setFormat}
-        options={Object.keys(FormatLabel)}
-        placeholder="Select schedule format..."
-        placement="bottom-start"
-        itemComponent={props => (
-          <SelectItem item={props.item} class="max-w-xs transition-colors">
-            <p class="font-medium">{FormatLabel[props.item.rawValue].label}</p>
+    <Select
+      collection={collection}
+      value={[format()]}
+      onValueChange={v => setFormat(v.value as unknown as ScheduleFormat)}
+      class="flex items-center gap-2">
+      <SelectLabel>Dialect:</SelectLabel>
 
-            <p class="mt-1 text-muted-foreground text-xs">
-              {FormatLabel[props.item.rawValue].description}
-            </p>
-          </SelectItem>
-        )}>
-        <SelectTrigger
-          aria-label="Dialect"
-          class="h-full w-48 cursor-pointer rounded-r-none rounded-l-lg border-none shadow-none transition-colors transition-shadow hover:bg-accent focus:bg-accent focus:ring-0 focus:ring-muted focus:ring-offset-0">
-          <div class="flex max-w-full flex-col items-start">
-            <p class="text-muted-foreground text-xs">Dialect</p>
-            <SelectValue<string>>
-              {state => FormatLabel[state.selectedOption() as ScheduleFormat].label}
-            </SelectValue>
-          </div>
-        </SelectTrigger>
+      <SelectTrigger>
+        <SelectValue
+          class="w-20 cursor-pointer shadow-none transition-colors transition-shadow"
+          placeholder="Select dialect..."
+        />
+      </SelectTrigger>
 
-        <SelectContent class="border-border"></SelectContent>
-      </Select>
-    </Show>
+      <SelectContent>
+        <For each={collection.items}>
+          {item => <SelectItem item={item.value}> {item.label}</SelectItem>}
+        </For>
+      </SelectContent>
+    </Select>
   );
+
+  // return (
+  //   <Show when={isNonMobile()} fallback={<FormatSelectorDrawer />}>
+  //     <Select
+  //       collection={collection}
+  //       value={[format()]}
+  //       onValueChange={v => setFormat(v.value as unknown as ScheduleFormat)}>
+  //       <SelectLabel>Dialect:</SelectLabel>
+
+  //       <SelectTrigger>
+  //         <SelectValue
+  //           class="h-full w-48 cursor-pointer rounded-r-none rounded-l-lg border-none shadow-none transition-colors transition-shadow hover:bg-accent focus:bg-accent focus:ring-0 focus:ring-muted focus:ring-offset-0"
+  //           placeholder="Select dialect..."
+  //         />
+  //       </SelectTrigger>
+
+  //       <SelectContent>
+  //         <For each={collection.items}>
+  //           {item => <SelectItem item={item.value}> {item.label}</SelectItem>}
+  //         </For>
+  //       </SelectContent>
+  //     </Select>
+  //   </Show>
+  // );
 }
