@@ -12,37 +12,35 @@ import { useRutinContext } from '@/context';
 import { cn } from '@/lib/css';
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
 import type { Format, ScheduleFormat } from '@/types';
-import { Button } from './ui/Button';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from './ui/Drawer';
 
+// biome-ignore assist/source/useSortedKeys: Need to preserve order
 const Formats: Record<ScheduleFormat, Format> = {
-  'cf-workers': {
-    description:
-      'CRON implementation used in Cloudflare Workers. Closer to Quartz but with 5 fields.',
-    label: 'Cloudflare Workers',
-  },
-  cloudwatch: {
-    description: 'CRON implementation used in Amazon Cloudwatch. Closer to CRON but with 6 fields.',
-    label: 'Amazon Cloudwatch',
-  },
-  node: {
-    description:
-      'CRON implementation of node-cron, CRON library written for Node.js with optional seconds field.',
-    label: 'Node.js',
-  },
   posix: {
-    description:
-      'Standard CRON implementation on UNIX operating system via crontab like Vixie or Anacron.',
+    description: '5 fields ⋅ Classic CRON',
     label: 'POSIX',
   },
   quartz: {
     description:
-      'Richly-featured scheduling system commonly implemented in Java-based applications.',
+      '6 - 7 fields ⋅ Java-based',
     label: 'Quartz',
+  },
+  node: {
+    description:
+      '5 - 6 fields ⋅ Optional seconds field',
+    label: 'Node.js',
+  },
+  amazon: {
+    description: '5 - 6 fields ⋅ Optional year field',
+    label: 'Amazon',
+  },
+  'cf-workers': {
+    description: '5 fields ⋅ Day start with 0',
+    label: 'Cloudflare Workers',
   },
   systemd: {
     description:
-      'Scheduling system integrated by systemd which is commonly found in Linux systems.',
+      '3 fields ⋅ OnCalendar ⋅ Linux',
     label: 'Systemd',
   },
 };
@@ -61,8 +59,6 @@ function FormatSelectorDrawer() {
   return (
     <Drawer open={open()} onOpenChange={setOpen}>
       <DrawerTrigger
-        as={Button<'button'>}
-        variant="outline"
         class="h-full w-48 justify-start rounded-r-none rounded-l-xl border-none px-4 pl-3 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
         <div class="flex flex-col items-start">
           <p class="text-muted-foreground text-xs tracking-tight">Dialect</p>
@@ -121,20 +117,28 @@ export function FormatSelector() {
     <Select
       collection={collection}
       value={[format()]}
-      onValueChange={v => setFormat(v.value as unknown as ScheduleFormat)}
+      onValueChange={v => setFormat(v.value[0] as unknown as ScheduleFormat)}
       class="flex items-center gap-2">
-      <SelectLabel>Dialect:</SelectLabel>
+      <SelectLabel class="text-content-tertiary">Dialect:</SelectLabel>
 
       <SelectTrigger>
         <SelectValue
-          class="w-20 cursor-pointer shadow-none transition-colors transition-shadow"
+          class="h-fit w-24 truncate font-medium leading-none"
           placeholder="Select dialect..."
         />
       </SelectTrigger>
 
-      <SelectContent>
+      <SelectContent class="max-w-sm">
         <For each={collection.items}>
-          {item => <SelectItem item={item.value}> {item.label}</SelectItem>}
+          {item => (
+            <SelectItem item={item.value} class=            "[data-highlighted]:bg-content-tertiary">
+              <p class="font-medium text-sm leading-normal">{item.label}</p>
+
+              <p class="text-content-tertiary text-xs">
+                {Formats[item.value as ScheduleFormat].description}
+              </p>
+            </SelectItem>
+          )}
         </For>
       </SelectContent>
     </Select>

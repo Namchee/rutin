@@ -1,4 +1,4 @@
-export type ScheduleFormat = 'posix' | 'quartz' | 'systemd' | 'node' | 'cf-workers' | 'cloudwatch';
+export type ScheduleFormat = 'posix' | 'quartz' | 'systemd' | 'node' | 'cf-workers' | 'amazon';
 export interface Format {
   label: string;
   description: string;

@@ -20,7 +20,7 @@ const SelectTrigger = <T extends ValidComponent = 'button'>(props: SelectTrigger
   return (
     <SelectPrimitive.Trigger
       class={cn(
-        'flex h-8 w-full items-center justify-between rounded-md border border-separator bg-transparent px-3 py-2 hover:bg-background text-left transition-colors text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+        'flex h-8 w-full cursor-pointer items-center justify-between rounded-md border border-separator bg-transparent p-2 text-left text-sm ring-offset-background transition-colors transition-shadow placeholder:text-muted-foreground hover:bg-background focus:outline-none focus:ring-2 focus:ring-content-tertiary/25 disabled:cursor-not-allowed disabled:opacity-50',
         local.class,
       )}
       {...others}>
@@ -42,7 +42,7 @@ const SelectContent = <T extends ValidComponent = 'div'>(props: SelectContentPro
     <SelectPrimitive.Positioner>
       <SelectPrimitive.Content
         class={cn(
-          'select__content relative z-50 m-0 min-w-32 list-none overflow-hidden rounded-md border border-separator bg-surface p-1 text-content-primary shadow-md focus:outline-none',
+          'relative z-50 m-0 min-w-32 list-none overflow-hidden rounded-md border border-separator bg-surface p-1 text-content-primary shadow-md focus:outline-none',
           local.class,
         )}
         {...others}>
@@ -63,7 +63,7 @@ const SelectItem = <T extends ValidComponent = 'div'>(props: SelectItemProps<T>)
   return (
     <SelectPrimitive.Item
       class={cn(
-        'relative mt-0 flex w-full cursor-default select-none items-center rounded-sm py-1.5 pr-8 pl-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+        'relative mt-0 flex w-full cursor-default select-none items-center rounded-sm py-1.5 pr-10 pl-2 text-sm outline-none focus:bg-content-tertiary data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
         local.class,
       )}
       {...others}>

@@ -1,7 +1,7 @@
 import { Title } from '@solidjs/meta';
 
-import { RutinContextProvider } from '@/context';
 import { FormatSelector } from '@/components/FormatSelector';
+import { RutinContextProvider } from '@/context';
 
 export default function Home() {
   return (
@@ -26,7 +26,9 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div class="flex-1 p-4"></div>
+                <div class="flex-1 p-4">
+                  <input type="text" class="w-full bg-background border border-separator text-2xl text-center font-mono rounded-lg" />
+                </div>
               </div>
 
               <div class="flex flex-col overflow-hidden rounded-lg border border-separator">
