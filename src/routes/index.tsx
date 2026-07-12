@@ -29,6 +29,21 @@ export default function Home() {
                 <div class="flex-1 p-4">
                   <input type="text" class="w-full bg-background border border-separator text-2xl text-center font-mono rounded-lg" />
                 </div>
+
+                <div class="p-4 border-t border-separator flex items-center justify-between">
+                  <div>
+                    <button>
+                      Normalize
+                    </button>
+                  </div>
+
+                  <div>
+                    <button>
+                      Copy
+                    </button>
+                  </div>
+
+                </div>
               </div>
 
               <div class="flex flex-col overflow-hidden rounded-lg border border-separator">
