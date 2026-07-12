@@ -30,11 +30,11 @@
   --foreground: oklch(from var(--grey-100) calc(l - 0.025) c h);
 }
 
-html.dark {
+html[style*="color-scheme: dark"] {
   --background: var(--grey-950);
   --background-hover: var(--grey-900);
   --surface: var(--grey-900);
-  --surface-hover: var(--grey-50);
+  --surface-hover: var(--grey-800);
 
   --content-primary: var(--grey-50);
   --content-secondary: var(--grey-400);
@@ -42,7 +42,7 @@ html.dark {
 
   --separator: var(--grey-800);
 
-  --foreground: oklch(from var(--grey-900) calc(l + 0.025) c h);
+  --foreground: oklch(from var(--grey-950) calc(l + 0.025) c h);
 }
 
 body {
