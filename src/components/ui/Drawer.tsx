@@ -43,6 +43,7 @@ const DrawerContent = <T extends ValidComponent = 'div'>(props: DrawerContentPro
   return (
     <Portal>
       <DrawerOverlay />
+
       <DrawerPrimitive.Positioner class="fixed inset-0 z-50 flex items-end justify-center">
         <DrawerPrimitive.Content
           class={cn(
@@ -50,7 +51,10 @@ const DrawerContent = <T extends ValidComponent = 'div'>(props: DrawerContentPro
             props.class,
           )}
           {...rest}>
-          <div class="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
+          <DrawerPrimitive.Grabber class="flex w-full justify-center p-2">
+            <DrawerPrimitive.GrabberIndicator class="h-2 w-12 bg-content-tertiary/15 hover:bg-content-tertiary/25 transition-colors rounded-full" />
+          </DrawerPrimitive.Grabber>
+
           {props.children}
         </DrawerPrimitive.Content>
       </DrawerPrimitive.Positioner>

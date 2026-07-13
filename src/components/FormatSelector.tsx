@@ -57,7 +57,7 @@ function FormatSelectorDrawer() {
     <div class="flex items-center gap-2">
       <p class="font-medium text-content-tertiary text-sm">Dialect:</p>
 
-      <Drawer open={open()} onOpenChange={setOpen}>
+      <Drawer open={open()} onOpenChange={(d) => setOpen(d.open)}>
         <DrawerTrigger class="flex h-8 w-24 items-center justify-between rounded-md border border-separator p-2 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
           <p class="truncate font-medium text-sm">{Formats[format()].label}</p>
 
@@ -67,7 +67,7 @@ function FormatSelectorDrawer() {
         <DrawerContent>
           <div class="px-2 py-4">
             <DrawerHeader class="px-2 pt-0 pb-2 text-left">
-              <DrawerTitle class="font-mono font-normal text-muted-foreground text-xs uppercase">
+              <DrawerTitle class="font-mono text-content-tertiary text-xs uppercase">
                 Dialect
               </DrawerTitle>
             </DrawerHeader>
@@ -78,12 +78,12 @@ function FormatSelectorDrawer() {
                   <div
                     onPointerDown={() => onSelect(key as ScheduleFormat)}
                     class={cn('flex items-center gap-3 rounded-md p-2', {
-                      'bg-muted': format() === key,
+                      'bg-background-hover': format() === key,
                     })}>
                     <div class="flex-1">
                       <p class="font-medium">{value.label}</p>
 
-                      <p class="text-muted-foreground text-xs">{value.description}</p>
+                      <p class="text-content-tertiary text-xs">{value.description}</p>
                     </div>
 
                     <div

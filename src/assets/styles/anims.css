@@ -1,5 +1,5 @@
 /* Tooltip */
-@keyframes tooltipIn {
+@keyframes tooltip-in {
   from {
     opacity: 0;
     scale: 0.9;
@@ -10,7 +10,7 @@
   }
 }
 
-@keyframes tooltipOut {
+@keyframes tooltip-out {
   from {
     opacity: 1;
     scale: 1;
@@ -41,10 +41,40 @@
   }
 
   &[data-state="open"] {
-    animation: tooltipIn 0.15s ease-out;
+    animation: tooltip-in 0.15s ease-out;
   }
 
   &[data-state="closed"] {
-    animation: tooltipOut 0.1s ease-in;
+    animation: tooltip-in 0.15s ease-in;
+  }
+}
+
+/* Drawer */
+@keyframes drawer-slide-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes drawer-slide-out {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+[data-scope="drawer"][data-part="content"] {
+  will-change: transform;
+
+  &[data-state="open"] {
+    animation: drawer-slide-in 500ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  }
+  &[data-state="closed"] {
+    animation: drawer-slide-out 500ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
   }
 }
