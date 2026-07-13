@@ -21,13 +21,11 @@ const Formats: Record<ScheduleFormat, Format> = {
     label: 'POSIX',
   },
   quartz: {
-    description:
-      '6 - 7 fields ⋅ Java-based',
+    description: '6 - 7 fields ⋅ Java-based',
     label: 'Quartz',
   },
   node: {
-    description:
-      '5 - 6 fields ⋅ Optional seconds field',
+    description: '5 - 6 fields ⋅ Optional seconds field',
     label: 'Node.js',
   },
   amazon: {
@@ -39,8 +37,7 @@ const Formats: Record<ScheduleFormat, Format> = {
     label: 'Cloudflare Workers',
   },
   systemd: {
-    description:
-      '3 fields ⋅ OnCalendar ⋅ Linux',
+    description: '3 fields ⋅ OnCalendar ⋅ Linux',
     label: 'Systemd',
   },
 };
@@ -57,50 +54,51 @@ function FormatSelectorDrawer() {
   }
 
   return (
-    <Drawer open={open()} onOpenChange={setOpen}>
-      <DrawerTrigger
-        class="h-full w-48 justify-start rounded-r-none rounded-l-xl border-none px-4 pl-3 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
-        <div class="flex flex-col items-start">
-          <p class="text-muted-foreground text-xs tracking-tight">Dialect</p>
-          <p class="truncate text-sm">{Formats[format()].label}</p>
-        </div>
-        <div class="i-lucide-chevron-down ml-auto size-3 shrink-0 text-accent-foreground/50" />
-      </DrawerTrigger>
+    <div class="flex items-center gap-2">
+      <p class="font-medium text-content-tertiary text-sm">Dialect:</p>
 
-      <DrawerContent>
-        <div class="px-2 py-4">
-          <DrawerHeader class="px-2 pt-0 pb-2 text-left">
-            <DrawerTitle class="font-mono font-normal text-muted-foreground text-xs uppercase">
-              Dialect
-            </DrawerTitle>
-          </DrawerHeader>
+      <Drawer open={open()} onOpenChange={setOpen}>
+        <DrawerTrigger class="flex h-8 w-24 items-center justify-between rounded-md border border-separator p-2 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
+          <p class="truncate font-medium text-sm">{Formats[format()].label}</p>
 
-          <div class="flex flex-col gap-1">
-            <For each={Object.entries(Formats)}>
-              {([key, value]) => (
-                <div
-                  onPointerDown={() => onSelect(key as ScheduleFormat)}
-                  class={cn('flex items-center gap-3 rounded-md p-2', {
-                    'bg-muted': format() === key,
-                  })}>
-                  <div class="flex-1">
-                    <p class="font-medium">{value.label}</p>
+          <div class="i-lucide-chevron-down ml-auto size-3 shrink-0 text-accent-foreground/50" />
+        </DrawerTrigger>
 
-                    <p class="text-muted-foreground text-xs">{value.description}</p>
-                  </div>
+        <DrawerContent>
+          <div class="px-2 py-4">
+            <DrawerHeader class="px-2 pt-0 pb-2 text-left">
+              <DrawerTitle class="font-mono font-normal text-muted-foreground text-xs uppercase">
+                Dialect
+              </DrawerTitle>
+            </DrawerHeader>
 
+            <div class="flex flex-col gap-1">
+              <For each={Object.entries(Formats)}>
+                {([key, value]) => (
                   <div
-                    class={cn('i-lucide-check size-4', {
-                      invisible: format() !== key,
-                    })}
-                  />
-                </div>
-              )}
-            </For>
+                    onPointerDown={() => onSelect(key as ScheduleFormat)}
+                    class={cn('flex items-center gap-3 rounded-md p-2', {
+                      'bg-muted': format() === key,
+                    })}>
+                    <div class="flex-1">
+                      <p class="font-medium">{value.label}</p>
+
+                      <p class="text-muted-foreground text-xs">{value.description}</p>
+                    </div>
+
+                    <div
+                      class={cn('i-lucide-check size-4', {
+                        invisible: format() !== key,
+                      })}
+                    />
+                  </div>
+                )}
+              </For>
+            </div>
           </div>
-        </div>
-      </DrawerContent>
-    </Drawer>
+        </DrawerContent>
+      </Drawer>
+    </div>
   );
 }
 
@@ -114,57 +112,35 @@ export function FormatSelector() {
   });
 
   return (
-    <Select
-      collection={collection}
-      value={[format()]}
-      onValueChange={v => setFormat(v.value[0] as unknown as ScheduleFormat)}
-      class="flex items-center gap-2">
-      <SelectLabel class="text-content-tertiary">Dialect:</SelectLabel>
+    <Show when={isNonMobile()} fallback={<FormatSelectorDrawer />}>
+      <Select
+        collection={collection}
+        value={[format()]}
+        onValueChange={v => setFormat(v.value[0] as unknown as ScheduleFormat)}
+        class="flex items-center gap-2">
+        <SelectLabel class="text-content-tertiary">Dialect:</SelectLabel>
 
-      <SelectTrigger>
-        <SelectValue
-          class="h-fit w-24 truncate font-medium leading-none"
-          placeholder="Select dialect..."
-        />
-      </SelectTrigger>
+        <SelectTrigger>
+          <SelectValue
+            class="h-fit w-24 truncate font-medium leading-none"
+            placeholder="Select dialect..."
+          />
+        </SelectTrigger>
 
-      <SelectContent class="max-w-sm">
-        <For each={collection.items}>
-          {item => (
-            <SelectItem item={item.value} class=            "[data-highlighted]:bg-content-tertiary">
-              <p class="font-medium text-sm leading-normal">{item.label}</p>
+        <SelectContent class="max-w-sm">
+          <For each={collection.items}>
+            {item => (
+              <SelectItem item={item.value}>
+                <p class="font-medium text-sm leading-normal">{item.label}</p>
 
-              <p class="text-content-tertiary text-xs">
-                {Formats[item.value as ScheduleFormat].description}
-              </p>
-            </SelectItem>
-          )}
-        </For>
-      </SelectContent>
-    </Select>
+                <p class="text-content-tertiary text-xs">
+                  {Formats[item.value as ScheduleFormat].description}
+                </p>
+              </SelectItem>
+            )}
+          </For>
+        </SelectContent>
+      </Select>
+    </Show>
   );
-
-  // return (
-  //   <Show when={isNonMobile()} fallback={<FormatSelectorDrawer />}>
-  //     <Select
-  //       collection={collection}
-  //       value={[format()]}
-  //       onValueChange={v => setFormat(v.value as unknown as ScheduleFormat)}>
-  //       <SelectLabel>Dialect:</SelectLabel>
-
-  //       <SelectTrigger>
-  //         <SelectValue
-  //           class="h-full w-48 cursor-pointer rounded-r-none rounded-l-lg border-none shadow-none transition-colors transition-shadow hover:bg-accent focus:bg-accent focus:ring-0 focus:ring-muted focus:ring-offset-0"
-  //           placeholder="Select dialect..."
-  //         />
-  //       </SelectTrigger>
-
-  //       <SelectContent>
-  //         <For each={collection.items}>
-  //           {item => <SelectItem item={item.value}> {item.label}</SelectItem>}
-  //         </For>
-  //       </SelectContent>
-  //     </Select>
-  //   </Show>
-  // );
 }
