@@ -25,7 +25,10 @@ export default function App() {
                 const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 theme = isDark ? 'dark' : 'light';
               }
-              document.documentElement.style.colorScheme = theme;
+
+              if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+              }
             `}
           />
 

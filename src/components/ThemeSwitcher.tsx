@@ -36,13 +36,13 @@ export function ThemeSwitcher() {
 
     switch (resolvedTheme) {
       case 'light': {
-        root.style.colorScheme = 'light';
+        root.classList.remove('dark');
         setThemeToCookie('light');
 
         break;
       }
       case 'dark': {
-        root.style.colorScheme = 'dark';
+        root.classList.add('dark');
         setThemeToCookie('dark');
 
         break;
@@ -51,7 +51,11 @@ export function ThemeSwitcher() {
         const actualTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
           ? 'dark'
           : 'light';
-        root.style.colorScheme = actualTheme;
+        if (actualTheme === 'dark') {
+          root.classList.add('dark');
+        } else {
+          root.classList.remove('dark');
+        }
         setThemeToCookie('system');
 
         break;
