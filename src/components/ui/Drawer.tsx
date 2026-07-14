@@ -1,8 +1,4 @@
-import {
-  Drawer as DrawerPrimitive,
-  type DrawerRootProps,
-  useDrawerContext,
-} from '@ark-ui/solid';
+import { Drawer as DrawerPrimitive, type DrawerRootProps, useDrawerContext } from '@ark-ui/solid';
 import type { Component, ComponentProps, JSX, ValidComponent } from 'solid-js';
 import { splitProps } from 'solid-js';
 import { Portal } from 'solid-js/web';
@@ -10,12 +6,13 @@ import { Portal } from 'solid-js/web';
 import { cn } from '@/lib/css';
 
 const Drawer = (props: DrawerRootProps) => {
+  const [local, rest] = splitProps(props, ['children']);
+
   return (
     <DrawerPrimitive.Stack>
       <DrawerPrimitive.IndentBackground />
-
       <DrawerPrimitive.Indent>
-        <DrawerPrimitive.Root {...props} />
+        <DrawerPrimitive.Root {...rest}>{local.children}</DrawerPrimitive.Root>
       </DrawerPrimitive.Indent>
     </DrawerPrimitive.Stack>
   );
@@ -61,11 +58,11 @@ const DrawerContent = <T extends ValidComponent = 'div'>(props: DrawerContentPro
       <DrawerPrimitive.Positioner class="fixed inset-0 z-50 flex items-end justify-center">
         <DrawerPrimitive.Content
           class={cn(
-            'fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto transition-transformmd:select-none flex-col rounded-t-[10px] border bg-background',
+            'fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background transition-transform md:select-none',
             props.class,
           )}
           {...rest}>
-          <DrawerPrimitive.Grabber class="flex w-full justify-center p-2 active:cursor-grabbing">
+          <DrawerPrimitive.Grabber class="flex w-full cursor-gray touch-none select-none justify-center p-2 active:cursor-grabbing">
             <DrawerPrimitive.GrabberIndicator class="h-2 w-12 rounded-full bg-content-tertiary/15 transition-colors hover:bg-content-tertiary/25" />
           </DrawerPrimitive.Grabber>
 

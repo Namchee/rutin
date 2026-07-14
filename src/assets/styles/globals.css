@@ -27,7 +27,9 @@
 
   --separator: var(--grey-200);
 
-  --foreground: oklch(from var(--grey-100) calc(l - 0.025) c h);
+  --brand: var(--grey-900);
+  --brand-foreground: var(--grey-50);
+  --brand-hover:   var(--grey-700);
 }
 
 html.dark {
@@ -42,7 +44,9 @@ html.dark {
 
   --separator: var(--grey-800);
 
-  --foreground: oklch(from var(--grey-950) calc(l + 0.025) c h);
+  --brand: var(--grey-100);
+  --brand-foreground: var(--grey-900);
+  --brand-hover:   var(--grey-200);
 }
 
 body {

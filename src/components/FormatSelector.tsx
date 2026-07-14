@@ -77,11 +77,11 @@ function FormatSelectorDrawer() {
                 {([key, value]) => (
                   <div
                     onPointerDown={() => onSelect(key as ScheduleFormat)}
-                    class={cn('flex items-center gap-3 rounded-md p-2', {
+                    class={cn('flex items-center gap-3 rounded-md p-2 hover:bg-background-hover', {
                       'bg-background-hover': format() === key,
                     })}>
                     <div class="flex-1">
-                      <p class="font-medium text-sm">{value.label}</p>
+                      <p class="font-medium text-content-primary text-sm">{value.label}</p>
 
                       <p class="text-content-tertiary text-xs">{value.description}</p>
                     </div>
