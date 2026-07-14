@@ -12,7 +12,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
     <div class="flex min-h-screen bg-background text-content-primary">
       <Sidebar />
 
-      <div class="my-2 mr-2 flex flex-1 flex-col rounded-md border border-separator bg-surface shadow-xs">
+      <div class="my-2 mx-2 md:ml-0 flex flex-1 flex-col rounded-md border border-separator bg-surface shadow-xs">
         <Topbar />
 
         <main class="flex-1">

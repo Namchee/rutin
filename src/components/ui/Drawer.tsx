@@ -1,11 +1,25 @@
-import { Drawer as DrawerPrimitive, useDrawerContext } from '@ark-ui/solid';
+import {
+  Drawer as DrawerPrimitive,
+  type DrawerRootProps,
+  useDrawerContext,
+} from '@ark-ui/solid';
 import type { Component, ComponentProps, JSX, ValidComponent } from 'solid-js';
 import { splitProps } from 'solid-js';
 import { Portal } from 'solid-js/web';
 
 import { cn } from '@/lib/css';
 
-const Drawer = DrawerPrimitive.Root;
+const Drawer = (props: DrawerRootProps) => {
+  return (
+    <DrawerPrimitive.Stack>
+      <DrawerPrimitive.IndentBackground />
+
+      <DrawerPrimitive.Indent>
+        <DrawerPrimitive.Root {...props} />
+      </DrawerPrimitive.Indent>
+    </DrawerPrimitive.Stack>
+  );
+};
 
 const DrawerTrigger = DrawerPrimitive.Trigger;
 
@@ -51,8 +65,8 @@ const DrawerContent = <T extends ValidComponent = 'div'>(props: DrawerContentPro
             props.class,
           )}
           {...rest}>
-          <DrawerPrimitive.Grabber class="flex w-full justify-center p-2">
-            <DrawerPrimitive.GrabberIndicator class="h-2 w-12 bg-content-tertiary/15 hover:bg-content-tertiary/25 transition-colors rounded-full" />
+          <DrawerPrimitive.Grabber class="flex w-full justify-center p-2 active:cursor-grabbing">
+            <DrawerPrimitive.GrabberIndicator class="h-2 w-12 rounded-full bg-content-tertiary/15 transition-colors hover:bg-content-tertiary/25" />
           </DrawerPrimitive.Grabber>
 
           {props.children}

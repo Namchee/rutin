@@ -1,3 +1,24 @@
+/* Common */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
 /* Tooltip */
 @keyframes tooltip-in {
   from {
@@ -68,13 +89,24 @@
   }
 }
 
-[data-scope="drawer"][data-part="content"] {
-  will-change: transform;
+[data-scope="drawer"] {
+  &[data-part="content"] {
+    will-change: transform;
 
-  &[data-state="open"] {
-    animation: drawer-slide-in 500ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    &[data-state="open"] {
+      animation: drawer-slide-in 500ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    }
+    &[data-state="closed"] {
+      animation: drawer-slide-out 500ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    }
   }
-  &[data-state="closed"] {
-    animation: drawer-slide-out 500ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+
+  &[data-part="backdrop"] {
+    &[data-state="open"] {
+      animation: fade-in 250ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    }
+    &[data-state="closed"] {
+      animation: fade-out 250ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    }
   }
 }

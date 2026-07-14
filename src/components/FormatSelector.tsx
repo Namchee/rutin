@@ -81,7 +81,7 @@ function FormatSelectorDrawer() {
                       'bg-background-hover': format() === key,
                     })}>
                     <div class="flex-1">
-                      <p class="font-medium">{value.label}</p>
+                      <p class="font-medium text-sm">{value.label}</p>
 
                       <p class="text-content-tertiary text-xs">{value.description}</p>
                     </div>

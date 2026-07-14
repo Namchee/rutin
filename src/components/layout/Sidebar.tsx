@@ -28,7 +28,7 @@ export function Sidebar() {
   const location = useLocation();
 
   return (
-    <div class="flex h-screen w-60 flex-col gap-4 p-4">
+    <div class="md:flex h-screen w-60 flex-col gap-4 p-4 hidden">
       <div class="flex px-2 py-2">
         <A href="/" class="i-me-logo size-6 shrink-0" />
       </div>
