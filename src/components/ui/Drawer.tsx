@@ -1,22 +1,11 @@
-import { Drawer as DrawerPrimitive, type DrawerRootProps, useDrawerContext } from '@ark-ui/solid';
+import { Drawer as DrawerPrimitive, useDrawerContext } from '@ark-ui/solid';
 import type { Component, ComponentProps, JSX, ValidComponent } from 'solid-js';
 import { splitProps } from 'solid-js';
 import { Portal } from 'solid-js/web';
 
 import { cn } from '@/lib/css';
 
-const Drawer = (props: DrawerRootProps) => {
-  const [local, rest] = splitProps(props, ['children']);
-
-  return (
-    <DrawerPrimitive.Stack>
-      <DrawerPrimitive.IndentBackground />
-      <DrawerPrimitive.Indent>
-        <DrawerPrimitive.Root {...rest}>{local.children}</DrawerPrimitive.Root>
-      </DrawerPrimitive.Indent>
-    </DrawerPrimitive.Stack>
-  );
-};
+const Drawer = DrawerPrimitive.Root;
 
 const DrawerTrigger = DrawerPrimitive.Trigger;
 
@@ -33,10 +22,7 @@ const DrawerOverlay = <T extends ValidComponent = 'div'>(props: DrawerOverlayPro
 
   return (
     <DrawerPrimitive.Backdrop
-      class={cn('fixed inset-0 z-50 transition-colors duration-300', props.class)}
-      style={{
-        'background-color': drawer().open ? 'rgb(0 0 0 / 0.8)' : 'rgb(0 0 0 / 0)',
-      }}
+      class={cn('fixed inset-0 z-50 transition-colors', props.class)}
       {...rest}
     />
   );
