@@ -87,7 +87,7 @@ function FormatSelectorDrawer() {
                     </div>
 
                     <div
-                      class={cn('i-lucide-check size-4', {
+                      class={cn('i-lucide-check size-4 text-content-primary', {
                         invisible: format() !== key,
                       })}
                     />

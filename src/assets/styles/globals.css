@@ -33,7 +33,7 @@
 }
 
 html.dark {
-  --background: var(--grey-900);
+  --background: oklch(from var(--grey-900) calc(l * 0.85) c h);
   --background-hover: var(--grey-800);
   --surface: var(--grey-950);
   --surface-hover: var(--grey-900);
@@ -42,7 +42,7 @@ html.dark {
   --content-secondary: var(--grey-400);
   --content-tertiary: var(--grey-500);
 
-  --separator: var(--grey-800);
+  --separator: oklch(from var(--grey-800) calc(l * 0.85) c h);
 
   --brand: var(--grey-100);
   --brand-foreground: var(--grey-900);

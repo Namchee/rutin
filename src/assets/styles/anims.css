@@ -73,25 +73,32 @@
 /* Drawer */
 @keyframes drawer-slide-in {
   from {
-    transform: translateY(100%);
+    transform: translate3d(0, 100%, 0);
   }
   to {
-    transform: translateY(0);
+    transform: translate3d(var(--drawer-translate-x, 0), var(--drawer-translate-y, 0), 0);
   }
 }
 
 @keyframes drawer-slide-out {
   from {
-    transform: translateY(0);
+    transform: translate3d(var(--drawer-translate-x, 0), var(--drawer-translate-y, 0), 0);
   }
   to {
-    transform: translateY(100%);
+    transform: translate3d(0, 100%, 0);
   }
 }
 
 [data-scope="drawer"] {
   &[data-part="content"] {
-    will-change: transform;
+    will-change: transform, translate;
+
+    transform: translateY(var(--drawer-swipe-movement-y, 0px));
+    transition: transform 500ms cubic-bezier(0.32, 0.72, 0, 1);
+
+    &[data-swiping] {
+      transition-duration: 0ms;
+    }
 
     &[data-state="open"] {
       animation: drawer-slide-in 500ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
