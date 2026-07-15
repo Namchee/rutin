@@ -1,8 +1,8 @@
 import { Title } from '@solidjs/meta';
 
 import { FormatSelector } from '@/components/FormatSelector';
-import { RutinContextProvider } from '@/context';
 import { Button } from '@/components/ui/Button';
+import { RutinContextProvider } from '@/context';
 
 export default function Home() {
   return (
@@ -36,13 +36,22 @@ export default function Home() {
 
                 <div class="flex items-center justify-between border-separator border-t p-4">
                   <div>
-                    <Button size="sm">Normalize</Button>
+                    <Button size="sm" disabled>
+                      <div class="i-lucide-wrench text-brand-foreground" />
+                      Normalize
+                    </Button>
                   </div>
 
                   <div class="flex items-center gap-2">
-                    <Button size="sm" variant="outline">Copy</Button>
+                    <Button size="sm" variant="outline">
+                      <div class="i-lucide-copy" />
+                      Copy
+                    </Button>
 
-                    <Button size="sm" variant="outline">Share</Button>
+                    <Button size="sm" variant="outline">
+                      <div class="i-lucide-save" />
+                      Save
+                    </Button>
                   </div>
                 </div>
               </div>

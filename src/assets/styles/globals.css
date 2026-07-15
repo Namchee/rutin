@@ -29,7 +29,7 @@
 
   --brand: var(--grey-900);
   --brand-foreground: var(--grey-50);
-  --brand-hover:   var(--grey-700);
+  --brand-hover: var(--grey-700);
 }
 
 html.dark {
@@ -46,7 +46,7 @@ html.dark {
 
   --brand: var(--grey-100);
   --brand-foreground: var(--grey-900);
-  --brand-hover:   var(--grey-200);
+  --brand-hover: var(--grey-200);
 }
 
 body {
