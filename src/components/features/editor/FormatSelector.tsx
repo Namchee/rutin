@@ -1,6 +1,13 @@
 import { createListCollection } from '@ark-ui/solid';
 import { createSignal, For, Show } from 'solid-js';
 import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/Drawer';
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -8,11 +15,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/Select';
-import { useRutinContext } from '@/context';
 import { cn } from '@/lib/css';
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
 import type { Format, ScheduleFormat } from '@/types';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from './ui/Drawer';
+import { useEditor } from './context';
 
 // biome-ignore assist/source/useSortedKeys: Need to preserve order
 const Formats: Record<ScheduleFormat, Format> = {
@@ -43,7 +49,7 @@ const Formats: Record<ScheduleFormat, Format> = {
 };
 
 function FormatSelectorDrawer() {
-  const { format, setFormat } = useRutinContext();
+  const { format, setFormat } = useEditor();
 
   const [open, setOpen] = createSignal(false);
 
@@ -55,7 +61,7 @@ function FormatSelectorDrawer() {
 
   return (
     <div class="flex items-center gap-2">
-      <p class="font-medium text-content-tertiary text-sm">Dialect:</p>
+      <p class="font-medium text-content-tertiary text-sm">Dialect</p>
 
       <Drawer open={open()} onOpenChange={d => setOpen(d.open)}>
         <DrawerTrigger class="flex h-8 w-24 items-center justify-between rounded-md border border-separator p-2 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
@@ -103,7 +109,7 @@ function FormatSelectorDrawer() {
 }
 
 export function FormatSelector() {
-  const { format, setFormat } = useRutinContext();
+  const { format, setFormat } = useEditor();
 
   const isNonMobile = useMediaQuery('(min-width: 768px)');
 
@@ -118,7 +124,7 @@ export function FormatSelector() {
         value={[format()]}
         onValueChange={v => setFormat(v.value[0] as unknown as ScheduleFormat)}
         class="flex items-center gap-2">
-        <SelectLabel class="text-content-tertiary">Dialect:</SelectLabel>
+        <SelectLabel class="text-content-tertiary">Dialect</SelectLabel>
 
         <SelectTrigger>
           <SelectValue
