@@ -9,10 +9,10 @@ interface LayoutProps {
 
 export function Layout({ children }: Readonly<LayoutProps>) {
   return (
-    <div class="flex min-h-screen bg-background text-content-primary">
+    <div class="flex min-h-screen bg-background text-content-primary transition-colors">
       <Sidebar />
 
-      <div class="mx-2 my-2 flex flex-1 flex-col rounded-md border border-separator bg-surface shadow-xs md:ml-0">
+      <div class="mx-2 my-2 flex flex-1 flex-col rounded-md border border-separator bg-surface shadow-xs transition-colors md:ml-0">
         <Topbar />
 
         <main class="flex-1">

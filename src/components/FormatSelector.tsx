@@ -43,7 +43,7 @@ const Formats: Record<ScheduleFormat, Format> = {
 };
 
 function FormatSelectorDrawer() {
-  const [{ format }, { setFormat }] = useRutinContext();
+  const { format, setFormat } = useRutinContext();
 
   const [open, setOpen] = createSignal(false);
 
@@ -57,7 +57,7 @@ function FormatSelectorDrawer() {
     <div class="flex items-center gap-2">
       <p class="font-medium text-content-tertiary text-sm">Dialect:</p>
 
-      <Drawer open={open()} onOpenChange={(d) => setOpen(d.open)}>
+      <Drawer open={open()} onOpenChange={d => setOpen(d.open)}>
         <DrawerTrigger class="flex h-8 w-24 items-center justify-between rounded-md border border-separator p-2 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
           <p class="truncate font-medium text-sm">{Formats[format()].label}</p>
 
@@ -103,7 +103,7 @@ function FormatSelectorDrawer() {
 }
 
 export function FormatSelector() {
-  const [{ format }, { setFormat }] = useRutinContext();
+  const { format, setFormat } = useRutinContext();
 
   const isNonMobile = useMediaQuery('(min-width: 768px)');
 

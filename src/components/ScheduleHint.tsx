@@ -3,8 +3,8 @@ import { cn } from '@/lib/css';
 import type { ScheduleFormat } from '@/types';
 
 const Hints = {
+  amazon: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
   'cf-workers': ['Minute', 'Hour', 'Date', 'Month', 'Day'],
-  cloudwatch: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
   node: ['[Second]', 'Minute', 'Hour', 'Date', 'Day'],
   posix: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
   quartz: ['Second', 'Minute', 'Hour', 'Date', 'Month', 'Day', '[Year]'],
@@ -22,7 +22,7 @@ interface ScheduleHintProps {
 
 export function ScheduleHint(props: Readonly<ScheduleHintProps>) {
   return (
-    <div class="flex justify-center gap-2 text-sm">
+    <div class="flex w-full gap-2">
       {Hints[props.format].map((hint, idx) => (
         <button
           type="button"

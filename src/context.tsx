@@ -2,10 +2,18 @@ import { createContext, createSignal, type JSXElement, useContext } from 'solid-
 
 import type { ScheduleFormat } from './types';
 
+const Parser: Record<ScheduleFormat, any> = {};
+
 function createRutinContext() {
   const [format, setFormat] = createSignal<ScheduleFormat>('posix');
+  const [tokens, setTokens] = createSignal<string[]>([]);
 
-  return [{ format }, { setFormat }] as const;
+  return {
+    format,
+    setFormat,
+
+    tokens,
+  } as const;
 }
 
 export const RutinContext = createContext<ReturnType<typeof createRutinContext>>();
