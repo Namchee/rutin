@@ -18,7 +18,7 @@ import {
 import { cn } from '@/lib/css';
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
 import type { Format, ScheduleFormat } from '@/types';
-import { useEditor } from './context';
+import { useEditorContext } from './context';
 
 // biome-ignore assist/source/useSortedKeys: Need to preserve order
 const Formats: Record<ScheduleFormat, Format> = {
@@ -49,7 +49,7 @@ const Formats: Record<ScheduleFormat, Format> = {
 };
 
 function FormatSelectorDrawer() {
-  const { format, setFormat } = useEditor();
+  const { format, setFormat } = useEditorContext();
 
   const [open, setOpen] = createSignal(false);
 
@@ -109,7 +109,7 @@ function FormatSelectorDrawer() {
 }
 
 export function FormatSelector() {
-  const { format, setFormat } = useEditor();
+  const { format, setFormat } = useEditorContext();
 
   const isNonMobile = useMediaQuery('(min-width: 768px)');
 

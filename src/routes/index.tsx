@@ -1,6 +1,6 @@
 import { Title } from '@solidjs/meta';
 
-import { EditorContext } from '@/components/features/editor/context';
+import { EditorContextProvider } from '@/components/features/editor/context';
 
 import { ScheduleEditor } from '@/components/features/editor/ScheduleEditor';
 
@@ -9,7 +9,7 @@ export default function Home() {
     <>
       <Title>Editor | Rutin</Title>
 
-      <EditorContext>
+      <EditorContextProvider>
         <div class="flex flex-col gap-8">
           <div class="flex flex-col gap-0">
             <h1 class="font-semibold text-2xl leading-relaxed">Editor</h1>
@@ -52,7 +52,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </EditorContext>
+      </EditorContextProvider>
     </>
   );
 }

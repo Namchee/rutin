@@ -3,11 +3,13 @@ import { createContext, createSignal, type JSXElement, useContext } from 'solid-
 import type { ScheduleFormat } from '@/types';
 
 export type ScheduleState = 'valid' | 'invalid' | 'incomplete';
+export type ScheduleType = 'macro' | 'normal';
 
 function createEditorContext() {
   const [format, setFormat] = createSignal<ScheduleFormat>('posix');
 
-  const [state, setState] = createSignal<ScheduleState>('valid');
+  const [state, setState] = createSignal<ScheduleState>('invalid');
+  const [type, setType] = createSignal<ScheduleType>('normal');
   const [tokens, setTokens] = createSignal<string[]>([]);
 
   return {
@@ -28,10 +30,10 @@ export function EditorContextProvider(props: { children: JSXElement }) {
   );
 }
 
-export function useEditor() {
+export function useEditorContext() {
   const store = useContext(EditorContext);
   if (!store) {
-    throw new Error('useEditor must be used within EditorContextProvider');
+    throw new Error('useEditorContext must be used within EditorContextProvider');
   }
 
   return store;
