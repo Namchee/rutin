@@ -4,6 +4,8 @@ import { EditorContextProvider } from '@/components/features/editor/context';
 
 import { ScheduleEditor } from '@/components/features/editor/ScheduleEditor';
 import { ScheduleExecutions } from '@/components/features/editor/ScheduleExecutions';
+import { ScheduleMacro } from '@/components/features/editor/ScheduleMacro';
+import { ScheduleSyntax } from '@/components/features/editor/ScheduleSyntax';
 
 export default function Home() {
   return (
@@ -27,17 +29,9 @@ export default function Home() {
             </div>
 
             <div class="flex flex-col gap-4">
-              <div class="rounded-lg border border-separator">
-                <div class="border-separator border-b p-4">
-                  <p class="font-medium text-content-tertiary text-sm">Field References</p>
-                </div>
-              </div>
+              <ScheduleSyntax />
 
-              <div class="rounded-lg border border-separator">
-                <div class="border-separator border-b p-4">
-                  <p class="font-medium text-content-tertiary text-sm">Macros</p>
-                </div>
-              </div>
+              <ScheduleMacro />
             </div>
           </div>
         </div>

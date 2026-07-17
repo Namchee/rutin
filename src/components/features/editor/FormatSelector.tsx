@@ -77,7 +77,7 @@ function FormatSelectorDrawer() {
         <DrawerContent>
           <div class="px-2 py-4">
             <DrawerHeader class="px-2 pt-0 pb-2 text-left">
-              <DrawerTitle class="font-mono text-content-tertiary text-xs uppercase">
+              <DrawerTitle class="font-mono text-content-secondary text-xs uppercase">
                 Dialect
               </DrawerTitle>
             </DrawerHeader>
@@ -128,7 +128,7 @@ export function FormatSelector() {
         value={[format()]}
         onValueChange={v => setFormat(v.value[0] as unknown as ScheduleFormat)}
         class="flex items-center gap-2">
-        <SelectLabel class="text-content-tertiary">Dialect</SelectLabel>
+        <SelectLabel class="text-content-secondary">Dialect</SelectLabel>
 
         <SelectTrigger>
           <SelectValue

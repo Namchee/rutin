@@ -22,7 +22,7 @@ export function ScheduleExecutions() {
   return (
     <div class="flex flex-col overflow-hidden rounded-lg border border-separator">
       <div class="border-separator border-b p-4">
-        <p class="font-medium text-content-tertiary text-sm">Next executions</p>
+        <p class="font-medium text-content-secondary text-sm">Next executions</p>
       </div>
 
       <div class="min-h-48 flex-1">

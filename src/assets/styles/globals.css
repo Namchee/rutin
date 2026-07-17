@@ -23,7 +23,7 @@
 
   --content-primary: var(--grey-900);
   --content-secondary: var(--grey-600);
-  --content-tertiary: var(--grey-400);
+  --content-tertiary: oklch(from var(--grey-500) calc(l * 1.15) c h);
 
   --separator: var(--grey-200);
 

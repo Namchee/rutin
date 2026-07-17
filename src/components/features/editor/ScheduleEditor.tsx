@@ -14,7 +14,7 @@ export function ScheduleEditor() {
 
   return (
     <div class="flex flex-col rounded-lg border border-separator transition-colors">
-      <div class="flex items-center justify-between border-separator border-b p-4">
+      <div class='flex items-center justify-between border-separator border-b p-4 transition-colors'>
         <FormatSelector />
 
         <Show when={state() !== 'incomplete'}>
