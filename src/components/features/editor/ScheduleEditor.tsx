@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/css';
 import { useEditorContext } from './context';
+
 import { FormatSelector } from './FormatSelector';
 import { ScheduleDescriptor } from './ScheduleDescriptor';
 import { ScheduleHint } from './ScheduleHint';
@@ -12,7 +13,7 @@ export function ScheduleEditor() {
   const { state } = useEditorContext();
 
   return (
-    <div class="flex flex-col rounded-lg border border-separator">
+    <div class="flex flex-col rounded-lg border border-separator transition-colors">
       <div class="flex items-center justify-between border-separator border-b p-4">
         <FormatSelector />
 
@@ -37,11 +38,11 @@ export function ScheduleEditor() {
         />
 
         <ScheduleHint />
-
-        <ScheduleDescriptor />
       </div>
 
-      <div class="flex items-center justify-between border-separator border-t p-4">
+      <ScheduleDescriptor />
+
+      <div class="flex items-center justify-between border-separator border-t p-4 transition-colors">
         <div>
           <Button size="sm" disabled>
             <div class="i-lucide-wrench text-brand-foreground" />

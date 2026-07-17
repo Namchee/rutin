@@ -1,5 +1,6 @@
 import { createListCollection } from '@ark-ui/solid';
 import { createSignal, For, Show } from 'solid-js';
+
 import {
   Drawer,
   DrawerContent,
@@ -15,9 +16,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/Select';
+
 import { cn } from '@/lib/css';
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
+
 import type { Format, ScheduleFormat } from '@/types';
+
 import { useEditorContext } from './context';
 
 // biome-ignore assist/source/useSortedKeys: Need to preserve order

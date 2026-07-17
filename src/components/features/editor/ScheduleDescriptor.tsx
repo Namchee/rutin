@@ -1,9 +1,31 @@
-export function ScheduleDescriptor() {
-  return (
-    <div class="flex flex-col gap-2 rounded-lg border border-separator bg-background p-4 text-sm">
-      <p class="font-semibold text-content-tertiary text-xs uppercase">In plain English</p>
+import { cn } from '@/lib/css';
 
-      <p class="font-medium">Every 15 minutes, between Monday - Friday</p>
+import { type ScheduleState, useEditorContext } from './context';
+
+const ScheduleLabel: Record<Exclude<ScheduleState, 'valid'>, string> = {
+  incomplete: 'Schedule is not complete.',
+  invalid: 'There are error(s) in your schedule syntax.',
+};
+
+export function ScheduleDescriptor() {
+  const { state } = useEditorContext();
+
+  const actualState = state();
+
+  return (
+    <div class="flex items-start gap-2 border-separator border-t p-4 text-sm transition-colors">
+      <div class="i-lucide-speech mt-[1px] size-4 shrink-0 text-content-tertiary" />
+
+      <div class="flex flex-col gap-2">
+        <p class="font-semibold text-content-secondary text-xs uppercase">In plain English</p>
+
+        <p class={cn("leading-relaxed", {
+          "font-medium text-content-secondary": actualState === 'valid',
+          "text-content-tertiary": actualState !== 'valid',
+        })}>
+          {actualState !== 'valid' ? ScheduleLabel[actualState] : 'Yes'}
+        </p>
+      </div>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { Title } from '@solidjs/meta';
 import { EditorContextProvider } from '@/components/features/editor/context';
 
 import { ScheduleEditor } from '@/components/features/editor/ScheduleEditor';
+import { ScheduleExecutions } from '@/components/features/editor/ScheduleExecutions';
 
 export default function Home() {
   return (
@@ -22,19 +23,7 @@ export default function Home() {
             <div class="flex flex-col gap-4">
               <ScheduleEditor />
 
-              <div class="flex flex-col overflow-hidden rounded-lg border border-separator">
-                <div class="border-separator border-b p-4">
-                  <p class="font-medium text-content-tertiary text-sm">Next executions</p>
-                </div>
-
-                <div class="min-h-40 flex-1"></div>
-
-                <div class="border-separator border-t bg-background p-2 dark:bg-surface">
-                  <p class="text-center text-content-tertiary text-xs">
-                    Scroll for more executions
-                  </p>
-                </div>
-              </div>
+              <ScheduleExecutions />
             </div>
 
             <div class="flex flex-col gap-4">

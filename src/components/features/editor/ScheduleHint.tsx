@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/Button';
 import type { ScheduleFormat } from '@/types';
+
 import { useEditorContext } from './context';
 
 const Hints: Record<ScheduleFormat, string[]> = {
@@ -20,8 +21,9 @@ export function ScheduleHint() {
         <Button
           variant="ghost"
           size="sm"
-          class="flex h-fit flex-1 flex-col items-center justify-center gap-0 py-1 font-mono font-normal text-content-tertiary">
-          <span class="font-medium font-mono text-content-primary text-lg">30</span>
+          class="flex h-fit flex-1 flex-col items-center justify-center gap-0 py-1.5 font-mono font-normal text-content-tertiary">
+          <span class="font-medium font-mono text-content-primary text-lg leading-normal">30</span>
+
           {hint}
         </Button>
       ))}
