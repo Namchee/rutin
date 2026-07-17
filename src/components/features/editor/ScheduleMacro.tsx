@@ -25,5 +25,9 @@ export function ScheduleMacro() {
     <div class="border-separator border-b p-4">
       <p class="font-medium text-content-secondary text-sm">Macros</p>
     </div>
+
+    <div class="p-4">
+      Kiryu-chan
+    </div>
   </div>
 }
