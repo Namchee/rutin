@@ -1,4 +1,4 @@
-import { For, Show } from 'solid-js';
+import { createEffect, createSignal, For, Show } from 'solid-js';
 import { Code } from '@/components/ui/Code';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
 import type { ScheduleFormat } from '@/types';
@@ -103,10 +103,13 @@ const Advanced = {
 
 export function ScheduleSyntax() {
   const { format } = useEditorContext();
+  const [advancedForms, setAdvancedForms] = createSignal<[string, { label: string; tooltip: string; }][]>([]);
 
-  const advancedFilters = Object.entries(Advanced).filter(syntax =>
-    Operators[format()].some(f => syntax[0].includes(f)),
-  );
+  createEffect(() => {
+    setAdvancedForms(Object.entries(Advanced).filter(syntax =>
+      Operators[format()].some(f => syntax[0].includes(f)),
+    ));
+  });
 
   return (
     <div class="rounded-lg border border-separator transition-colors">
@@ -123,7 +126,7 @@ export function ScheduleSyntax() {
           {Operators[format()].map(op => (
             <Tooltip>
               <TooltipTrigger>
-                <Code>{op}</Code>
+                <Code class='px-2 py-1'>{op}</Code>
               </TooltipTrigger>
 
               <TooltipContent>{Labels[op]}</TooltipContent>
@@ -149,20 +152,20 @@ export function ScheduleSyntax() {
               </Show>
             </div>
 
-            <p class="font-mono text-content-tertiary">{value.range.join(', ')}</p>
+            <p class="font-mono text-content-tertiary text-xs">{value.range.join(', ')}</p>
           </div>
         ))}
       </div>
 
-      <Show when={advancedFilters.length > 0}>
+      <Show when={advancedForms().length > 0}>
         <div class="flex flex-col gap-2 border-separator border-t p-4">
           <p class="font-medium text-content-secondary text-xs uppercase">Advanced Forms</p>
 
           <div class="flex flex-wrap items-center gap-2">
-            <For each={advancedFilters}>
+            <For each={advancedForms()}>
               {([k, v]) => {
                 return (
-                  <div class='flex w-full items-center justify-between gap-2 text-sm'>
+                  <div class="flex w-full items-center justify-between gap-2 text-sm">
                     <Tooltip>
                       <TooltipTrigger>
                         <Code class="block">{k}</Code>
@@ -173,7 +176,7 @@ export function ScheduleSyntax() {
                       </Show>
                     </Tooltip>
 
-                    <p class="font-mono text-content-tertiary text-sm">{v.label}</p>
+                    <p class="font-mono text-content-tertiary text-xs">{v.label}</p>
                   </div>
                 );
               }}
