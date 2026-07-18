@@ -18,7 +18,7 @@ const Macros: Record<ScheduleFormat, Record<string, Macro>> = {
     '@hourly': { alias: '0 * * * *', label: 'Every hour' },
     '@midnight': { alias: '0 0 * * *', label: 'Every day on midnight' },
     '@monthly': { alias: '0 0 1 * *', label: 'Every month' },
-    '@reboot': { alias: '@reboot', label: 'After reboot' },
+    '@reboot': { alias: '', label: 'After reboot' },
     '@weekly': { alias: '0 0 * * 0', label: 'Every week' },
     '@yearly': { alias: '0 0 1 1 *', label: 'Every year' },
   },
@@ -39,7 +39,7 @@ const Macros: Record<ScheduleFormat, Record<string, Macro>> = {
 function EmptyMacro() {
   return (
     <div class="grid min-h-24 place-items-center p-4 text-content-tertiary text-sm">
-      This format doesn't support macro syntax.
+      This format doesn't support macro syntax
     </div>
   );
 }
@@ -54,24 +54,30 @@ export function ScheduleMacro() {
 
   return (
     <div class="rounded-lg border border-separator transition-colors">
-      <div class="border-separator border-b p-4 transition-colors">
+      <div class="flex items-center justify-between border-separator border-b p-4 transition-colors">
         <p class="font-medium text-content-secondary text-sm">Macros</p>
+
+        <p class="text-content-tertiary text-xs">Normalize expands these</p>
       </div>
 
       <div class="flex flex-col">
         <Show when={Object.keys(macro()).length > 0} fallback={<EmptyMacro />}>
           <For each={Object.entries(macro())}>
             {([key, macro]) => (
-              <div class="flex flex-col gap-1 px-4 py-3">
-                <div class="flex items-center gap-4">
-                  <p class="min-w-24 font-mono text-content-primary text-xs">{key}</p>
+              <div class="flex items-center justify-between gap-1 px-4 py-3 text-xs leading-snug">
+                <Tooltip positioning={{ placement: 'left' }}>
+                  <TooltipTrigger class='font-medium font-mono text-content-primary'>
+                    {key}
+                  </TooltipTrigger>
 
-                  <div class="i-lucide-arrow-right size-3 text-content-tertiary"></div>
+                  <Show when={macro.alias.length > 0}>
+                    <TooltipContent>
+                      Equivalent to <span class="ml-1 font-mono">{macro.alias}</span>
+                    </TooltipContent>
+                  </Show>
+                </Tooltip>
 
-                  <p class='font-mono text-content-secondary text-xs'>{macro.alias}</p>
-                </div>
-
-                <p class="text-content-tertiary text-xs">{macro.label}</p>
+                <p class="text-content-tertiary">{macro.label}</p>
               </div>
             )}
           </For>

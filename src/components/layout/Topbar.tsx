@@ -7,7 +7,7 @@ export function Topbar() {
   return (
     <div class='sticky top-0 z-10 flex h-14 items-center justify-between rounded-t-md border-separator border-b bg-surface p-4'>
       <div>
-        <Tooltip>
+        <Tooltip positioning={{ placement: 'right' }}>
           <TooltipTrigger class="group grid size-6 cursor-pointer place-items-center rounded bg-surface transition-colors hover:bg-surface-hover">
             <div class="i-lucide-panel-right size-4 bg-content-secondary transition-colors group-hover:bg-content-primary" />
           </TooltipTrigger>

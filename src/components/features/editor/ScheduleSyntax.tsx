@@ -122,9 +122,9 @@ function getForms(format: ScheduleFormat) {
 
 export function ScheduleSyntax() {
   const { format } = useEditorContext();
-  const [advancedForms, setAdvancedForms] = createSignal<
-    [string, AdvancedForm][]
-  >(getForms(format()));
+  const [advancedForms, setAdvancedForms] = createSignal<[string, AdvancedForm][]>(
+    getForms(format()),
+  );
 
   createEffect(() => {
     setAdvancedForms(getForms(format()));
@@ -143,7 +143,7 @@ export function ScheduleSyntax() {
 
         <div class="flex flex-wrap items-center gap-2">
           {Operators[format()].map(op => (
-            <Tooltip>
+            <Tooltip positioning={{ placement: 'top' }}>
               <TooltipTrigger>
                 <Code class="px-2 py-1">{op}</Code>
               </TooltipTrigger>
@@ -156,8 +156,8 @@ export function ScheduleSyntax() {
 
       <div>
         {Object.entries(Range[format()]).map(([key, value]) => (
-          <div class="flex items-center justify-between px-4 py-3 text-sm transition-colors hover:bg-background">
-            <div class="flex items-center gap-1 font-medium text-content-secondary">
+          <div class='flex items-center justify-between px-4 py-3 text-xs leading-snug transition-colors hover:bg-background'>
+            <div class="flex items-center gap-1 font-medium text-content-primary">
               {key.charAt(0).toUpperCase() + key.slice(1)}
 
               <Show when={value.optional}>
@@ -171,7 +171,7 @@ export function ScheduleSyntax() {
               </Show>
             </div>
 
-            <p class="font-mono text-content-tertiary text-xs">{value.range.join(', ')}</p>
+            <p class="font-mono text-content-tertiary">{value.range.join(', ')}</p>
           </div>
         ))}
       </div>
@@ -184,7 +184,7 @@ export function ScheduleSyntax() {
             <For each={advancedForms()}>
               {([k, v]) => {
                 return (
-                  <div class="flex w-full items-center justify-between gap-2 text-sm">
+                  <div class="flex w-full items-center justify-between gap-2">
                     <Tooltip positioning={{ placement: 'left' }}>
                       <TooltipTrigger>
                         <Code class="block w-10">{k}</Code>
