@@ -23,7 +23,7 @@
 
   --content-primary: var(--grey-900);
   --content-secondary: var(--grey-600);
-  --content-tertiary: oklch(from var(--grey-500) calc(l * 1.15) c h);
+  --content-tertiary: oklch(from var(--grey-400) calc(l * 0.95) c h);
 
   --separator: var(--grey-200);
 
@@ -39,7 +39,7 @@ html.dark {
   --surface-hover: var(--grey-900);
 
   --content-primary: var(--grey-50);
-  --content-secondary: var(--grey-400);
+  --content-secondary: var(--grey-300);
   --content-tertiary: var(--grey-500);
 
   --separator: oklch(from var(--grey-800) calc(l * 0.85) c h);
