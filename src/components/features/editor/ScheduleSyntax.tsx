@@ -24,25 +24,25 @@ const Operators = {
 const Range: Record<ScheduleFormat, Record<string, FieldRange>> = {
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   amazon: {
-    minutes: { optional: false, range: ['0-59'] },
-    hours: { optional: false, range: ['0-23'] },
+    minute: { optional: false, range: ['0-59'] },
+    hour: { optional: false, range: ['0-23'] },
     date: { optional: false, range: ['1-31'] },
     month: { optional: false, range: ['1-12'] },
     day: { optional: false, range: ['1-7', 'SUN-SAT'] },
   },
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   'cf-workers': {
-    minutes: { optional: false, range: ['0-59'] },
-    hours: { optional: false, range: ['0-23'] },
+    minute: { optional: false, range: ['0-59'] },
+    hour: { optional: false, range: ['0-23'] },
     date: { optional: false, range: ['1-31'] },
     month: { optional: false, range: ['1-12'] },
     day: { optional: false, range: ['1-7', 'SUN-SAT'] },
   },
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   node: {
-    seconds: { optional: true, range: ['0-59'] },
-    minutes: { optional: false, range: ['0-59'] },
-    hours: { optional: false, range: ['0-23'] },
+    second: { optional: true, range: ['0-59'] },
+    minute: { optional: false, range: ['0-59'] },
+    hour: { optional: false, range: ['0-23'] },
     date: { optional: false, range: ['1-31'] },
     month: { optional: false, range: ['1-12'] },
     day: { optional: false, range: ['0-6', 'SUN-SAT'] },
@@ -50,16 +50,16 @@ const Range: Record<ScheduleFormat, Record<string, FieldRange>> = {
   },
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   posix: {
-    minutes: { optional: false, range: ['0-59'] },
-    hours: { optional: false, range: ['0-23'] },
+    minute: { optional: false, range: ['0-59'] },
+    hour: { optional: false, range: ['0-23'] },
     date: { optional: false, range: ['1-31'] },
     month: { optional: false, range: ['1-12'] },
     day: { optional: false, range: ['0-6', 'SUN-SAT'] },
   },
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   quartz: {
-    seconds: { optional: true, range: ['0-59'] },
-    minutes: { optional: false, range: ['0-59'] },
+    second: { optional: true, range: ['0-59'] },
+    minute: { optional: false, range: ['0-59'] },
     hours: { optional: false, range: ['0-23'] },
     date: { optional: false, range: ['1-31'] },
     month: { optional: false, range: ['1-12'] },
@@ -86,37 +86,48 @@ const Labels = {
   W: 'Nearest weekday',
 };
 
-const Advanced = {
+interface AdvancedForm {
+  label: string;
+  example: string;
+}
+
+const AdvancedForms: Record<string, AdvancedForm> = {
   'L-x': {
+    example: 'L-3 = 3 days before month end',
     label: 'x days before the last day',
-    tooltip: 'L-3 = 3 days before month end',
   },
   LW: {
+    example: '',
     label: 'Last weekdays of month',
-    tooltip: '',
   },
   'x#y': {
+    example: '6#3 = 3rd Friday',
     label: 'yth weekday x of the month',
-    tooltip: '6#3 = 3rd Friday',
   },
   xL: {
+    example: '6L = Last Friday',
     label: 'xth weekday of the month',
-    tooltip: '6L = Last Friday',
   },
   xW: {
+    example: '12W = Nearest weekday to 12th of the month',
     label: 'Nearest weekday to xth',
-    tooltip: '12W = Nearest weekday to 12th of the month',
   },
 };
 
+function getForms(format: ScheduleFormat) {
+  return Object.entries(AdvancedForms).filter(syntax =>
+    Operators[format].some(f => syntax[0].includes(f)),
+  );
+}
+
 export function ScheduleSyntax() {
   const { format } = useEditorContext();
-  const [advancedForms, setAdvancedForms] = createSignal<[string, { label: string; tooltip: string; }][]>([]);
+  const [advancedForms, setAdvancedForms] = createSignal<
+    [string, AdvancedForm][]
+  >(getForms(format()));
 
   createEffect(() => {
-    setAdvancedForms(Object.entries(Advanced).filter(syntax =>
-      Operators[format()].some(f => syntax[0].includes(f)),
-    ));
+    setAdvancedForms(getForms(format()));
   });
 
   return (
@@ -128,13 +139,13 @@ export function ScheduleSyntax() {
       </div>
 
       <div class="flex flex-col gap-2 border-separator border-b p-4 transition-colors">
-        <p class="font-medium text-content-secondary text-xs uppercase">Operators</p>
+        <p class="font-medium text-content-tertiary text-xs uppercase">Operators</p>
 
         <div class="flex flex-wrap items-center gap-2">
           {Operators[format()].map(op => (
             <Tooltip>
               <TooltipTrigger>
-                <Code class='px-2 py-1'>{op}</Code>
+                <Code class="px-2 py-1">{op}</Code>
               </TooltipTrigger>
 
               <TooltipContent>{Labels[op]}</TooltipContent>
@@ -179,8 +190,8 @@ export function ScheduleSyntax() {
                         <Code class="block w-10">{k}</Code>
                       </TooltipTrigger>
 
-                      <Show when={v.tooltip.length > 0}>
-                        <TooltipContent>{v.tooltip}</TooltipContent>
+                      <Show when={v.example.length > 0}>
+                        <TooltipContent>{v.example}</TooltipContent>
                       </Show>
                     </Tooltip>
 

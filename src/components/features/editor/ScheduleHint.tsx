@@ -16,7 +16,7 @@ export function ScheduleHint() {
   const { tokens, format } = useEditorContext();
 
   return (
-    <div class='flex w-full max-w-full gap-2 overflow-scroll'>
+    <div class='no-scrollbar flex w-full max-w-full gap-2 overflow-x-auto'>
       {Hints[format()].map(hint => (
         <Button
           variant="ghost"
