@@ -38,7 +38,7 @@ const Macros: Record<ScheduleFormat, Record<string, Macro>> = {
 
 function EmptyMacro() {
   return (
-    <div class="grid min-h-24 place-items-center p-4 text-content-tertiary text-sm">
+    <div class="grid min-h-24 place-items-center p-4 text-content-tertiary text-xs">
       This format doesn't support macro syntax
     </div>
   );

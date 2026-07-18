@@ -177,8 +177,8 @@ export function ScheduleSyntax() {
       </div>
 
       <Show when={advancedForms().length > 0}>
-        <div class="flex flex-col gap-2 border-separator border-t p-4">
-          <p class="font-medium text-content-secondary text-xs uppercase">Advanced Forms</p>
+        <div class="flex flex-col gap-2 border-separator border-t p-4 transition-colors">
+          <p class="font-medium text-content-tertiary text-xs uppercase">Advanced Forms</p>
 
           <div class="flex flex-wrap items-center gap-2">
             <For each={advancedForms()}>
@@ -195,7 +195,7 @@ export function ScheduleSyntax() {
                       </Show>
                     </Tooltip>
 
-                    <p class="font-mono text-content-tertiary text-xs">{v.label}</p>
+                    <p class="text-content-tertiary text-xs">{v.label}</p>
                   </div>
                 );
               }}
