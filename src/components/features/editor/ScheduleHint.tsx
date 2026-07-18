@@ -16,12 +16,12 @@ export function ScheduleHint() {
   const { tokens, format } = useEditorContext();
 
   return (
-    <div class='no-scrollbar flex w-full max-w-full gap-2 overflow-x-auto'>
+    <div class="no-scrollbar flex w-full max-w-full gap-2 overflow-x-auto -p-4">
       {Hints[format()].map(hint => (
         <Button
           variant="ghost"
           size="sm"
-          class="flex h-fit flex-1 flex-col items-center justify-center gap-0 py-1.5 font-mono font-normal text-content-tertiary">
+          class='flex h-fit min-w-20 flex-1 flex-col items-center justify-center gap-0 py-1.5 font-mono font-normal text-content-tertiary'>
           <span class="font-medium font-mono text-content-primary text-lg leading-normal">30</span>
 
           {hint}

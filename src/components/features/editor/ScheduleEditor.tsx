@@ -14,7 +14,7 @@ export function ScheduleEditor() {
 
   return (
     <div class="flex flex-col rounded-lg border border-separator transition-colors">
-      <div class='flex items-center justify-between border-separator border-b p-4 transition-colors'>
+      <div class="flex items-center justify-between border-separator border-b p-4 transition-colors">
         <FormatSelector />
 
         <Show when={state() !== 'incomplete'}>
@@ -31,13 +31,19 @@ export function ScheduleEditor() {
         </Show>
       </div>
 
-      <div class="flex flex-1 flex-col gap-2 p-4">
-        <input
-          type="text"
-          class="w-full rounded-lg border border-separator bg-background text-center font-mono text-2xl"
-        />
+      <div class="flex flex-1 flex-col gap-2">
+        <div class='px-4 pt-4'>
+          <input
+            type="text"
+            class="w-full rounded-lg border border-separator bg-background text-center font-mono text-2xl"
+          />
+        </div>
 
-        <ScheduleHint />
+        <div class="px-4 pb-4">
+          <ScheduleHint />
+
+        </div>
+
       </div>
 
       <ScheduleDescriptor />
