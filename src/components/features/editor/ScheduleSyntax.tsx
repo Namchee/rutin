@@ -1,8 +1,16 @@
 import { createEffect, createSignal, For, Show } from 'solid-js';
+
 import { Code } from '@/components/ui/Code';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
+
 import type { ScheduleFormat } from '@/types';
+
 import { useEditorContext } from './context';
+
+interface FieldRange {
+  optional: boolean;
+  range: string[];
+}
 
 const Operators = {
   amazon: ['-', ',', '*', '/', '?', 'L', 'W', '#'],
@@ -13,7 +21,7 @@ const Operators = {
   systemd: [',', '..', '*'],
 } as const;
 
-const Range: Record<ScheduleFormat, Record<string, { optional: boolean; range: string[] }>> = {
+const Range: Record<ScheduleFormat, Record<string, FieldRange>> = {
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   amazon: {
     minutes: { optional: false, range: ['0-59'] },
@@ -166,9 +174,9 @@ export function ScheduleSyntax() {
               {([k, v]) => {
                 return (
                   <div class="flex w-full items-center justify-between gap-2 text-sm">
-                    <Tooltip>
+                    <Tooltip positioning={{ placement: 'left' }}>
                       <TooltipTrigger>
-                        <Code class="block">{k}</Code>
+                        <Code class="block w-10">{k}</Code>
                       </TooltipTrigger>
 
                       <Show when={v.tooltip.length > 0}>

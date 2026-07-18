@@ -1,3 +1,5 @@
+import { useEditorContext } from "./context";
+
 const Macros = {
   '@annually': 'Every year (macro)',
   '@daily': 'Every day (macro)',
@@ -21,6 +23,8 @@ const SystemdMacros = {
 };
 
 export function ScheduleMacro() {
+  const { format } = useEditorContext();
+
   return <div class="rounded-lg border border-separator">
     <div class="border-separator border-b p-4">
       <p class="font-medium text-content-secondary text-sm">Macros</p>

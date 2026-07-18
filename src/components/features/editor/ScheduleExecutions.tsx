@@ -4,13 +4,11 @@ import { useEditorContext } from './context';
 
 function ExecutionsEmpty() {
   return (
-    <div class="grid h-full w-full place-items-center">
-      <div class='grid place-items-center gap-4 text-content-tertiary text-sm'>
+    <div class="grid h-full w-full place-items-center p-4">
+      <div class='grid place-items-center gap-4 text-center text-content-tertiary text-sm'>
         <div class="i-lucide-clock-fading size-8" />
 
-        <p class="max-w-md">
-          Executions will appear here once the schedule syntax is valid.
-        </p>
+        <p class="max-w-md">Executions will appear here once the schedule syntax is valid.</p>
       </div>
     </div>
   );
