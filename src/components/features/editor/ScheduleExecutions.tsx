@@ -5,7 +5,7 @@ import { useEditorContext } from './context';
 function ExecutionsEmpty() {
   return (
     <div class="grid h-full w-full place-items-center p-4">
-      <div class='grid place-items-center gap-4 text-center text-content-tertiary text-sm'>
+      <div class="grid place-items-center gap-4 text-center text-content-tertiary text-sm">
         <div class="i-lucide-clock-fading size-8" />
 
         <p class="max-w-md">Executions will appear here once the schedule syntax is valid.</p>
@@ -18,8 +18,8 @@ export function ScheduleExecutions() {
   const { state } = useEditorContext();
 
   return (
-    <div class="flex flex-col overflow-hidden rounded-lg border border-separator">
-      <div class="border-separator border-b p-4">
+    <div class="flex flex-col overflow-hidden rounded-lg border border-separator transition-colors">
+      <div class="border-separator border-b p-4 transition-colors">
         <p class="font-medium text-content-secondary text-sm">Next executions</p>
       </div>
 
@@ -29,7 +29,7 @@ export function ScheduleExecutions() {
         </Show>
       </div>
 
-      <div class="border-separator border-t bg-background p-2 dark:bg-surface">
+      <div class='border-separator border-t bg-background p-2 transition-colors dark:bg-surface'>
         <p class="text-center text-content-tertiary text-xs">Scroll for more executions</p>
       </div>
     </div>

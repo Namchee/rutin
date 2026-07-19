@@ -1,6 +1,6 @@
-import { Drawer as DrawerPrimitive } from '@ark-ui/solid';
+import { Drawer as DrawerPrimitive, useDrawer, useDrawerContext } from '@ark-ui/solid';
 import type { Component, ComponentProps, JSX, ValidComponent } from 'solid-js';
-import { splitProps } from 'solid-js';
+import { Show, splitProps } from 'solid-js';
 import { Portal } from 'solid-js/web';
 
 import { cn } from '@/lib/css';
@@ -40,20 +40,33 @@ const DrawerContent = <T extends ValidComponent = 'div'>(props: DrawerContentPro
     <Portal>
       <DrawerOverlay />
 
-      <DrawerPrimitive.Positioner class="fixed inset-0 z-50 flex items-end justify-center">
-        <DrawerPrimitive.Content
-          class={cn(
-            'fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background transition-transform md:select-none',
-            props.class,
-          )}
-          {...rest}>
-          <DrawerPrimitive.Grabber class="flex w-full cursor-gray touch-none select-none justify-center p-2 active:cursor-grabbing">
-            <DrawerPrimitive.GrabberIndicator class="h-2 w-12 rounded-full bg-content-tertiary/15 transition-colors hover:bg-content-tertiary/25" />
-          </DrawerPrimitive.Grabber>
+      <DrawerPrimitive.Context>
+        {api => {
+          const isLeft = api().swipeDirection === 'start';
 
-          {props.children}
-        </DrawerPrimitive.Content>
-      </DrawerPrimitive.Positioner>
+          return (
+            <DrawerPrimitive.Positioner class="fixed inset-0 z-50 flex items-end justify-center">
+              <DrawerPrimitive.Content
+                class={cn(
+                  'fixed inset-x-0 z-50 flex flex-col border bg-background transition-transform md:select-none',
+                  props.class,
+                  {
+                    'bottom-0 mt-24 h-auto rounded-t-[10px]': !isLeft, 'left-0 h-screen rounded-r-[10px]': isLeft,
+                  },
+                )}
+                {...rest}>
+                <Show when={!isLeft}>
+                  <DrawerPrimitive.Grabber class="flex w-full cursor-gray touch-none select-none justify-center p-2 active:cursor-grabbing">
+                    <DrawerPrimitive.GrabberIndicator class="h-2 w-12 rounded-full bg-content-tertiary/15 transition-colors hover:bg-content-tertiary/25" />
+                  </DrawerPrimitive.Grabber>
+                </Show>
+
+                {props.children}
+              </DrawerPrimitive.Content>
+            </DrawerPrimitive.Positioner>
+          );
+        }}
+      </DrawerPrimitive.Context>
     </Portal>
   );
 };
