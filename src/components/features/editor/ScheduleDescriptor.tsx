@@ -20,10 +20,10 @@ export function ScheduleDescriptor() {
         <p class="font-semibold text-content-secondary text-xs uppercase">In plain English</p>
 
         <p class={cn("leading-relaxed", {
-          "font-medium text-content-secondary": actualState === 'valid',
+          "text-content-secondary": actualState === 'valid',
           "text-content-tertiary": actualState !== 'valid',
         })}>
-          {actualState !== 'valid' ? ScheduleLabel[actualState] : 'Yes'}
+          {actualState !== 'valid' ? ScheduleLabel[actualState] : 'Lorem ipsum dolor sit amet, in laborum eiusmod et in proident. Quis excepteur do mollit adipiscing consectetur in voluptate consequat ea sint. Dolore in consectetur laboris in et quis ullamco.'}
         </p>
       </div>
     </div>

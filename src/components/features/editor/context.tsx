@@ -8,7 +8,7 @@ export type ScheduleType = 'macro' | 'normal';
 function createEditorContext() {
   const [format, setFormat] = createSignal<ScheduleFormat>('posix');
 
-  const [state, setState] = createSignal<ScheduleState>('invalid');
+  const [state, setState] = createSignal<ScheduleState>('valid');
   const [type, setType] = createSignal<ScheduleType>('normal');
   const [tokens, setTokens] = createSignal<string[]>([]);
 

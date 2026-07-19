@@ -127,7 +127,7 @@
       }
     }
 
-    &[data-swipe-direction="bottom"] {
+    &[data-swipe-direction="down"] {
       &[data-state="open"] {
         animation: drawer-slide-in-bottom 500ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
       }
