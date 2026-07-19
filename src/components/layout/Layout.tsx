@@ -12,10 +12,10 @@ export function Layout({ children }: Readonly<LayoutProps>) {
     <div class="flex min-h-screen bg-background text-content-primary transition-colors">
       <Sidebar />
 
-      <div class='mx-2 my-2 flex flex-1 flex-col rounded-md border border-separator bg-surface shadow-xs transition-colors md:ml-0'>
+      <div class='mx-2 mb-2 flex flex-1 flex-col rounded-md rounded-b-lg border-separator border-b bg-surface shadow-xs transition-colors md:ml-0'>
         <Topbar />
 
-        <main class="flex-1">
+        <main class="flex-1 border-separator border-x">
           <div class="mx-auto max-w-6xl px-4 py-8">{children}</div>
         </main>
       </div>
