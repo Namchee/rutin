@@ -3,6 +3,7 @@ import { type Accessor, type Setter, Show } from 'solid-js';
 
 import { cn } from '@/lib/css';
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
+import { Button } from '../ui/Button';
 import { Drawer, DrawerContent } from '../ui/Drawer';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
 
@@ -44,15 +45,17 @@ function MobileDrawer({ expanded, setExpanded }: Readonly<SidebarProps>) {
   );
 }
 
-function SidebarBody({ expanded }: Readonly<SidebarProps>) {
+function SidebarBody({ expanded, setExpanded }: Readonly<SidebarProps>) {
   const location = useLocation();
 
   return (
     <>
-      <div class='flex items-center gap-2 px-2 py-2 pl-[5px] text-content-primary'>
+      <div class="flex items-center justify-between px-2 pt-4 pl-[5px] text-content-primary md:pt-2">
         <A href="/" class="i-me-logo size-6 shrink-0" />
 
-        <p class="font-medium text-lg md:hidden">Rutin</p>
+        <Button variant="ghost" size="icon" class="size-6 p-0 md:hidden" onClick={() => setExpanded(false)}>
+          <div class='i-lucide-panel-left size-4 text-content-secondary' />
+        </Button>
       </div>
 
       <nav class="flex flex-col gap-1">
