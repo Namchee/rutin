@@ -12,7 +12,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
 
   return (
     <div class="flex min-h-screen bg-background text-content-primary transition-colors">
-      <Sidebar expanded={expanded} />
+      <Sidebar expanded={expanded} setExpanded={setExpanded} />
 
       <button
         class={cn('-ml-1 hidden h-screen w-1 cursor-col-resize', {

@@ -1,4 +1,4 @@
-import { Drawer as DrawerPrimitive, useDrawerContext } from '@ark-ui/solid';
+import { Drawer as DrawerPrimitive } from '@ark-ui/solid';
 import type { Component, ComponentProps, JSX, ValidComponent } from 'solid-js';
 import { splitProps } from 'solid-js';
 import { Portal } from 'solid-js/web';
@@ -18,7 +18,6 @@ type DrawerOverlayProps<T extends ValidComponent = 'div'> = DrawerPrimitive.Back
 
 const DrawerOverlay = <T extends ValidComponent = 'div'>(props: DrawerOverlayProps<T>) => {
   const [, rest] = splitProps(props as DrawerOverlayProps, ['class']);
-  const drawer = useDrawerContext();
 
   return (
     <DrawerPrimitive.Backdrop
