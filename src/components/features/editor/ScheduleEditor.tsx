@@ -39,11 +39,9 @@ export function ScheduleEditor() {
           />
         </div>
 
-        <div class="px-4 pb-4">
+        <div class="pb-4">
           <ScheduleHint />
-
         </div>
-
       </div>
 
       <ScheduleDescriptor />
