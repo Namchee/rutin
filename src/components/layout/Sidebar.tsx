@@ -53,7 +53,7 @@ function SidebarBody({ expanded, setExpanded }: Readonly<SidebarProps>) {
       <div class="flex items-center gap-[6px] px-2 pt-4 pl-[5px] text-content-primary md:pt-2">
         <A href="/" class="i-me-logo size-6 shrink-0" />
 
-        <p class="font-medium text-lg">Rutin</p>
+        <p class="font-medium text-lg md:hidden">Rutin</p>
       </div>
 
       <nav class="flex flex-col gap-1">
