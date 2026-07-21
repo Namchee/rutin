@@ -45,7 +45,7 @@ function MobileDrawer({ expanded, setExpanded }: Readonly<SidebarProps>) {
   );
 }
 
-function SidebarBody({ expanded, setExpanded }: Readonly<SidebarProps>) {
+function SidebarBody({ expanded }: Readonly<SidebarProps>) {
   const location = useLocation();
 
   return (
@@ -101,7 +101,7 @@ export function Sidebar({ expanded, setExpanded }: Readonly<SidebarProps>) {
   return (
     <>
       <div
-        class={cn('hidden h-screen flex-col gap-4 p-4 transition-all duration-250 md:flex', {
+        class={cn('sticky top-0 hidden h-screen flex-col gap-4 p-4 transition-all duration-250 md:flex', {
           'w-16': !expanded(),
           'w-60': expanded(),
         })}>
