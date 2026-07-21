@@ -51,7 +51,6 @@ function DesktopTopbar({ expanded, setExpanded }: Readonly<TopbarProps>) {
         </A>
       </div>
     </>
-
   );
 }
 
@@ -60,7 +59,7 @@ export function Topbar(props: Readonly<TopbarProps>) {
 
   return (
     <div class="sticky top-0 z-10 bg-background pt-2 transition-colors">
-      <div class='flex h-14 items-center justify-between rounded-t-lg border border-separator bg-surface p-4 transition-colors'>
+      <div class='flex h-14 items-center justify-between rounded-t-lg border-separator border-b bg-surface p-4 transition-colors'>
         <Show when={isNonDesktop()} fallback={<MobileTopbar {...props} />}>
           <DesktopTopbar {...props} />
         </Show>
