@@ -3,6 +3,7 @@ import { type Accessor, type Setter, Show } from 'solid-js';
 
 import { cn } from '@/lib/css';
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
+import { ThemeSwitcher } from '../ThemeSwitcher';
 import { Button } from '../ui/Button';
 import { Drawer, DrawerContent } from '../ui/Drawer';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
@@ -38,13 +39,13 @@ interface SidebarProps {
 function MobileDrawer({ expanded, setExpanded }: Readonly<SidebarProps>) {
   return (
     <Drawer swipeDirection="start" open={expanded()} onOpenChange={() => setExpanded(false)}>
-      <DrawerContent class="w-[240px] gap-4 p-2">
+      <DrawerContent class="w-[240px] gap-4 p-2 transition-colors">
         <Button
           onClick={() => setExpanded(false)}
           size="icon"
           variant="ghost"
-          class='absolute top-3 right-3 size-4 p-0'>
-          <div class="i-lucide-x size-3" />
+          class="absolute top-3 right-3 size-4 p-0">
+          <div class="i-lucide-x size-3 text-content-primary" />
         </Button>
 
         <SidebarBody expanded={expanded} setExpanded={setExpanded} />
@@ -57,49 +58,63 @@ function SidebarBody({ expanded }: Readonly<SidebarProps>) {
   const location = useLocation();
 
   return (
-    <>
-      <div class="flex items-center gap-[6px] px-2 pt-4 pl-[5px] text-content-primary md:pt-2">
-        <A href="/" class="i-me-logo size-6 shrink-0" />
+    <div class="flex h-full flex-col justify-between">
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center gap-[6px] px-2 pt-4 pl-[5px] text-content-primary md:pt-2">
+          <A href="/" class="i-me-logo size-6 shrink-0" />
 
-        <p class="font-medium text-lg md:hidden">Rutin</p>
+          <p class="font-medium text-lg md:hidden">Rutin</p>
+        </div>
+
+        <nav class="flex flex-col gap-1">
+          {Links.map(link => (
+            <Tooltip positioning={{ placement: 'right' }}>
+              <TooltipTrigger>
+                <A
+                  class={cn(
+                    'flex h-8 w-full items-center gap-2 text-nowrap rounded-md p-2 hover:bg-background-hover',
+                    {
+                      'bg-background-hover text-content-primary': location.pathname === link.href,
+                      'text-content-secondary group-hover:text-content-primary':
+                        location.pathname !== link.href,
+                    },
+                  )}
+                  href={link.href}>
+                  <div class={cn('size-4 shrink-0', link.icon)} />
+
+                  <span
+                    class={cn('text-sm leading-none transition-opacity duration-250', {
+                      'pointer-events-none w-0 opacity-0': !expanded(),
+                      'w-auto opacity-100': expanded(),
+                    })}>
+                    {link.name}
+                  </span>
+                </A>
+              </TooltipTrigger>
+
+              <TooltipContent
+                class={cn({
+                  hidden: expanded(),
+                })}>
+                {link.name}
+              </TooltipContent>
+            </Tooltip>
+          ))}
+        </nav>
       </div>
 
-      <nav class="flex flex-col gap-1">
-        {Links.map(link => (
-          <Tooltip positioning={{ placement: 'right' }}>
-            <TooltipTrigger>
-              <A
-                class={cn(
-                  'flex h-8 w-full items-center gap-2 text-nowrap rounded-md p-2 transition-colors hover:bg-background-hover',
-                  {
-                    'bg-background-hover text-content-primary': location.pathname === link.href,
-                    'text-content-secondary group-hover:text-content-primary':
-                      location.pathname !== link.href,
-                  },
-                )}
-                href={link.href}>
-                <div class={cn('size-4 shrink-0 transition-colors', link.icon)} />
+      <div class="flex flex-col gap-2 pb-2">
+        <div class="flex items-center justify-between px-2 md:hidden">
+          <p class="text-content-tertiary text-sm">Theme</p>
 
-                <span
-                  class={cn('text-sm leading-none transition-all duration-250', {
-                    'pointer-events-none w-0 opacity-0': !expanded(),
-                    'w-auto opacity-100': expanded(),
-                  })}>
-                  {link.name}
-                </span>
-              </A>
-            </TooltipTrigger>
+          <ThemeSwitcher />
+        </div>
 
-            <TooltipContent
-              class={cn({
-                hidden: expanded(),
-              })}>
-              {link.name}
-            </TooltipContent>
-          </Tooltip>
-        ))}
-      </nav>
-    </>
+        <div class='hidden h-[1px] bg-separator'></div>
+
+        <Button size="sm" class="hidden">Sign In</Button>
+      </div>
+    </div>
   );
 }
 
@@ -109,13 +124,10 @@ export function Sidebar({ expanded, setExpanded }: Readonly<SidebarProps>) {
   return (
     <>
       <div
-        class={cn(
-          'sticky top-0 hidden h-screen flex-col gap-4 p-4 transition-all duration-250 md:flex',
-          {
-            'w-16': !expanded(),
-            'w-60': expanded(),
-          },
-        )}>
+        class={cn('sticky top-0 hidden h-screen flex-col p-4 transition-all duration-250 md:flex', {
+          'w-16': !expanded(),
+          'w-60': expanded(),
+        })}>
         <SidebarBody expanded={expanded} setExpanded={setExpanded} />
       </div>
 
