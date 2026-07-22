@@ -17,9 +17,9 @@
 
   /* Semantic Tokens */
   --background: var(--grey-50);
-  --background-hover: var(--grey-100);
+  --background-hover: oklch(from var(--grey-100) calc(l * 0.985) c h);
   --surface: var(--white);
-  --surface-hover: var(--grey-50);
+  --surface-hover: oklch(from var(--grey-50) calc(l * 0.985) c h);
 
   --content-primary: var(--grey-900);
   --content-secondary: var(--grey-600);

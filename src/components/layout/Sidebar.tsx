@@ -39,6 +39,14 @@ function MobileDrawer({ expanded, setExpanded }: Readonly<SidebarProps>) {
   return (
     <Drawer swipeDirection="start" open={expanded()} onOpenChange={() => setExpanded(false)}>
       <DrawerContent class="w-[240px] gap-4 p-2">
+        <Button
+          onClick={() => setExpanded(false)}
+          size="icon"
+          variant="ghost"
+          class='absolute top-3 right-3 size-4 p-0'>
+          <div class="i-lucide-x size-3" />
+        </Button>
+
         <SidebarBody expanded={expanded} setExpanded={setExpanded} />
       </DrawerContent>
     </Drawer>
@@ -101,10 +109,13 @@ export function Sidebar({ expanded, setExpanded }: Readonly<SidebarProps>) {
   return (
     <>
       <div
-        class={cn('sticky top-0 hidden h-screen flex-col gap-4 p-4 transition-all duration-250 md:flex', {
-          'w-16': !expanded(),
-          'w-60': expanded(),
-        })}>
+        class={cn(
+          'sticky top-0 hidden h-screen flex-col gap-4 p-4 transition-all duration-250 md:flex',
+          {
+            'w-16': !expanded(),
+            'w-60': expanded(),
+          },
+        )}>
         <SidebarBody expanded={expanded} setExpanded={setExpanded} />
       </div>
 

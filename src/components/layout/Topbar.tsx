@@ -25,14 +25,7 @@ export function Topbar({ expanded, setExpanded }: Readonly<TopbarProps>) {
           </Tooltip>
         </div>
 
-        <A
-          href="/"
-          class="i-me-logo absolute right-1/2 left-1/2 mx-auto size-6 shrink-0 md:hidden"
-        />
-
-        <div class="flex items-center gap-2 md:gap-4">
-          <ThemeSwitcher />
-        </div>
+        <ThemeSwitcher />
       </div>
     </div>
   );

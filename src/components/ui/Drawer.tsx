@@ -48,10 +48,11 @@ const DrawerContent = <T extends ValidComponent = 'div'>(props: DrawerContentPro
             <DrawerPrimitive.Positioner class="fixed inset-0 z-50 flex items-end justify-center">
               <DrawerPrimitive.Content
                 class={cn(
-                  'fixed inset-x-0 z-50 flex flex-col border bg-background transition-transform md:select-none',
+                  'fixed inset-x-0 z-50 flex flex-col bg-background transition-transform md:select-none',
                   props.class,
                   {
-                    'bottom-0 mt-24 h-auto rounded-t-[10px]': !isLeft, 'left-0 h-screen rounded-r-[10px]': isLeft,
+                    'bottom-0 mt-24 h-auto rounded-t-[10px]': !isLeft,
+                    'left-0 h-screen rounded-r-[10px]': isLeft,
                   },
                 )}
                 {...rest}>
