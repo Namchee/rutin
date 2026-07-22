@@ -67,7 +67,7 @@ export function ThemeSwitcher() {
     <ToggleGroup
       value={[theme()]}
       onValueChange={e => setTheme(e.value[0] as unknown as Theme)}
-      class="inset-shadow h-6 gap-[2px] rounded-md border border-separator bg-background px-[1px]">
+      class="inset-shadow h-6 gap-[2px] rounded-md border border-separator bg-background-hover px-[1px] transition-colors">
       <ToggleGroupItem value="light" class="size-5 rounded p-0" aria-label="Switch to light theme">
         <div class="i-lucide-sun size-[14px]" />
       </ToggleGroupItem>

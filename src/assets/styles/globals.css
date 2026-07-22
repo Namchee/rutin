@@ -34,9 +34,9 @@
 
 html.dark {
   --background: oklch(from var(--grey-900) calc(l * 0.85) c h);
-  --background-hover: var(--grey-800);
+  --background-hover: oklch(from var(--grey-800) calc(l * 0.85) c h);
   --surface: var(--grey-950);
-  --surface-hover: var(--grey-900);
+  --surface-hover: oklch(from var(--grey-900) calc(l * 1.1) c h);
 
   --content-primary: var(--grey-50);
   --content-secondary: var(--grey-300);
