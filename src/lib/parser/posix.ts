@@ -2,65 +2,59 @@ import cronstrue from 'cronstrue';
 import type { ScheduleFormat } from '@/types';
 import { createTokenValidator, getNumericRange } from './shared';
 
-export const POSIXCron = {
-  Macros: {
-    '@yearly': '0 0 1 1 *',
-    '@annually': '0 0 1 1 *',
-    '@monthly': '0 0 1 * *',
-    '@weekly': '0 0 * * 0',
-    '@daily': '0 0 * * *',
-    '@midnight': '0 0 * * *',
-    '@hourly': '0 * * * *',
-  },
+export const POSIXParser = {
+  convert(expr: string, format: ScheduleFormat): string {
+    switch (format) {
+      case 'posix': {
+        return POSIXParser.normalize(expr);
+      }
 
-  MonthToNumber: {
-    jan: 1,
-    feb: 2,
-    mar: 3,
-    apr: 4,
-    may: 5,
-    jun: 6,
-    jul: 7,
-    aug: 8,
-    sep: 9,
-    oct: 10,
-    nov: 11,
-    dec: 12,
+      case 'quartz': {
+        const tokens = expr.split(/\s+/);
+
+        // complete
+        if (tokens.length === 7) {
+          return tokens.slice(1, 6).join(' ');
+        }
+
+        // syntax without year
+        if (tokens.length === 6) {
+          return tokens.slice(1).join(' ');
+        }
+
+        return '';
+      }
+
+      case 'systemd': {
+        return '';
+      }
+
+      default: {
+        throw new Error('Unsupported scheduling format');
+      }
+    }
   },
 
   DayToNumber: {
-    sun: 0,
+    fri: 5,
     mon: 1,
+    sat: 6,
+    sun: 0,
+    thu: 4,
     tue: 2,
     wed: 3,
-    thu: 4,
-    fri: 5,
-    sat: 6,
   },
+  isNonStandard(expr: string): boolean {
+    const multiWhitespace = /[^\S ]|\s{2,}/;
 
-  Validator: [
-    createTokenValidator(/[^0-9*,\-/]/, 0, 59),
-    createTokenValidator(/[^0-9*,\-/]/, 0, 23),
-    createTokenValidator(/[^0-9*,\-LW#?/]/i, 1, 31),
-    createTokenValidator(/[^0-9*,\-/]/, 1, 12, (token: string): string => {
-      const monthRegex = new RegExp(Object.keys(POSIXCron.MonthToNumber).join('|'), 'gi');
-      return token.replace(monthRegex, matched =>
-        POSIXCron.MonthToNumber[
-          matched.toUpperCase() as keyof typeof POSIXCron.MonthToNumber
-        ].toString(),
-      );
-    }),
-    createTokenValidator(/[^0-9*,\-LW?#]/i, 0, 6, (token: string): string => {
-      const dayRegex = new RegExp(Object.keys(POSIXCron.DayToNumber).join('|'), 'gi');
-      return token.replace(dayRegex, matched =>
-        POSIXCron.DayToNumber[
-          matched.toUpperCase() as keyof typeof POSIXCron.DayToNumber
-        ].toString(),
-      );
-    }),
-  ],
+    if (multiWhitespace.test(expr)) {
+      return true;
+    }
+
+    return Object.keys(POSIXParser.Macros).includes(expr.trim());
+  },
   *iterate(expr: string, start: Date) {
-    const tokens = POSIXCron.normalize(expr).trim().split(/\s+/);
+    const tokens = POSIXParser.normalize(expr).trim().split(/\s+/);
 
     // to be parsed, the expression must be complete
     if (tokens.length !== 5) {
@@ -125,71 +119,92 @@ export const POSIXCron = {
       curr.setMinutes(curr.getMinutes() + 1);
     }
   },
-  validate(expr: string): { error: number[]; isComplete: boolean } {
-    const tokens = POSIXCron.normalize(expr).trim().split(/\s+/).filter(Boolean);
-    const errorIdx: number[] = [];
-
-    if (expr.startsWith('@')) {
-      // skip validation, maybe a macro
-      return { error: [], isComplete: expr.trim() in POSIXCron.Macros };
-    }
-
-    for (let idx = 0; idx < tokens.length; idx++) {
-      if (!POSIXCron.Validator[idx](tokens[idx])) {
-        errorIdx.push(idx);
-      }
-    }
-
-    return { error: errorIdx, isComplete: tokens.length === 5 };
+  Macros: {
+    '@annually': '0 0 1 1 *',
+    '@daily': '0 0 * * *',
+    '@hourly': '0 * * * *',
+    '@midnight': '0 0 * * *',
+    '@monthly': '0 0 1 * *',
+    '@weekly': '0 0 * * 0',
+    '@yearly': '0 0 1 1 *',
   },
-  isNonStandard(expr: string): boolean {
-    const multiWhitespace = /[^\S ]|\s{2,}/;
 
-    if (multiWhitespace.test(expr)) {
-      return true;
-    }
-
-    return Object.keys(POSIXCron.Macros).includes(expr.trim());
+  MonthToNumber: {
+    apr: 4,
+    aug: 8,
+    dec: 12,
+    feb: 2,
+    jan: 1,
+    jul: 7,
+    jun: 6,
+    mar: 3,
+    may: 5,
+    nov: 11,
+    oct: 10,
+    sep: 9,
   },
   normalize(expr: string): string {
     const normalExpr = expr.trim().replaceAll(/[^\S ]|\s{2,}/g, ' ');
 
-    return normalExpr in POSIXCron.Macros
-      ? POSIXCron.Macros[normalExpr as keyof typeof POSIXCron.Macros]
+    return normalExpr in POSIXParser.Macros
+      ? POSIXParser.Macros[normalExpr as keyof typeof POSIXParser.Macros]
       : normalExpr;
   },
-  convert(expr: string, format: ScheduleFormat): string {
-    switch (format) {
-      case 'posix': {
-        return POSIXCron.normalize(expr);
+
+  toString(expr: string): string {
+    return cronstrue.toString(POSIXParser.normalize(expr));
+  },
+
+  Validator: [
+    createTokenValidator(/[^0-9*,\-/]/, 0, 59),
+    createTokenValidator(/[^0-9*,\-/]/, 0, 23),
+    createTokenValidator(/[^0-9*,\-LW#?/]/i, 1, 31),
+    createTokenValidator(/[^0-9*,\-/]/, 1, 12, (token: string): string => {
+      const monthRegex = new RegExp(Object.keys(POSIXParser.MonthToNumber).join('|'), 'gi');
+      return token.replace(monthRegex, matched =>
+        POSIXParser.MonthToNumber[
+          matched.toUpperCase() as keyof typeof POSIXParser.MonthToNumber
+        ].toString(),
+      );
+    }),
+    createTokenValidator(/[^0-9*,\-LW?#]/i, 0, 6, (token: string): string => {
+      const dayRegex = new RegExp(Object.keys(POSIXParser.DayToNumber).join('|'), 'gi');
+      return token.replace(dayRegex, matched =>
+        POSIXParser.DayToNumber[
+          matched.toUpperCase() as keyof typeof POSIXParser.DayToNumber
+        ].toString(),
+      );
+    }),
+  ],
+
+  validate(expr: string) {
+    const tokens = POSIXParser.normalize(expr).trim().split(/\s+/).filter(Boolean);
+    const errorIdx: number[] = [];
+
+    if (expr.startsWith('@')) {
+      const isCompleteMacro = expr.trim() in POSIXParser.Macros;
+
+      if (isCompleteMacro) {
+        return {
+          normal: false,
+          status: 'valid',
+        };
       }
 
-      case 'quartz': {
-        const tokens = expr.split(/\s+/);
+    }
 
-        // complete
-        if (tokens.length === 7) {
-          return tokens.slice(1, 6).join(' ');
-        }
-
-        // syntax without year
-        if (tokens.length === 6) {
-          return tokens.slice(1).join(' ');
-        }
-
-        return '';
-      }
-
-      case 'systemd': {
-        return '';
-      }
-
-      default: {
-        throw new Error('Unsupported scheduling format');
+    for (let idx = 0; idx < tokens.length; idx++) {
+      if (!POSIXParser.Validator[idx](tokens[idx])) {
+        errorIdx.push(idx);
       }
     }
-  },
-  toString(expr: string): string {
-    return cronstrue.toString(POSIXCron.normalize(expr));
+
+    if (errorIdx.length) {
+      return {
+        status: 'invalid',
+      }
+    }
+
+    return { error: errorIdx, isComplete: tokens.length === 5 };
   },
 };

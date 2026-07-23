@@ -12,7 +12,7 @@ import { NavigationBar } from './components/NavigationBar';
 import { ScheduleMenu } from './components/ScheduleMenu';
 import { useRutinContext } from './context';
 import { cn } from './lib/css';
-import { POSIXCron } from './lib/parser/posix';
+import { POSIXParser } from './lib/parser/posix';
 
 const Placeholders: Record<ScheduleFormat, string> = {
   'cf-workers': '* * * * *',
@@ -24,12 +24,12 @@ const Placeholders: Record<ScheduleFormat, string> = {
 };
 
 const Parsers = {
-  'cf-workers': POSIXCron,
-  cloudwatch: POSIXCron,
-  node: POSIXCron,
-  posix: POSIXCron,
-  quartz: POSIXCron,
-  systemd: POSIXCron,
+  'cf-workers': POSIXParser,
+  cloudwatch: POSIXParser,
+  node: POSIXParser,
+  posix: POSIXParser,
+  quartz: POSIXParser,
+  systemd: POSIXParser,
 };
 
 const App: Component = () => {

@@ -1,11 +1,11 @@
 export function formatDate(date: Date, options?: Intl.DateTimeFormatOptions): string {
   return date.toLocaleDateString('en-GB', {
-    weekday: 'short',
-    year: 'numeric',
-    month: 'short',
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
+    month: 'short',
+    weekday: 'short',
+    year: 'numeric',
     ...options,
   });
 }
@@ -16,11 +16,11 @@ export function formatRelativeTime(a: Date, b: Date): string {
   const absMinutes = Math.abs(diffInMinutes);
 
   const THRESHOLDS: Record<string, number> = {
-    year: 365 * 24 * 60,
-    month: 30 * 24 * 60,
     day: 24 * 60,
     hour: 60,
     minute: 1,
+    month: 30 * 24 * 60,
+    year: 365 * 24 * 60,
   };
 
   const formatter = new Intl.RelativeTimeFormat('en-GB', { numeric: 'auto' });
