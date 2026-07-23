@@ -1,5 +1,6 @@
 import cronstrue from 'cronstrue';
 import type { ScheduleFormat } from '@/types';
+
 import type { ScheduleParser } from './base';
 import { createTokenValidator, getNumericRange } from './shared';
 

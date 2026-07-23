@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type ComponentProps, splitProps } from 'solid-js';
+import { type ComponentProps, splitProps, type ValidComponent } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 
 import { cn } from '@/lib/css';
@@ -20,9 +20,10 @@ const badgeVariants = cva(
   },
 );
 
-export interface BadgeProps extends ComponentProps<'span'>, VariantProps<typeof badgeVariants> {
-  as?: any;
-}
+type BadgeProps<T extends ValidComponent = 'span'> = ComponentProps<T> &
+  VariantProps<typeof badgeVariants> & {
+    as?: T;
+  };
 
 function Badge(props: BadgeProps) {
   const [local, variantProps, rest] = splitProps(props, ['class', 'as'], ['variant']);

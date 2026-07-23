@@ -1,4 +1,4 @@
-import { Drawer as DrawerPrimitive, useDrawer, useDrawerContext } from '@ark-ui/solid';
+import { Drawer as DrawerPrimitive } from '@ark-ui/solid';
 import type { Component, ComponentProps, JSX, ValidComponent } from 'solid-js';
 import { Show, splitProps } from 'solid-js';
 import { Portal } from 'solid-js/web';
