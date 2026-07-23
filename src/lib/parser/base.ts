@@ -24,6 +24,7 @@ interface InvalidSchedule extends ValidationResult {
 export interface ScheduleParser {
   convert: (expr: string, from: ScheduleFormat) => string;
   validate: (expr: string) => ValidSchedule | IncompleteSchedule | InvalidSchedule;
+  normalize: (expr: string) => string;
 }
 
 export const Parsers: Record<ScheduleFormat, ScheduleParser> = {
