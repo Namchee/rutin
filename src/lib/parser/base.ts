@@ -3,29 +3,32 @@ import type { Temporal } from '@js-temporal/polyfill';
 import type { ScheduleFormat } from '@/types';
 import { POSIXParser } from './posix';
 
-interface ValidationResult {
+interface BaseValidationResult {
   normal: boolean;
 }
 
-interface ValidSchedule extends ValidationResult {
+interface ValidSchedule extends BaseValidationResult {
   status: 'valid';
   tokens: string[];
-  iterator: Generator<Temporal.PlainDateTime, unknown, unknown>;
+  generator: Generator<Temporal.PlainDateTime, unknown, unknown>;
   descriptor: string;
 }
 
-interface IncompleteSchedule extends ValidationResult {
+interface IncompleteSchedule extends BaseValidationResult {
   status: 'incomplete';
 }
 
-interface InvalidSchedule extends ValidationResult {
+interface InvalidSchedule extends BaseValidationResult {
   status: 'invalid';
   error: number[];
 }
 
+export type ValidationResult = ValidSchedule | IncompleteSchedule | InvalidSchedule;
+
 export interface ScheduleParser {
+  hasMacro: boolean;
   convert: (expr: string, from: ScheduleFormat) => string;
-  validate: (expr: string) => ValidSchedule | IncompleteSchedule | InvalidSchedule;
+  validate: (expr: string) => ValidationResult;
   normalize: (expr: string) => string;
 }
 

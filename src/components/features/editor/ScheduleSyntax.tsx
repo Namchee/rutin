@@ -2,9 +2,8 @@ import { createEffect, createSignal, For, Show } from 'solid-js';
 
 import { Code } from '@/components/ui/Code';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
-
+import { useIntersectionObserver } from '@/lib/hooks/use-intersection-observer';
 import type { ScheduleFormat } from '@/types';
-
 import { useEditorContext } from './context';
 
 interface FieldRange {
@@ -156,7 +155,7 @@ export function ScheduleSyntax() {
 
       <div>
         {Object.entries(Range[format()]).map(([key, value]) => (
-          <div class='flex items-center justify-between px-4 py-3 text-xs leading-snug transition-colors hover:bg-background'>
+          <div class="flex items-center justify-between px-4 py-3 text-xs leading-snug transition-colors hover:bg-background">
             <div class="flex items-center gap-1 font-medium text-content-primary">
               {key.charAt(0).toUpperCase() + key.slice(1)}
 

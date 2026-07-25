@@ -185,6 +185,8 @@ export const POSIXParser = {
     }
   },
 
+  hasMacro: true,
+
   normalize(expr: string): string {
     const normalExpr = expr.trim().replaceAll(/[^\S ]|\s{2,}/g, ' ');
 
@@ -200,7 +202,7 @@ export const POSIXParser = {
       if (trimmedExpr in Macros) {
         return {
           descriptor: cronstrue.toString(POSIXParser.normalize(expr)),
-          iterator: iterate(Macros[trimmedExpr], Temporal.Now.plainDateTimeISO()),
+          generator: iterate(Macros[trimmedExpr], Temporal.Now.plainDateTimeISO()),
           normal: false,
           status: 'valid',
           tokens: Macros[trimmedExpr].split(' '),
@@ -263,7 +265,7 @@ export const POSIXParser = {
 
     return {
       descriptor: cronstrue.toString(POSIXParser.normalize(expr)),
-      iterator: iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),
+      generator: iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),
       normal: isNormal(trimmedExpr),
       status: 'valid',
       tokens: trimmedExpr.split(/\s+/),

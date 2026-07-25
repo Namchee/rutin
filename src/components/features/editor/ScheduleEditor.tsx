@@ -35,7 +35,7 @@ export function ScheduleEditor() {
         <div class='px-4 pt-4'>
           <input
             type="text"
-            class="w-full rounded-lg border border-separator bg-background text-center font-mono text-2xl"
+            class="w-full rounded-lg border border-separator bg-background text-center font-mono text-2xl transition-colors transition-shadow focus:outline-none focus:ring-2 focus:ring-content-tertiary/25"
           />
         </div>
 

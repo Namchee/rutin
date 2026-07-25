@@ -1,6 +1,7 @@
 import { createListCollection } from '@ark-ui/solid';
+import { Temporal } from '@js-temporal/polyfill';
 import { type Accessor, createSignal, For, type Setter, Show } from 'solid-js';
-
+import { createEffect } from 'solid-js/types/server/reactive.js';
 import {
   Drawer,
   DrawerContent,
@@ -15,10 +16,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/Select';
-
 import { cn } from '@/lib/css';
+import { take } from '@/lib/generator';
+import { useIntersectionObserver } from '@/lib/hooks/use-intersection-observer';
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
-
+import { formatDate, formatRelativeTime } from '@/lib/temporal';
 import { useEditorContext } from './context';
 
 function ExecutionEmpty() {
@@ -36,7 +38,7 @@ function ExecutionEmpty() {
 const Timezones: Record<string, { label: string; value: string; description: string }> = {
   local: {
     description: `GMT ${Temporal.Now.zonedDateTimeISO().offset}`,
-    label: 'Local',
+    label: Temporal.Now.timeZoneId(),
     value: Temporal.Now.timeZoneId(),
   },
   utc: {
@@ -126,12 +128,12 @@ export function TimezoneSelector({ timezone, setTimezone }: Readonly<TimezoneSel
         value={[timezone()]}
         onValueChange={v => setTimezone(v.value[0])}
         class="flex items-center gap-2">
-        <SelectTrigger class='w-32'>
-          <div class="flex items-center gap-1.5">
+        <SelectTrigger class="w-32">
+          <div class="flex max-w-full items-center gap-1.5 overflow-hidden">
             <div class="i-lucide-globe size-4" />
 
             <SelectValue
-              class='h-fit truncate font-medium leading-none'
+              class="h-fit truncate font-medium leading-none"
               placeholder="Select dialect..."
             />
           </div>
@@ -154,9 +156,33 @@ export function TimezoneSelector({ timezone, setTimezone }: Readonly<TimezoneSel
 }
 
 export function ScheduleExecutions() {
-  const { state } = useEditorContext();
-
+  const { result } = useEditorContext();
+  const [executions, setExecutions] = createSignal<Temporal.PlainDateTime[]>([]);
+  const [generator, setGenerator] =
+    createSignal<Generator<Temporal.PlainDateTime, unknown, unknown>>();
   const [timezone, setTimezone] = createSignal<string>('utc');
+
+  let ref!: HTMLDivElement;
+
+  useIntersectionObserver(ref, () => {
+    const gen = generator();
+    if (gen) {
+      setExecutions(prev => [...prev, ...take(gen, 10)]);
+    }
+  });
+
+  createEffect(() => {
+    const r = result();
+
+    if (r.status === 'valid') {
+      const gen = r.generator;
+
+      setGenerator(gen);
+
+      // seed the executions
+      setExecutions(take(gen, 20));
+    }
+  });
 
   return (
     <div class="flex flex-col overflow-hidden rounded-lg border border-separator transition-colors">
@@ -167,8 +193,19 @@ export function ScheduleExecutions() {
       </div>
 
       <div class="min-h-48 flex-1">
-        <Show when={state() === 'valid'} fallback={ExecutionEmpty()}>
-          <p>Hello World!</p>
+        <Show when={executions().length > 0} fallback={ExecutionEmpty()}>
+          <For each={executions()}>
+            {e => (
+              <div class="flex items-center justify-between p-4">
+                <p class="font-mono text-sm">{formatDate(e)}</p>
+                <p class="text-content-tertiary text-xs">
+                  {formatRelativeTime(Temporal.Now.plainDateTimeISO(), e)}
+                </p>
+              </div>
+            )}
+          </For>
+
+          <div ref={ref} />
         </Show>
       </div>
 

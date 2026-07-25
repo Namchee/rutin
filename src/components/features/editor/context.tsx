@@ -1,5 +1,6 @@
 import { createContext, createSignal, type JSXElement, useContext } from 'solid-js';
 
+import { Parsers, type ValidationResult } from '@/lib/parser/base';
 import type { ScheduleFormat } from '@/types';
 
 export type ScheduleState = 'valid' | 'invalid' | 'incomplete';
@@ -7,20 +8,48 @@ export type ScheduleType = 'macro' | 'normal';
 
 function createEditorContext() {
   const [format, setFormat] = createSignal<ScheduleFormat>('posix');
+  const [result, setResult] = createSignal<ValidationResult>(Parsers.posix.validate(''));
 
-  const [state, setState] = createSignal<ScheduleState>('incomplete');
-  const [type, setType] = createSignal<ScheduleType>('normal');
-  const [tokens, setTokens] = createSignal<string[]>([]);
-  const [errors, setErrors] = createSignal<number[]>([]);
+  const [caret, setCaret] = createSignal<number>(-1);
+
+  function updateCaret(el: HTMLInputElement) {
+    const { value, selectionStart } = el;
+    const trimmed = value.trim();
+
+    if (selectionStart === null) {
+      return;
+    }
+
+    if (trimmed.length === 0 || (value.startsWith('@') && Parsers[format()].hasMacro)) {
+      setCaret(-1);
+      return;
+    }
+
+    const textBeforeCaret = value.slice(0, selectionStart);
+    const tokensBefore = textBeforeCaret.match(/\S+/g) || [];
+    const isAtTrailingSpace = /\s$/.test(textBeforeCaret);
+
+    const currentSectionIdx = isAtTrailingSpace
+      ? tokensBefore.length
+      : Math.max(0, tokensBefore.length - 1);
+
+    setCaret(currentSectionIdx);
+  }
+
+  function onInput(el: HTMLInputElement) {
+    updateCaret(el);
+
+    setResult(Parsers[format()].validate(el.value));
+  }
 
   return {
-    errors,
+    caret,
     format,
+
+    onInput,
+
+    result,
     setFormat,
-
-    state,
-
-    tokens,
   } as const;
 }
 
