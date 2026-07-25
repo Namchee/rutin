@@ -64,7 +64,7 @@ function TimezoneDrawer({ timezone, setTimezone }: Readonly<TimezoneSelectorProp
   return (
     <div class="flex items-center gap-2">
       <Drawer open={open()} onOpenChange={d => setOpen(d.open)}>
-        <DrawerTrigger class="flex h-8 w-32 items-center justify-between gap-2 rounded-md border border-separator p-2 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
+        <DrawerTrigger class="flex h-8 w-32 items-center justify-between gap-1.5 rounded-md border border-separator p-2 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
           <div class="i-lucide-globe size-4 shrink-0" />
 
           <p class="truncate font-medium text-sm">{Timezones[timezone()].label}</p>
@@ -126,8 +126,8 @@ export function TimezoneSelector({ timezone, setTimezone }: Readonly<TimezoneSel
         value={[timezone()]}
         onValueChange={v => setTimezone(v.value[0])}
         class="flex items-center gap-2">
-        <SelectTrigger class='w-32 transition-colors'>
-          <div class="flex items-center gap-2">
+        <SelectTrigger class='w-32'>
+          <div class="flex items-center gap-1.5">
             <div class="i-lucide-globe size-4" />
 
             <SelectValue

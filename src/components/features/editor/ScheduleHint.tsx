@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/Button';
+import { cn } from '@/lib/css';
 import type { ScheduleFormat } from '@/types';
-
 import { useEditorContext } from './context';
 
 const Hints: Record<ScheduleFormat, string[]> = {
@@ -13,20 +13,32 @@ const Hints: Record<ScheduleFormat, string[]> = {
 };
 
 export function ScheduleHint() {
-  const { tokens, format } = useEditorContext();
+  const { tokens, errors, format } = useEditorContext();
 
   return (
-    <div class='scrollbar-none flex w-full max-w-full gap-2 overflow-x-auto px-4'>
-      {Hints[format()].map(hint => (
+    <div class="scrollbar-none flex w-full max-w-full gap-2 overflow-x-auto px-4">
+      {Hints[format()].map((hint, index) => (
         <Button
           variant="ghost"
           size="sm"
-          class="flex h-fit min-w-[21%] flex-shrink-0 flex-col items-center justify-center gap-0 py-1.5 font-mono font-normal text-content-tertiary lg:min-w-0 lg:flex-1">
-          <span class="font-medium font-mono text-content-primary text-lg leading-normal">30</span>
+          class={cn(
+            'flex h-fit min-w-[21%] flex-shrink-0 flex-col items-center justify-center gap-0 py-1.5 font-mono font-normal lg:min-w-0 lg:flex-1',
+            {
+              'bg-danger text-danger-foreground dark:bg-danger/': errors().includes(index),
+              'text-content-secondary': !errors().includes(index),
+            },
+          )}>
+          <span class={cn("font-medium font-mono text-lg leading-normal", {
+            'text-content-primary': !errors().includes(index),
+            'text-danger-foreground': errors().includes(index),
+          })}>
+            30
+          </span>
 
-          {hint}
+          <span>{hint}</span>
         </Button>
-      ))}
+      ))
+      }
     </div>
   );
 }

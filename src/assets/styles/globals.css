@@ -15,6 +15,18 @@
   --grey-900: oklch(0.2046 0 0);
   --grey-950: oklch(0.1448 0 0);
 
+  --red-50: oklch(0.9705 0.0129 17.38);
+  --red-100: oklch(0.9356 0.0309 17.72);
+  --red-200: oklch(0.8845 0.0593 18.33);
+  --red-300: oklch(0.8077 0.1035 19.57);
+  --red-400: oklch(0.7106 0.1661 22.22);
+  --red-500: oklch(0.6368 0.2078 25.33);
+  --red-600: oklch(0.5771 0.2152 27.33);
+  --red-700: oklch(0.5054 0.1905 27.52);
+  --red-800: oklch(0.4437 0.1613 26.9);
+  --red-900: oklch(0.3958 0.1331 25.72);
+  --red-950: oklch(0.2575 0.0886 26.04);
+
   /* Semantic Tokens */
   --background: var(--grey-50);
   --background-hover: oklch(from var(--grey-100) calc(l * 0.985) c h);
@@ -30,6 +42,9 @@
   --brand: var(--grey-900);
   --brand-foreground: var(--grey-50);
   --brand-hover: var(--grey-700);
+
+  --danger: var(--red-100);
+  --danger-foreground: var(--red-600);
 }
 
 html.dark {
@@ -47,6 +62,9 @@ html.dark {
   --brand: var(--grey-100);
   --brand-foreground: var(--grey-900);
   --brand-hover: var(--grey-200);
+
+  --danger: var(--red-950);
+  --danger-foreground: var(--red-400);
 }
 
 body {

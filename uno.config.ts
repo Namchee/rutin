@@ -39,7 +39,11 @@ export default defineConfig({
       brand: {
         DEFAULT: 'var(--brand)',
         foreground: 'var(--brand-foreground)',
-        hover:         'var(--brand-hover)',
+        hover: 'var(--brand-hover)',
+      },
+      danger: {
+        DEFAULT: 'var(--danger)',
+        foreground: 'var(--danger-foreground)'
       }
     },
     font: {
