@@ -222,12 +222,14 @@ export const POSIXParser = {
           error: [],
           normal: true, // do not attempt to normalize
           status: 'invalid',
+          tokens: [],
         };
       }
 
       return {
         normal: true, // do not attempt to normalize
         status: 'incomplete',
+        tokens: [],
       };
     }
 
@@ -236,6 +238,7 @@ export const POSIXParser = {
       return {
         normal: isNormal(expr),
         status: 'incomplete',
+        tokens,
       };
     }
 
@@ -244,6 +247,7 @@ export const POSIXParser = {
         error: [],
         normal: true,
         status: 'invalid',
+        tokens,
       };
     }
 
@@ -260,6 +264,7 @@ export const POSIXParser = {
         error,
         normal: isNormal(trimmedExpr),
         status: 'invalid',
+        tokens,
       };
     }
 
@@ -268,7 +273,7 @@ export const POSIXParser = {
       generator: iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),
       normal: isNormal(trimmedExpr),
       status: 'valid',
-      tokens: trimmedExpr.split(/\s+/),
+      tokens,
     };
   },
 };

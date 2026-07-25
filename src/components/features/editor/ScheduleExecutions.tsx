@@ -1,7 +1,7 @@
 import { createListCollection } from '@ark-ui/solid';
 import { Temporal } from '@js-temporal/polyfill';
-import { type Accessor, createSignal, For, type Setter, Show } from 'solid-js';
-import { createEffect } from 'solid-js/types/server/reactive.js';
+import { type Accessor, createEffect, createSignal, For, type Setter, Show } from 'solid-js';
+
 import {
   Drawer,
   DrawerContent,
@@ -16,11 +16,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/Select';
+
 import { cn } from '@/lib/css';
 import { take } from '@/lib/generator';
 import { useIntersectionObserver } from '@/lib/hooks/use-intersection-observer';
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
 import { formatDate, formatRelativeTime } from '@/lib/temporal';
+
 import { useEditorContext } from './context';
 
 function ExecutionEmpty() {

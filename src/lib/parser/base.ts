@@ -5,11 +5,11 @@ import { POSIXParser } from './posix';
 
 interface BaseValidationResult {
   normal: boolean;
+  tokens: string[];
 }
 
 interface ValidSchedule extends BaseValidationResult {
   status: 'valid';
-  tokens: string[];
   generator: Generator<Temporal.PlainDateTime, unknown, unknown>;
   descriptor: string;
 }

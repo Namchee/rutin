@@ -2,40 +2,56 @@ import { Show } from 'solid-js';
 
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { cn } from '@/lib/css';
-import { useEditorContext } from './context';
 
+import { cn } from '@/lib/css';
+
+import type { ScheduleFormat } from '@/types';
+
+import { useEditorContext } from './context';
 import { FormatSelector } from './FormatSelector';
 import { ScheduleDescriptor } from './ScheduleDescriptor';
 import { ScheduleHint } from './ScheduleHint';
 
+const Placeholders: Record<ScheduleFormat, string> = {
+  amazon: '* * * * * *',
+  'cf-workers': '* * * * *',
+  node: '* * * * * *',
+  posix: '* * * * *',
+  quartz: '* * * * * * *',
+  systemd: '* *-*-* *:*:*',
+};
+
 export function ScheduleEditor() {
-  const { state } = useEditorContext();
+  const { onInput, result, format } = useEditorContext();
 
   return (
     <div class="flex flex-col rounded-lg border border-separator transition-colors">
       <div class="flex items-center justify-between border-separator border-b p-4 transition-colors">
         <FormatSelector />
 
-        <Show when={state() !== 'incomplete'}>
-          <Badge variant={state() === 'valid' ? 'default' : 'outline'}>
+        <Show when={result().status !== 'incomplete'}>
+          <Badge variant={result().status === 'valid' ? 'default' : 'outline'}>
             <div
               class={cn('size-[14px]', {
-                'i-lucide-check': state() === 'valid',
-                'i-lucide-x': state() === 'invalid',
+                'i-lucide-check': result().status === 'valid',
+                'i-lucide-x': result().status === 'invalid',
               })}
             />
 
-            {state() === 'valid' ? 'Valid' : 'Invalid'}
+            {result().status === 'valid' ? 'Valid' : 'Invalid'}
           </Badge>
         </Show>
       </div>
 
       <div class="flex flex-1 flex-col gap-2">
-        <div class='px-4 pt-4'>
+        <div class="px-4 pt-4">
           <input
             type="text"
             class="w-full rounded-lg border border-separator bg-background text-center font-mono text-2xl transition-colors transition-shadow focus:outline-none focus:ring-2 focus:ring-content-tertiary/25"
+            onInput={e => onInput(e.target)}
+            spellcheck={false}
+            placeholder={Placeholders[format()]}
+            autocomplete="off"
           />
         </div>
 

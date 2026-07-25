@@ -2,8 +2,9 @@ import { createEffect, createSignal, For, Show } from 'solid-js';
 
 import { Code } from '@/components/ui/Code';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
-import { useIntersectionObserver } from '@/lib/hooks/use-intersection-observer';
+
 import type { ScheduleFormat } from '@/types';
+
 import { useEditorContext } from './context';
 
 interface FieldRange {

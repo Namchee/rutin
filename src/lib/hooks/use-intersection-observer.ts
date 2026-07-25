@@ -19,7 +19,9 @@ export function useIntersectionObserver(el: HTMLElement, onIntersect: () => void
 
     setObserver(observer);
 
-    observer.observe(el);
+    if (el) {
+      observer.observe(el);
+    }
   });
 
   onCleanup(() => {

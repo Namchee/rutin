@@ -1,14 +1,15 @@
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/css';
 import type { ScheduleFormat } from '@/types';
+
 import { useEditorContext } from './context';
 
 const Hints: Record<ScheduleFormat, string[]> = {
-  amazon: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
+  amazon: ['Minute', 'Hour', 'Date', 'Month', 'Day', 'Year'],
   'cf-workers': ['Minute', 'Hour', 'Date', 'Month', 'Day'],
-  node: ['[Second]', 'Minute', 'Hour', 'Date', 'Day'],
+  node: ['[Second]', 'Minute', 'Hour', 'Date', 'Month', 'Day'],
   posix: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
-  quartz: ['Second', 'Minute', 'Hour', 'Date', 'Month', 'Day', '[Year]'],
+  quartz: ['[Second]', 'Minute', 'Hour', 'Date', 'Month', 'Day', '[Year]'],
   systemd: ['Day', 'Year-Month-Day', 'Hour:Minute:Second'],
 };
 
@@ -35,7 +36,7 @@ export function ScheduleHint() {
             'text-content-primary': !errors.includes(index),
             'text-danger-foreground': errors.includes(index),
           })}>
-            30
+            {result().tokens.length <= index ? '-' : result().tokens[index]}
           </span>
 
           <span>{hint}</span>
