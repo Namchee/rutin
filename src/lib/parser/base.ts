@@ -1,3 +1,5 @@
+import type { Temporal } from '@js-temporal/polyfill';
+
 import type { ScheduleFormat } from '@/types';
 import { POSIXParser } from './posix';
 
@@ -8,7 +10,7 @@ interface ValidationResult {
 interface ValidSchedule extends ValidationResult {
   status: 'valid';
   tokens: string[];
-  iterator: Generator<Date, unknown, unknown>;
+  iterator: Generator<Temporal.PlainDateTime, unknown, unknown>;
   descriptor: string;
 }
 
@@ -29,4 +31,4 @@ export interface ScheduleParser {
 
 export const Parsers: Record<ScheduleFormat, ScheduleParser> = {
   posix: POSIXParser,
-}
+};

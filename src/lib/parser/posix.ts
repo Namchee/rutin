@@ -1,8 +1,12 @@
+import { Temporal } from '@js-temporal/polyfill';
+
 import cronstrue from 'cronstrue';
 import type { ScheduleFormat } from '@/types';
 
 import type { ScheduleParser } from './base';
 import { createTokenValidator, getNumericRange } from './shared';
+
+const YEAR_LIMIT = 10;
 
 const DayToNumber = {
   fri: 5,
@@ -67,7 +71,58 @@ function isNormal(expr: string): boolean {
   return Object.keys(Macros).includes(expr.trim());
 }
 
-function* iterate(expr: string, start: Date) {
+function nextMatch(
+  curr: Temporal.PlainDateTime,
+  ranges: number[][],
+  isDomWild: boolean,
+  isDowWild: boolean,
+): Temporal.PlainDateTime | null {
+  const limit = curr.add({ years: YEAR_LIMIT });
+
+  while (Temporal.PlainDateTime.compare(curr, limit) <= 0) {
+    if (!ranges[3].includes(curr.month)) {
+      const nextMonth = ranges[3].find(m => m > curr.month) ?? ranges[3][0];
+      const year = nextMonth <= curr.month ? curr.year + 1 : curr.year;
+      curr = curr.with({ day: 1, hour: 0, minute: 0, month: nextMonth, second: 0, year });
+
+      continue;
+    }
+
+    const domMatch = ranges[2].includes(curr.day);
+    const dowMatch = ranges[4].includes(curr.dayOfWeek % 7);
+    const dateValid = isDomWild || isDowWild ? domMatch && dowMatch : domMatch || dowMatch;
+    if (!dateValid) {
+      curr = curr.add({ days: 1 }).with({ hour: 0, minute: 0, second: 0 });
+      continue;
+    }
+
+    if (!ranges[1].includes(curr.hour)) {
+      const nextHour = ranges[1].find(h => h > curr.hour) ?? ranges[1][0];
+      curr = (nextHour <= curr.hour ? curr.add({ days: 1 }) : curr).with({
+        hour: nextHour,
+        minute: 0,
+        second: 0,
+      });
+
+      continue;
+    }
+
+    if (!ranges[0].includes(curr.minute)) {
+      const nextMin = ranges[0].find(m => m > curr.minute) ?? ranges[0][0];
+      curr = (nextMin <= curr.minute ? curr.add({ hours: 1 }) : curr).with({
+        minute: nextMin,
+        second: 0,
+      });
+      continue;
+    }
+
+    return curr;
+  }
+
+  return null;
+}
+
+function* iterate(expr: string, start: Temporal.PlainDateTime) {
   const tokens = POSIXParser.normalize(expr).trim().split(/\s+/);
 
   // to be parsed, the expression must be complete
@@ -77,7 +132,7 @@ function* iterate(expr: string, start: Date) {
 
   const ranges = [
     getNumericRange(tokens[0], 0, 59),
-    getNumericRange(tokens[1], 1, 23),
+    getNumericRange(tokens[1], 0, 23),
     getNumericRange(tokens[2], 1, 31),
     getNumericRange(tokens[3], 1, 12),
     getNumericRange(tokens[4], 0, 6),
@@ -86,51 +141,14 @@ function* iterate(expr: string, start: Date) {
   const isDomWild = tokens[2] === '*';
   const isDowWild = tokens[4] === '*';
 
-  const curr = new Date(start.getTime());
-  curr.setSeconds(0);
+  const curr = start
+    .with({ microsecond: 0, millisecond: 0, nanosecond: 0, second: 0 })
+    .add({ minutes: 1 });
 
-  curr.setMinutes(curr.getMinutes() + 1);
-
-  while (true) {
-    if (!ranges[3].includes(curr.getMonth() + 1)) {
-      const nextMonth = ranges[3].find(m => m > curr.getMonth() + 1) || ranges[3][0];
-      if (nextMonth <= curr.getMonth() + 1) curr.setFullYear(curr.getFullYear() + 1);
-
-      curr.setMonth(nextMonth - 1, 1); // Reset to 1st of month
-      curr.setHours(0, 0, 0);
-      continue;
-    }
-
-    const domMatch = ranges[2].includes(curr.getDate());
-    const dowMatch = ranges[4].includes(curr.getDay());
-    const dateValid = isDomWild || isDowWild ? domMatch && dowMatch : domMatch || dowMatch;
-
-    if (!dateValid) {
-      curr.setDate(curr.getDate() + 1);
-      curr.setHours(0, 0, 0);
-      continue;
-    }
-
-    if (!ranges[1].includes(curr.getHours())) {
-      const nextHour = ranges[1].find(h => h > curr.getHours()) || ranges[1][0];
-      if (nextHour <= curr.getHours()) curr.setDate(curr.getDate() + 1);
-
-      curr.setHours(nextHour, 0, 0);
-      continue;
-    }
-
-    if (!ranges[0].includes(curr.getMinutes())) {
-      const nextMin = ranges[0].find(m => m > curr.getMinutes()) || ranges[0][0];
-      if (nextMin <= curr.getMinutes()) curr.setHours(curr.getHours() + 1);
-
-      curr.setMinutes(nextMin, 0);
-      continue;
-    }
-
-    yield new Date(curr.getTime());
-
-    // Prepare for next iteration
-    curr.setMinutes(curr.getMinutes() + 1);
+  let next = nextMatch(curr, ranges, isDomWild, isDowWild);
+  while (next !== null) {
+    yield next;
+    next = nextMatch(next.add({ minutes: 1 }), ranges, isDomWild, isDowWild);
   }
 }
 
@@ -182,7 +200,7 @@ export const POSIXParser = {
       if (trimmedExpr in Macros) {
         return {
           descriptor: cronstrue.toString(POSIXParser.normalize(expr)),
-          iterator: iterate(Macros[trimmedExpr], new Date()),
+          iterator: iterate(Macros[trimmedExpr], Temporal.Now.plainDateTimeISO()),
           normal: false,
           status: 'valid',
           tokens: Macros[trimmedExpr].split(' '),
@@ -219,6 +237,14 @@ export const POSIXParser = {
       };
     }
 
+    if (tokens.length > 5) {
+      return {
+        error: [],
+        normal: true,
+        status: 'invalid',
+      };
+    }
+
     const error: number[] = [];
 
     for (let idx = 0; idx < tokens.length; idx++) {
@@ -237,10 +263,10 @@ export const POSIXParser = {
 
     return {
       descriptor: cronstrue.toString(POSIXParser.normalize(expr)),
-      iterator: iterate(trimmedExpr, new Date()),
+      iterator: iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),
       normal: isNormal(trimmedExpr),
       status: 'valid',
-      tokens: trimmedExpr.split('\\s+'),
+      tokens: trimmedExpr.split(/\s+/),
     };
   },
 };

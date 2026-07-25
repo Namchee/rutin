@@ -1,9 +1,13 @@
 /// <reference types="@solidjs/start/env" />
 
-export {}
+import type { Temporal as TemporalType } from '@js-temporal/polyfill';
 
 type Theme = 'light' | 'dark' | 'system';
 
 declare global {
-  interface Window { THEME: Theme }
+  interface Window {
+    THEME: Theme;
+  }
+
+  const Temporal: typeof TemporalType;
 }
