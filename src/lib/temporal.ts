@@ -5,14 +5,18 @@ export function formatDate(
   date: Temporal.PlainDateTime,
   options?: Intl.DateTimeFormatOptions,
 ): string {
-  return date.toLocaleString('en-GB', {
+  const { timeZone, ...rest } = options ?? {};
+
+  const value = timeZone ? date.toZonedDateTime(timeZone) : date;
+
+  return value.toLocaleString('en-GB', {
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
     month: 'short',
     weekday: 'short',
     year: 'numeric',
-    ...options,
+    ...rest,
   })
 }
 

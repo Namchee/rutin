@@ -1,6 +1,24 @@
-import { Temporal } from '@js-temporal/polyfill';
-import { createSignal, Show } from 'solid-js';
-import { SelectLabel } from '@/components/ui/Select';
+import { createListCollection } from '@ark-ui/solid';
+import { type Accessor, createSignal, For, type Setter, Show } from 'solid-js';
+
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/Drawer';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/Select';
+
+import { cn } from '@/lib/css';
+import { useMediaQuery } from '@/lib/hooks/use-media-query';
+
 import { useEditorContext } from './context';
 
 function ExecutionEmpty() {
@@ -15,24 +33,41 @@ function ExecutionEmpty() {
   );
 }
 
-function FormatSelectorDrawer() {
-  const { format, setFormat } = useEditorContext();
+const Timezones: Record<string, { label: string; value: string; description: string }> = {
+  local: {
+    description: `GMT ${Temporal.Now.zonedDateTimeISO().offset}`,
+    label: 'Local',
+    value: Temporal.Now.timeZoneId(),
+  },
+  utc: {
+    description: 'GMT +00:00',
+    label: 'UTC',
+    value: 'utc',
+  },
+};
 
+interface TimezoneSelectorProps {
+  timezone: Accessor<string>;
+
+  setTimezone: Setter<string>;
+}
+
+function TimezoneDrawer({ timezone, setTimezone }: Readonly<TimezoneSelectorProps>) {
   const [open, setOpen] = createSignal(false);
 
-  function onSelect(format: ScheduleFormat) {
-    setFormat(format);
+  function onSelect(tz: string) {
+    setTimezone(tz);
 
     setOpen(false);
   }
 
   return (
     <div class="flex items-center gap-2">
-      <p class="font-medium text-content-tertiary text-sm">Dialect</p>
-
       <Drawer open={open()} onOpenChange={d => setOpen(d.open)}>
-        <DrawerTrigger class="flex h-8 w-24 items-center justify-between rounded-md border border-separator p-2 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
-          <p class="truncate font-medium text-sm">{Formats[format()].label}</p>
+        <DrawerTrigger class="flex h-8 w-32 items-center justify-between gap-2 rounded-md border border-separator p-2 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
+          <div class="i-lucide-globe size-4 shrink-0" />
+
+          <p class="truncate font-medium text-sm">{Timezones[timezone()].label}</p>
 
           <div class="i-lucide-chevron-down ml-auto size-3 shrink-0 text-accent-foreground/50" />
         </DrawerTrigger>
@@ -41,17 +76,17 @@ function FormatSelectorDrawer() {
           <div class="px-2 py-4">
             <DrawerHeader class="px-2 pt-0 pb-2 text-left">
               <DrawerTitle class="font-mono text-content-secondary text-xs uppercase">
-                Dialect
+                Timezone
               </DrawerTitle>
             </DrawerHeader>
 
             <div class="flex flex-col gap-1">
-              <For each={Object.entries(Formats)}>
+              <For each={Object.entries(Timezones)}>
                 {([key, value]) => (
                   <div
-                    onPointerDown={() => onSelect(key as ScheduleFormat)}
+                    onPointerDown={() => onSelect(key)}
                     class={cn('flex items-center gap-3 rounded-md p-2 hover:bg-background-hover', {
-                      'bg-background-hover': format() === key,
+                      'bg-background-hover': timezone() === key,
                     })}>
                     <div class="flex-1">
                       <p class="font-medium text-content-primary text-sm">{value.label}</p>
@@ -61,7 +96,7 @@ function FormatSelectorDrawer() {
 
                     <div
                       class={cn('i-lucide-check size-4 text-content-primary', {
-                        invisible: format() !== key,
+                        invisible: timezone() !== key,
                       })}
                     />
                   </div>
@@ -75,40 +110,40 @@ function FormatSelectorDrawer() {
   );
 }
 
-export function FormatSelector() {
-  const { format, setFormat } = useEditorContext();
-
+export function TimezoneSelector({ timezone, setTimezone }: Readonly<TimezoneSelectorProps>) {
   const isNonMobile = useMediaQuery('(min-width: 768px)');
 
   const collection = createListCollection({
-    items: Object.entries(Formats).map(([k, v]) => ({ label: v.label, value: k })),
+    items: Object.entries(Timezones).map(([k, v]) => ({ label: v.label, value: k })),
   });
 
   return (
-    <Show when={isNonMobile()} fallback={<FormatSelectorDrawer />}>
+    <Show
+      when={isNonMobile()}
+      fallback={<TimezoneDrawer timezone={timezone} setTimezone={setTimezone} />}>
       <Select
         collection={collection}
-        value={[format()]}
-        onValueChange={v => setFormat(v.value[0] as unknown as ScheduleFormat)}
+        value={[timezone()]}
+        onValueChange={v => setTimezone(v.value[0])}
         class="flex items-center gap-2">
-        <SelectLabel class="text-content-secondary">Dialect</SelectLabel>
+        <SelectTrigger class='w-32 transition-colors'>
+          <div class="flex items-center gap-2">
+            <div class="i-lucide-globe size-4" />
 
-        <SelectTrigger>
-          <SelectValue
-            class="h-fit w-24 truncate font-medium leading-none"
-            placeholder="Select dialect..."
-          />
+            <SelectValue
+              class='h-fit truncate font-medium leading-none'
+              placeholder="Select dialect..."
+            />
+          </div>
         </SelectTrigger>
 
-        <SelectContent class="max-w-sm">
+        <SelectContent class="max-w-md">
           <For each={collection.items}>
             {item => (
               <SelectItem item={item.value}>
                 <p class="font-medium text-sm leading-normal">{item.label}</p>
 
-                <p class="text-content-tertiary text-xs">
-                  {Formats[item.value as ScheduleFormat].description}
-                </p>
+                <p class="text-content-tertiary text-xs">{Timezones[item.value].description}</p>
               </SelectItem>
             )}
           </For>
@@ -121,18 +156,14 @@ export function FormatSelector() {
 export function ScheduleExecutions() {
   const { state } = useEditorContext();
 
-  const callAmsterdam = Temporal.ZonedDateTime.from('2026-04-24T15:00:00[Europe/Amsterdam]');
-
-  const callNewYork = callAmsterdam.withTimeZone('America/New_York');
-
-  const [timezone, setTimezone] = createSignal<Temporal.TimeZoneLike>();
+  const [timezone, setTimezone] = createSignal<string>('utc');
 
   return (
     <div class="flex flex-col overflow-hidden rounded-lg border border-separator transition-colors">
-      <div class="border-separator border-b p-4 transition-colors">
+      <div class="flex items-center justify-between border-separator border-b p-4 transition-colors">
         <p class="font-medium text-content-secondary text-sm">Next executions</p>
 
-        <></>
+        <TimezoneSelector timezone={timezone} setTimezone={setTimezone} />
       </div>
 
       <div class="min-h-48 flex-1">
