@@ -42,9 +42,18 @@ function createEditorContext() {
     setResult(Parsers[format()].validate(el.value));
   }
 
+  function onBlur(event: FocusEvent) {
+    const target = event.relatedTarget;
+
+    if (!target || !(target instanceof HTMLElement) || !target.classList.contains('active-hint')) {
+      setCaret(-1);
+    }
+  }
+
   return {
     caret,
     format,
+    onBlur,
 
     onInput,
 

@@ -2,9 +2,8 @@ import { createEffect, createSignal, For, Show } from 'solid-js';
 
 import { Code } from '@/components/ui/Code';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
-
+import { cn } from '@/lib/css';
 import type { ScheduleFormat } from '@/types';
-
 import { useEditorContext } from './context';
 
 interface FieldRange {
@@ -121,7 +120,7 @@ function getForms(format: ScheduleFormat) {
 }
 
 export function ScheduleSyntax() {
-  const { format } = useEditorContext();
+  const { format, caret } = useEditorContext();
   const [advancedForms, setAdvancedForms] = createSignal<[string, AdvancedForm][]>(
     getForms(format()),
   );
@@ -155,8 +154,10 @@ export function ScheduleSyntax() {
       </div>
 
       <div>
-        {Object.entries(Range[format()]).map(([key, value]) => (
-          <div class="flex items-center justify-between px-4 py-3 text-xs leading-snug transition-colors hover:bg-background">
+        {Object.entries(Range[format()]).map(([key, value], index) => (
+          <div class={cn("flex items-center justify-between px-4 py-3 text-xs leading-snug transition-colors hover:bg-background", {
+            'bg-background': caret() === index
+          })}>
             <div class="flex items-center gap-1 font-medium text-content-primary">
               {key.charAt(0).toUpperCase() + key.slice(1)}
 

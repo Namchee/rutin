@@ -22,7 +22,7 @@ const Placeholders: Record<ScheduleFormat, string> = {
 };
 
 export function ScheduleEditor() {
-  const { onInput, result, format } = useEditorContext();
+  const { onInput, result, format, onBlur } = useEditorContext();
 
   return (
     <div class="flex flex-col rounded-lg border border-separator transition-colors">
@@ -49,6 +49,7 @@ export function ScheduleEditor() {
             type="text"
             class="w-full rounded-lg border border-separator bg-background text-center font-mono text-2xl transition-colors transition-shadow focus:outline-none focus:ring-2 focus:ring-content-tertiary/25"
             onInput={e => onInput(e.target)}
+            onBlur={onBlur}
             spellcheck={false}
             placeholder={Placeholders[format()]}
             autocomplete="off"
@@ -64,7 +65,7 @@ export function ScheduleEditor() {
 
       <div class="flex items-center justify-between border-separator border-t p-4 transition-colors">
         <div>
-          <Button size="sm" disabled>
+          <Button size="sm" disabled={!result().normal}>
             <div class="i-lucide-wrench text-brand-foreground" />
             Normalize
           </Button>

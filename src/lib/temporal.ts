@@ -1,6 +1,5 @@
 import type { Temporal } from '@js-temporal/polyfill';
 
-
 export function formatDate(
   date: Temporal.PlainDateTime,
   options?: Intl.DateTimeFormatOptions,
@@ -14,16 +13,14 @@ export function formatDate(
     hour: '2-digit',
     minute: '2-digit',
     month: 'short',
-    weekday: 'short',
+    timeZoneName: 'long',
+    weekday: 'long',
     year: 'numeric',
     ...rest,
-  })
+  });
 }
 
-export function formatRelativeTime(
-  a: Temporal.PlainDateTime,
-  b: Temporal.PlainDateTime,
-): string {
+export function formatRelativeTime(a: Temporal.PlainDateTime, b: Temporal.PlainDateTime): string {
   const formatter = new Intl.RelativeTimeFormat('en-GB', { numeric: 'auto' });
   const diff = a.since(b, { largestUnit: 'year' });
 

@@ -194,7 +194,7 @@ export function ScheduleExecutions() {
         <TimezoneSelector timezone={timezone} setTimezone={setTimezone} />
       </div>
 
-      <div class="min-h-48 flex-1">
+      <div class='h-64 max-h-64 flex-1 overflow-auto'>
         <Show when={executions().length > 0} fallback={ExecutionEmpty()}>
           <For each={executions()}>
             {e => (
