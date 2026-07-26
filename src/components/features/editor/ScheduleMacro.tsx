@@ -53,8 +53,8 @@ export function ScheduleMacro() {
   });
 
   return (
-    <div class="rounded-lg border border-separator transition-colors">
-      <div class="flex items-center justify-between border-separator border-b p-4 transition-colors">
+    <div class="rounded-lg border border-separator">
+      <div class="flex items-center justify-between border-separator border-b p-4">
         <p class="font-medium text-content-secondary text-sm">Macros</p>
 
         <p class="text-content-tertiary text-xs">Normalize expands these</p>

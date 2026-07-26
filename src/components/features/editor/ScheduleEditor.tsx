@@ -25,8 +25,8 @@ export function ScheduleEditor() {
   const { onInput, result, format, onBlur } = useEditorContext();
 
   return (
-    <div class="flex flex-col rounded-lg border border-separator transition-colors">
-      <div class="flex items-center justify-between border-separator border-b p-4 transition-colors">
+    <div class="flex flex-col rounded-lg border border-separator">
+      <div class="flex items-center justify-between border-separator border-b p-4">
         <FormatSelector />
 
         <Show when={result().status !== 'incomplete'}>
@@ -47,7 +47,7 @@ export function ScheduleEditor() {
         <div class="px-4 pt-4">
           <input
             type="text"
-            class="w-full rounded-lg border border-separator bg-background text-center font-mono text-2xl transition-colors transition-shadow focus:outline-none focus:ring-2 focus:ring-content-tertiary/25"
+            class="w-full rounded-lg border border-separator bg-background text-center font-mono text-2xl transition-shadow focus:outline-none focus:ring-2 focus:ring-content-tertiary/25"
             onInput={e => onInput(e.target)}
             onBlur={onBlur}
             spellcheck={false}
@@ -63,7 +63,7 @@ export function ScheduleEditor() {
 
       <ScheduleDescriptor />
 
-      <div class="flex items-center justify-between border-separator border-t p-4 transition-colors">
+      <div class="flex items-center justify-between border-separator border-t p-4">
         <div>
           <Button size="sm" disabled={!result().normal}>
             <div class="i-lucide-wrench text-brand-foreground" />

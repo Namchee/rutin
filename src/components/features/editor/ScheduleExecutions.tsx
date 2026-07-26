@@ -187,14 +187,14 @@ export function ScheduleExecutions() {
   });
 
   return (
-    <div class="flex flex-col overflow-hidden rounded-lg border border-separator transition-colors">
-      <div class="flex items-center justify-between border-separator border-b p-4 transition-colors">
+    <div class="flex flex-col overflow-hidden rounded-lg border border-separator">
+      <div class="flex items-center justify-between border-separator border-b p-4">
         <p class="font-medium text-content-secondary text-sm">Next executions</p>
 
         <TimezoneSelector timezone={timezone} setTimezone={setTimezone} />
       </div>
 
-      <div class='h-64 max-h-64 flex-1 overflow-auto'>
+      <div class='h-64 max-h-64 min-h-64 flex-1 overflow-auto'>
         <Show when={executions().length > 0} fallback={ExecutionEmpty()}>
           <For each={executions()}>
             {e => (
@@ -211,7 +211,7 @@ export function ScheduleExecutions() {
         </Show>
       </div>
 
-      <div class="border-separator border-t bg-background p-2 transition-colors dark:bg-surface">
+      <div class="border-separator border-t bg-background p-2 dark:bg-surface">
         <p class="text-center text-content-tertiary text-xs">Scroll for more executions</p>
       </div>
     </div>

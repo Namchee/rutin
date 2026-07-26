@@ -128,9 +128,9 @@ export function FormatSelector() {
         value={[format()]}
         onValueChange={v => setFormat(v.value[0] as unknown as ScheduleFormat)}
         class="flex items-center gap-2">
-        <SelectLabel class="text-content-secondary transition-colors">Dialect</SelectLabel>
+        <SelectLabel class="text-content-secondary">Dialect</SelectLabel>
 
-        <SelectTrigger class="transition-colors">
+        <SelectTrigger>
           <SelectValue
             class="h-fit w-24 truncate font-medium leading-none"
             placeholder="Select dialect..."

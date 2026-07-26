@@ -13,7 +13,7 @@ export function ScheduleDescriptor() {
   const r = result();
 
   return (
-    <div class="flex items-start gap-2 border-separator border-t p-4 text-sm transition-colors">
+    <div class="flex items-start gap-2 border-separator border-t p-4 text-sm">
       <div class="i-lucide-speech mt-[1px] size-4 shrink-0 text-content-tertiary" />
 
       <div class="flex flex-col gap-2">

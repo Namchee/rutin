@@ -39,7 +39,7 @@ interface SidebarProps {
 function MobileDrawer({ expanded, setExpanded }: Readonly<SidebarProps>) {
   return (
     <Drawer swipeDirection="start" open={expanded()} onOpenChange={() => setExpanded(false)}>
-      <DrawerContent class="w-[240px] gap-4 p-2 transition-colors">
+      <DrawerContent class="w-[240px] gap-4 p-2">
         <Button
           onClick={() => setExpanded(false)}
           size="icon"
@@ -72,7 +72,7 @@ function SidebarBody({ expanded }: Readonly<SidebarProps>) {
               <TooltipTrigger>
                 <A
                   class={cn(
-                    'flex h-8 w-full items-center gap-2 text-nowrap rounded-md p-2 hover:bg-background-hover',
+                    'flex h-8 w-full items-center gap-2 text-nowrap rounded-md p-2 transition-colors hover:bg-background-hover',
                     {
                       'bg-background-hover text-content-primary': location.pathname === link.href,
                       'text-content-secondary group-hover:text-content-primary':
@@ -110,9 +110,11 @@ function SidebarBody({ expanded }: Readonly<SidebarProps>) {
           <ThemeSwitcher />
         </div>
 
-        <div class='hidden h-[1px] bg-separator'></div>
+        <div class="hidden h-[1px] bg-separator"></div>
 
-        <Button size="sm" class="hidden">Sign In</Button>
+        <Button size="sm" class="hidden">
+          Sign In
+        </Button>
       </div>
     </div>
   );

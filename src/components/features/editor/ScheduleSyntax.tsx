@@ -130,14 +130,14 @@ export function ScheduleSyntax() {
   });
 
   return (
-    <div class="rounded-lg border border-separator transition-colors">
-      <div class="flex items-center justify-between border-separator border-b p-4 transition-colors">
+    <div class="rounded-lg border border-separator">
+      <div class="flex items-center justify-between border-separator border-b p-4">
         <p class="font-medium text-content-secondary text-sm">Field References</p>
 
         <p class="text-content-tertiary text-xs">Hover for more details</p>
       </div>
 
-      <div class="flex flex-col gap-2 border-separator border-b p-4 transition-colors">
+      <div class="flex flex-col gap-2 border-separator border-b p-4">
         <p class="font-medium text-content-tertiary text-xs uppercase">Operators</p>
 
         <div class="flex flex-wrap items-center gap-2">
@@ -155,7 +155,7 @@ export function ScheduleSyntax() {
 
       <div>
         {Object.entries(Range[format()]).map(([key, value], index) => (
-          <div class={cn("flex items-center justify-between px-4 py-3 text-xs leading-snug transition-colors hover:bg-background", {
+          <div class={cn("flex items-center justify-between px-4 py-3 text-xs leading-snug hover:bg-background", {
             'bg-background': caret() === index
           })}>
             <div class="flex items-center gap-1 font-medium text-content-primary">

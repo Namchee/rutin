@@ -12,8 +12,8 @@ interface TopbarProps {
 
 export function Topbar({ expanded, setExpanded }: Readonly<TopbarProps>) {
   return (
-    <div class="sticky top-0 z-10 bg-background pt-2 transition-colors">
-      <div class="relative flex h-14 items-center justify-between rounded-t-lg border border-separator bg-surface p-4 transition-colors">
+    <div class="sticky top-0 z-10 bg-background pt-2">
+      <div class="relative flex h-14 items-center justify-between rounded-t-lg border border-separator bg-surface p-4">
         <div class="flex items-center">
           <A href="/" class="i-me-logo size-6 shrink-0 md:hidden" />
 

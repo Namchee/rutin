@@ -29,10 +29,39 @@ function setThemeToCookie(theme: Theme) {
 export function ThemeSwitcher() {
   const [theme, setTheme] = createSignal(getTheme());
 
+  // Code taken from next-themes
+  function disableTransition(): HTMLStyleElement {
+    const css = document.createElement('style');
+    css.appendChild(
+      document.createTextNode(
+        `*,*::before,*::after{-webkit-transition:none!important;-moz-transition:none!important;-o-transition:none!important;-ms-transition:none!important;transition:none!important}`
+      )
+    );
+
+    document.head.appendChild(css);
+
+    return css;
+  }
+
+  function enableTransition(style: HTMLStyleElement) {
+    if (document.body) {
+      // eslint-disable no-unused-expressions
+      window.getComputedStyle(document.body).opacity;
+    }
+
+    setTimeout(() => {
+      if (document.head.contains(style)) {
+        document.head.removeChild(style);
+      }
+    }, 0);
+  }
+
   createEffect(() => {
     const root = document.documentElement;
 
     const resolvedTheme = theme();
+
+    const styleTag = disableTransition();
 
     switch (resolvedTheme) {
       case 'light': {
@@ -61,13 +90,15 @@ export function ThemeSwitcher() {
         break;
       }
     }
+
+    enableTransition(styleTag);
   });
 
   return (
     <ToggleGroup
       value={[theme()]}
       onValueChange={e => setTheme(e.value[0] as unknown as Theme)}
-      class="inset-shadow h-6 gap-[2px] rounded-md border border-separator bg-background-hover px-[1px] transition-colors">
+      class="inset-shadow h-6 gap-[2px] rounded-md border border-separator bg-background-hover px-[1px]">
       <ToggleGroupItem value="light" class="size-5 rounded p-0" aria-label="Switch to light theme">
         <div class="i-lucide-sun size-[14px]" />
       </ToggleGroupItem>
