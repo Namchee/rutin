@@ -66,7 +66,6 @@ function createEditorContext() {
     updateCaret();
 
     const result = Parsers[format()].validate(ref.value);
-    console.log(result);
     setState(result.status);
     setNormal(result.normal);
     setTokens(result.tokens);
@@ -85,18 +84,23 @@ function createEditorContext() {
   }
 
   function onHintSelect(index: number) {
-    const token = tokens()?.[index];
-    if (!token || !ref) {
+    if (!ref) {
       return;
     }
 
-    const tokenIdx = ref.value.indexOf(token);
-    if (tokenIdx === -1) {
+    const matcher = ref.value.matchAll(/\S+/g);
+    const tokens = Array.from(matcher, match => ({
+      endIndex: match.index + match[0].length,
+      startIndex: match.index,
+      token: match[0],
+    }));
+
+    if (tokens.length <= index) {
       return;
     }
 
     ref.focus();
-    ref.setSelectionRange(tokenIdx, token.length);
+    ref.setSelectionRange(tokens[index].startIndex, tokens[index].endIndex);
   }
 
   function onCaretMovement() {

@@ -45,6 +45,8 @@
 
   --danger: var(--red-100);
   --danger-foreground: var(--red-600);
+
+  --selection: var(--grey-200);
 }
 
 html.dark {
@@ -65,6 +67,8 @@ html.dark {
 
   --danger: var(--red-950);
   --danger-foreground: var(--red-400);
+
+  --selection: var(--grey-800);
 }
 
 body {
@@ -80,4 +84,8 @@ body {
 .scrollbar-none {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+::selection {
+  background-color: var(--selection);
 }
