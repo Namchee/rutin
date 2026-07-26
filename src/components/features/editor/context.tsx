@@ -12,14 +12,18 @@ const ScheduleLabel: Record<Exclude<ScheduleState, 'valid'>, string> = {
 };
 
 function createEditorContext() {
-  let ref!: HTMLInputElement;
+  let ref: HTMLInputElement | undefined;
+
+  function setRef(el: HTMLInputElement) {
+    ref = el;
+  }
 
   const [format, setFormat] = createSignal<ScheduleFormat>('posix');
 
   const [state, setState] = createSignal<ScheduleState>('incomplete');
   const [tokens, setTokens] = createSignal<string[]>([]);
   const [descriptor, setDescriptor] = createSignal<string>(ScheduleLabel.incomplete);
-  const [normal, setNormal] = createSignal<boolean>(true);
+  const [normal, setNormal] = createSignal<boolean>(false);
   const [errors, setErrors] = createSignal<number[]>([]);
   const [generator, setGenerator] =
     createSignal<Generator<Temporal.PlainDateTime, unknown, unknown>>();
@@ -112,9 +116,9 @@ function createEditorContext() {
     onHintSelect,
 
     onInput,
-    ref,
 
     setFormat,
+    setRef,
     state,
     tokens,
   } as const;

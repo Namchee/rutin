@@ -163,14 +163,20 @@ export function ScheduleExecutions() {
   const [executions, setExecutions] = createSignal<Temporal.PlainDateTime[]>([]);
   const [timezone, setTimezone] = createSignal<string>('utc');
 
-  let ref!: HTMLDivElement;
+  // signal, not a plain ref: <Show> remounts the sentinel, so the observer has to re-attach
+  const [sentinel, setSentinel] = createSignal<HTMLDivElement>();
+  let scroller!: HTMLDivElement;
 
-  useIntersectionObserver(ref, () => {
-    const gen = generator();
-    if (gen) {
-      setExecutions(prev => [...prev, ...take(gen, 10)]);
-    }
-  });
+  useIntersectionObserver(
+    sentinel,
+    () => {
+      const gen = generator();
+      if (gen) {
+        setExecutions(prev => [...prev, ...take(gen, 10)]);
+      }
+    },
+    { root: () => scroller },
+  );
 
   createEffect(() => {
     const gen = generator();
@@ -188,7 +194,7 @@ export function ScheduleExecutions() {
         <TimezoneSelector timezone={timezone} setTimezone={setTimezone} />
       </div>
 
-      <div class='h-64 max-h-64 min-h-64 flex-1 overflow-auto'>
+      <div ref={scroller} class="h-64 max-h-64 min-h-64 flex-1 overflow-auto">
         <Show when={executions().length > 0} fallback={ExecutionEmpty()}>
           <For each={executions()}>
             {e => (
@@ -201,7 +207,7 @@ export function ScheduleExecutions() {
             )}
           </For>
 
-          <div ref={ref} />
+          <div ref={setSentinel} />
         </Show>
       </div>
 

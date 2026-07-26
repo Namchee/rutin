@@ -1,9 +1,22 @@
-import { createEffect, createSignal, onCleanup } from "solid-js";
+import { type Accessor, createEffect, onCleanup } from 'solid-js';
 
-export function useIntersectionObserver(el: HTMLElement, onIntersect: () => void) {
-  const [observer, setObserver] = createSignal<IntersectionObserver | null>(null);
+type IntersectionOptions = {
+  root?: Accessor<Element | undefined>;
+  rootMargin?: string;
+  threshold?: number | number[];
+};
 
+export function useIntersectionObserver(
+  target: Accessor<Element | undefined>,
+  onIntersect: () => void,
+  options: IntersectionOptions = {},
+) {
   createEffect(() => {
+    const el = target();
+    if (!el) {
+      return;
+    }
+
     const observer = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
@@ -13,22 +26,16 @@ export function useIntersectionObserver(el: HTMLElement, onIntersect: () => void
         });
       },
       {
-        root: el,
+        root: options.root?.(),
+        rootMargin: options.rootMargin,
+        threshold: options.threshold,
       },
     );
 
-    setObserver(observer);
+    observer.observe(el);
 
-    if (el) {
-      observer.observe(el);
-    }
-  });
-
-  onCleanup(() => {
-    const activeObserver = observer();
-
-    if (activeObserver) {
-      activeObserver.disconnect();
-    }
+    onCleanup(() => {
+      observer.disconnect();
+    });
   });
 }
