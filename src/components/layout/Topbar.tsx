@@ -1,8 +1,10 @@
 import { A } from '@solidjs/router';
 import type { Accessor, Setter } from 'solid-js';
+
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
+
 import { ThemeSwitcher } from '../ThemeSwitcher';
-import { Button } from '../ui/Button';
+import { MobileDrawer } from './Sidebar';
 
 interface TopbarProps {
   expanded: Accessor<boolean>;
@@ -21,7 +23,7 @@ export function Topbar({ expanded, setExpanded }: Readonly<TopbarProps>) {
             <TooltipTrigger
               class="group grid size-6 cursor-pointer place-items-center rounded bg-surface transition-colors hover:bg-surface-hover max-md:hidden"
               onClick={() => setExpanded(prev => !prev)}>
-              <div class='i-lucide-panel-right size-4 bg-content-secondary transition-colors group-hover:bg-content-primary' />
+              <div class="i-lucide-panel-right size-4 bg-content-secondary transition-colors group-hover:bg-content-primary" />
             </TooltipTrigger>
 
             <TooltipContent>{expanded() ? 'Shrink' : 'Expand'} Sidebar</TooltipContent>
@@ -32,13 +34,7 @@ export function Topbar({ expanded, setExpanded }: Readonly<TopbarProps>) {
           <ThemeSwitcher />
         </div>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          class="size-6 rounded p-0 md:hidden"
-          onClick={() => setExpanded(true)}>
-          <div class="i-lucide-text-align-end size-4 bg-content-secondary transition-colors group-hover:bg-content-primary" />
-        </Button>
+        <MobileDrawer />
       </div>
     </div>
   );

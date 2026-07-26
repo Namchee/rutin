@@ -1,11 +1,11 @@
 import { A, useLocation } from '@solidjs/router';
-import { type Accessor, type Setter, Show } from 'solid-js';
+import type { Accessor, Setter } from 'solid-js';
 
 import { cn } from '@/lib/css';
-import { useMediaQuery } from '@/lib/hooks/use-media-query';
+
 import { ThemeSwitcher } from '../ThemeSwitcher';
 import { Button } from '../ui/Button';
-import { Drawer, DrawerContent } from '../ui/Drawer';
+import { Drawer, DrawerContent, DrawerTrigger } from '../ui/Drawer';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
 
 const Links = [
@@ -36,19 +36,15 @@ interface SidebarProps {
   setExpanded: Setter<boolean>;
 }
 
-function MobileDrawer({ expanded, setExpanded }: Readonly<SidebarProps>) {
+export function MobileDrawer() {
   return (
-    <Drawer swipeDirection="start" open={expanded()} onOpenChange={() => setExpanded(false)}>
-      <DrawerContent class="w-[240px] gap-4 p-2">
-        <Button
-          onClick={() => setExpanded(false)}
-          size="icon"
-          variant="ghost"
-          class="absolute top-3 right-3 size-4 p-0">
-          <div class="i-lucide-x size-3 text-content-primary" />
-        </Button>
+    <Drawer swipeDirection="start">
+      <DrawerTrigger class='group grid size-6 place-items-center rounded transition-colors hover:bg-surface-hover'>
+        <div class="i-lucide-text-align-end size-4 bg-content-secondary transition-colors group-hover:bg-content-primary" />
+      </DrawerTrigger>
 
-        <SidebarBody expanded={expanded} setExpanded={setExpanded} />
+      <DrawerContent class="w-[240px] gap-4 p-2" showX>
+        <SidebarBody expanded={() => true} setExpanded={() => { }} />
       </DrawerContent>
     </Drawer>
   );
@@ -121,21 +117,13 @@ function SidebarBody({ expanded }: Readonly<SidebarProps>) {
 }
 
 export function Sidebar({ expanded, setExpanded }: Readonly<SidebarProps>) {
-  const isNonMobile = useMediaQuery('(min-width: 768px)');
-
   return (
-    <>
-      <div
-        class={cn('sticky top-0 hidden h-screen flex-col p-4 transition-all duration-250 md:flex', {
-          'w-16': !expanded(),
-          'w-60': expanded(),
-        })}>
-        <SidebarBody expanded={expanded} setExpanded={setExpanded} />
-      </div>
-
-      <Show when={!isNonMobile()}>
-        <MobileDrawer expanded={expanded} setExpanded={setExpanded} />
-      </Show>
-    </>
+    <div
+      class={cn('sticky top-0 hidden h-screen flex-col p-4 transition-all duration-250 md:flex', {
+        'w-16': !expanded(),
+        'w-60': expanded(),
+      })}>
+      <SidebarBody expanded={expanded} setExpanded={setExpanded} />
+    </div>
   );
 }

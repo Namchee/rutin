@@ -1,7 +1,6 @@
-import { createEffect, createSignal, type JSX } from 'solid-js';
+import { createSignal, type JSX } from 'solid-js';
 
 import { cn } from '@/lib/css';
-import { useMediaQuery } from '@/lib/hooks/use-media-query';
 
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
@@ -11,12 +10,7 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: Readonly<LayoutProps>) {
-  const isNonMobile = useMediaQuery('(min-width: 768px)');
-  const [expanded, setExpanded] = createSignal<boolean>(isNonMobile());
-
-  createEffect(() => {
-    setExpanded(isNonMobile());
-  })
+  const [expanded, setExpanded] = createSignal<boolean>(true);
 
   return (
     <div class="flex min-h-screen bg-background text-content-primary">

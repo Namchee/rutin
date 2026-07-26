@@ -31,6 +31,7 @@ type DrawerContentProps<T extends ValidComponent = 'div'> = DrawerPrimitive.Cont
   as?: T;
   class?: string;
   children?: JSX.Element;
+  showX?: boolean;
 };
 
 const DrawerContent = <T extends ValidComponent = 'div'>(props: DrawerContentProps<T>) => {
@@ -63,6 +64,12 @@ const DrawerContent = <T extends ValidComponent = 'div'>(props: DrawerContentPro
                 </Show>
 
                 {props.children}
+
+                <Show when={props.showX}>
+                  <DrawerPrimitive.CloseTrigger class='absolute top-3 right-3 w-fit text-content-primary'>
+                    <div class="i-lucide-x size-3" />
+                  </DrawerPrimitive.CloseTrigger>
+                </Show>
               </DrawerPrimitive.Content>
             </DrawerPrimitive.Positioner>
           );
