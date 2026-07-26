@@ -261,6 +261,15 @@ export const POSIXParser = {
       };
     }
 
+    if (tokens.length > 5) {
+      return {
+        error: [],
+        normal: isNormal(trimmedExpr),
+        status: 'invalid',
+        tokens,
+      }
+    }
+
     return {
       descriptor: cronstrue.toString(POSIXParser.normalize(expr)),
       generator: iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),

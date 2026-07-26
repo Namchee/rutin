@@ -66,6 +66,7 @@ function createEditorContext() {
     updateCaret();
 
     const result = Parsers[format()].validate(ref.value);
+    console.log(result);
     setState(result.status);
     setNormal(result.normal);
     setTokens(result.tokens);

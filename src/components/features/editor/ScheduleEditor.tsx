@@ -69,7 +69,7 @@ export function ScheduleEditor() {
 
       <div class="flex items-center justify-between border-separator border-t p-4">
         <div>
-          <Button size="sm" disabled={!normal()}>
+          <Button size="sm" disabled={normal()}>
             <div class="i-lucide-wrench text-brand-foreground" />
             Normalize
           </Button>
