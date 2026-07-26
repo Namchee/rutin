@@ -155,9 +155,13 @@ export function ScheduleSyntax() {
 
       <div>
         {Object.entries(Range[format()]).map(([key, value], index) => (
-          <div class={cn("flex items-center justify-between px-4 py-3 text-xs leading-snug hover:bg-background", {
-            'bg-background': caret() === index
-          })}>
+          <div
+            class={cn(
+              'flex items-center justify-between px-4 py-3 text-xs leading-snug transition-colors hover:bg-background',
+              {
+                'bg-background': caret() === index,
+              },
+            )}>
             <div class="flex items-center gap-1 font-medium text-content-primary">
               {key.charAt(0).toUpperCase() + key.slice(1)}
 

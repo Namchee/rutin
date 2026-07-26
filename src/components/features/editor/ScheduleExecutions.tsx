@@ -37,16 +37,14 @@ function ExecutionEmpty() {
   );
 }
 
-const Timezones: Record<string, { label: string; value: string; description: string }> = {
-  local: {
+const Timezones: Record<string, { label: string; description: string }> = {
+  [Temporal.Now.timeZoneId()]: {
     description: `GMT ${Temporal.Now.zonedDateTimeISO().offset}`,
     label: Temporal.Now.timeZoneId(),
-    value: Temporal.Now.timeZoneId(),
   },
   utc: {
     description: 'GMT +00:00',
     label: 'UTC',
-    value: 'utc',
   },
 };
 
@@ -118,7 +116,10 @@ export function TimezoneSelector({ timezone, setTimezone }: Readonly<TimezoneSel
   const isNonMobile = useMediaQuery('(min-width: 768px)');
 
   const collection = createListCollection({
-    items: Object.entries(Timezones).map(([k, v]) => ({ label: v.label, value: k })),
+    items: Object.entries(Timezones).map(([k, v]) => ({
+      label: v.label,
+      value: k,
+    })),
   });
 
   return (
@@ -163,7 +164,6 @@ export function ScheduleExecutions() {
   const [executions, setExecutions] = createSignal<Temporal.PlainDateTime[]>([]);
   const [timezone, setTimezone] = createSignal<string>('utc');
 
-  // signal, not a plain ref: <Show> remounts the sentinel, so the observer has to re-attach
   const [sentinel, setSentinel] = createSignal<HTMLDivElement>();
   let scroller!: HTMLDivElement;
 
@@ -183,6 +183,9 @@ export function ScheduleExecutions() {
     if (gen) {
       // seed the executions
       setExecutions(take(gen, 20));
+    } else {
+      // reset if not valid
+      setExecutions([]);
     }
   });
 
@@ -199,7 +202,9 @@ export function ScheduleExecutions() {
           <For each={executions()}>
             {e => (
               <div class="flex items-center justify-between p-4">
-                <p class="font-mono text-sm">{formatDate(e)}</p>
+                <p class='font-mono text-content-secondary text-sm'>
+                  {formatDate(e, { timeZone: timezone() !== 'utc' ? timezone() : undefined })}
+                </p>
                 <p class="text-content-tertiary text-xs">
                   {formatRelativeTime(Temporal.Now.plainDateTimeISO(), e)}
                 </p>

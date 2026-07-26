@@ -6,15 +6,15 @@ export function formatDate(
 ): string {
   const { timeZone, ...rest } = options ?? {};
 
-  const value = timeZone ? date.toZonedDateTime(timeZone) : date;
+  const value = timeZone ? date.toZonedDateTime('UTC').withTimeZone(timeZone) : date;
 
   return value.toLocaleString('en-GB', {
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
     month: 'short',
-    timeZoneName: 'long',
-    weekday: 'long',
+    timeZoneName: 'shortGeneric',
+    weekday: 'short',
     year: 'numeric',
     ...rest,
   });
@@ -22,7 +22,7 @@ export function formatDate(
 
 export function formatRelativeTime(a: Temporal.PlainDateTime, b: Temporal.PlainDateTime): string {
   const formatter = new Intl.RelativeTimeFormat('en-GB', { numeric: 'auto' });
-  const diff = a.since(b, { largestUnit: 'year' });
+  const diff = a.until(b, { largestUnit: 'year' });
 
   const parts: [number, Intl.RelativeTimeFormatUnit][] = [
     [diff.years, 'year'],
