@@ -66,12 +66,13 @@ function createEditorContext() {
     updateCaret();
 
     const result = Parsers[format()].validate(ref.value);
+    console.log(result);
     setState(result.status);
     setNormal(result.normal);
     setTokens(result.tokens);
 
     setDescriptor(result.status === 'valid' ? result.descriptor : ScheduleLabel[result.status]);
-    setErrors(result.status === 'invalid' ? result.error : []);
+    setErrors(result.status !== 'valid' ? result.error : []);
     setGenerator(result.status === 'valid' ? result.generator : undefined);
   }
 

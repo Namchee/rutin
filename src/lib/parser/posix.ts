@@ -227,6 +227,7 @@ export const POSIXParser = {
       }
 
       return {
+        error: [],
         normal: true, // do not attempt to normalize
         status: 'incomplete',
         tokens: [],
@@ -234,26 +235,9 @@ export const POSIXParser = {
     }
 
     const tokens = POSIXParser.normalize(trimmedExpr).split(/\s+/).filter(Boolean);
-    if (tokens.length < 5) {
-      return {
-        normal: isNormal(expr),
-        status: 'incomplete',
-        tokens,
-      };
-    }
-
-    if (tokens.length > 5) {
-      return {
-        error: [],
-        normal: true,
-        status: 'invalid',
-        tokens,
-      };
-    }
-
     const error: number[] = [];
 
-    for (let idx = 0; idx < tokens.length; idx++) {
+    for (let idx = 0; idx < tokens.length && idx < 5; idx++) {
       if (!Validator[idx](tokens[idx])) {
         error.push(idx);
       }
@@ -264,6 +248,15 @@ export const POSIXParser = {
         error,
         normal: isNormal(trimmedExpr),
         status: 'invalid',
+        tokens,
+      };
+    }
+
+    if (tokens.length < 5) {
+      return {
+        error: [],
+        normal: isNormal(trimmedExpr),
+        status: 'incomplete',
         tokens,
       };
     }

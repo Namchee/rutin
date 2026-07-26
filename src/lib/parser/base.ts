@@ -16,6 +16,7 @@ interface ValidSchedule extends BaseValidationResult {
 
 interface IncompleteSchedule extends BaseValidationResult {
   status: 'incomplete';
+  error: number[];
 }
 
 interface InvalidSchedule extends BaseValidationResult {

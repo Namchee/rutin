@@ -26,8 +26,9 @@ export function ScheduleHint() {
           class={cn(
             'flex h-fit min-w-[21%] flex-shrink-0 flex-col items-center justify-center gap-0 py-1.5 font-mono font-normal lg:min-w-0 lg:flex-1',
             {
-              'bg-danger text-danger-foreground dark:bg-danger/50': errors().includes(index),
-              'bg-surface-hover': caret() === index,
+              'bg-danger text-danger-foreground hover:bg-danger dark:bg-danger/50':
+                errors().includes(index),
+              'bg-surface-hover': caret() === index && !errors().includes(index),
               'text-content-secondary': !errors().includes(index),
             },
           )}
