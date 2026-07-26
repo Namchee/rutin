@@ -22,23 +22,23 @@ const Placeholders: Record<ScheduleFormat, string> = {
 };
 
 export function ScheduleEditor() {
-  const { onInput, result, format, onBlur } = useEditorContext();
+  const { onInput, state, format, onBlur, onCaretMovement, normal, ref } = useEditorContext();
 
   return (
     <div class="flex flex-col rounded-lg border border-separator">
       <div class="flex items-center justify-between border-separator border-b p-4">
         <FormatSelector />
 
-        <Show when={result().status !== 'incomplete'}>
-          <Badge variant={result().status === 'valid' ? 'default' : 'outline'}>
+        <Show when={state() !== 'incomplete'}>
+          <Badge variant={state() === 'valid' ? 'default' : 'outline'}>
             <div
               class={cn('size-[14px]', {
-                'i-lucide-check': result().status === 'valid',
-                'i-lucide-x': result().status === 'invalid',
+                'i-lucide-check': state() === 'valid',
+                'i-lucide-x': state() === 'invalid',
               })}
             />
 
-            {result().status === 'valid' ? 'Valid' : 'Invalid'}
+            {state() === 'valid' ? 'Valid' : 'Invalid'}
           </Badge>
         </Show>
       </div>
@@ -48,8 +48,12 @@ export function ScheduleEditor() {
           <input
             type="text"
             class="w-full rounded-lg border border-separator bg-background text-center font-mono text-2xl transition-shadow focus:outline-none focus:ring-2 focus:ring-content-tertiary/25"
-            onInput={e => onInput(e.target)}
+            onInput={onInput}
+            onSelect={onCaretMovement}
+            onKeyUp={onCaretMovement}
+            onClick={onCaretMovement}
             onBlur={onBlur}
+            ref={ref}
             spellcheck={false}
             placeholder={Placeholders[format()]}
             autocomplete="off"
@@ -65,7 +69,7 @@ export function ScheduleEditor() {
 
       <div class="flex items-center justify-between border-separator border-t p-4">
         <div>
-          <Button size="sm" disabled={!result().normal}>
+          <Button size="sm" disabled={!normal()}>
             <div class="i-lucide-wrench text-brand-foreground" />
             Normalize
           </Button>

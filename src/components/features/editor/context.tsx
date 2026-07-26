@@ -1,19 +1,37 @@
+import type { Temporal } from '@js-temporal/polyfill';
 import { createContext, createSignal, type JSXElement, useContext } from 'solid-js';
-
-import { Parsers, type ValidationResult } from '@/lib/parser/base';
+import { Parsers } from '@/lib/parser/base';
 import type { ScheduleFormat } from '@/types';
 
 export type ScheduleState = 'valid' | 'invalid' | 'incomplete';
 export type ScheduleType = 'macro' | 'normal';
 
+const ScheduleLabel: Record<Exclude<ScheduleState, 'valid'>, string> = {
+  incomplete: 'Schedule is not complete',
+  invalid: 'There are error(s) in your schedule syntax',
+};
+
 function createEditorContext() {
+  let ref!: HTMLInputElement;
+
   const [format, setFormat] = createSignal<ScheduleFormat>('posix');
-  const [result, setResult] = createSignal<ValidationResult>(Parsers.posix.validate(''));
+
+  const [state, setState] = createSignal<ScheduleState>('incomplete');
+  const [tokens, setTokens] = createSignal<string[]>([]);
+  const [descriptor, setDescriptor] = createSignal<string>(ScheduleLabel.incomplete);
+  const [normal, setNormal] = createSignal<boolean>(true);
+  const [errors, setErrors] = createSignal<number[]>([]);
+  const [generator, setGenerator] =
+    createSignal<Generator<Temporal.PlainDateTime, unknown, unknown>>();
 
   const [caret, setCaret] = createSignal<number>(-1);
 
-  function updateCaret(el: HTMLInputElement) {
-    const { value, selectionStart } = el;
+  function updateCaret() {
+    if (!ref) {
+      return;
+    }
+
+    const { value, selectionStart } = ref;
     const trimmed = value.trim();
 
     if (selectionStart === null) {
@@ -36,29 +54,69 @@ function createEditorContext() {
     setCaret(currentSectionIdx);
   }
 
-  function onInput(el: HTMLInputElement) {
-    updateCaret(el);
+  function onInput() {
+    if (!ref) {
+      return;
+    }
 
-    setResult(Parsers[format()].validate(el.value));
+    updateCaret();
+
+    const result = Parsers[format()].validate(ref.value);
+    setState(result.status);
+    setNormal(result.normal);
+    setTokens(result.tokens);
+
+    setDescriptor(result.status === 'valid' ? result.descriptor : ScheduleLabel[result.status]);
+    setErrors(result.status === 'invalid' ? result.error : []);
+    setGenerator(result.status === 'valid' ? result.generator : undefined);
   }
 
   function onBlur(event: FocusEvent) {
     const target = event.relatedTarget;
 
-    if (!target || !(target instanceof HTMLElement) || !target.classList.contains('active-hint')) {
+    if (!target || !(target instanceof HTMLElement) || !target.dataset.hint) {
       setCaret(-1);
+    }
+  }
+
+  function onHintSelect(index: number) {
+    const token = tokens()?.[index];
+    if (!token || !ref) {
+      return;
+    }
+
+    const tokenIdx = ref.value.indexOf(token);
+    if (tokenIdx === -1) {
+      return;
+    }
+
+    ref.focus();
+    ref.setSelectionRange(tokenIdx, token.length);
+  }
+
+  function onCaretMovement() {
+    if (ref) {
+      updateCaret();
     }
   }
 
   return {
     caret,
+    descriptor,
+    errors,
     format,
+    generator,
+    normal,
     onBlur,
+    onCaretMovement,
+    onHintSelect,
 
     onInput,
+    ref,
 
-    result,
     setFormat,
+    state,
+    tokens,
   } as const;
 }
 

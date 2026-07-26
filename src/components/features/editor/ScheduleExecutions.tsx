@@ -158,10 +158,9 @@ export function TimezoneSelector({ timezone, setTimezone }: Readonly<TimezoneSel
 }
 
 export function ScheduleExecutions() {
-  const { result } = useEditorContext();
+  const { generator } = useEditorContext();
+
   const [executions, setExecutions] = createSignal<Temporal.PlainDateTime[]>([]);
-  const [generator, setGenerator] =
-    createSignal<Generator<Temporal.PlainDateTime, unknown, unknown>>();
   const [timezone, setTimezone] = createSignal<string>('utc');
 
   let ref!: HTMLDivElement;
@@ -174,13 +173,8 @@ export function ScheduleExecutions() {
   });
 
   createEffect(() => {
-    const r = result();
-
-    if (r.status === 'valid') {
-      const gen = r.generator;
-
-      setGenerator(gen);
-
+    const gen = generator();
+    if (gen) {
       // seed the executions
       setExecutions(take(gen, 20));
     }
