@@ -22,7 +22,7 @@ const Placeholders: Record<ScheduleFormat, string> = {
 };
 
 export function ScheduleEditor() {
-  const { onInput, state, format, onBlur, onCaretMovement, normal, value, ref } = useEditorContext();
+  const { onInput, state, format, onBlur, onCaretMovement, normal, value, ref, normalize } = useEditorContext();
 
   return (
     <div class="flex flex-col rounded-lg border border-separator">
@@ -70,7 +70,7 @@ export function ScheduleEditor() {
 
       <div class="flex items-center justify-between border-separator border-t p-4">
         <div>
-          <Button size="sm" disabled={normal()}>
+          <Button size="sm" disabled={normal()} onClick={normalize}>
             <div class="i-lucide-wrench text-brand-foreground" />
             Normalize
           </Button>

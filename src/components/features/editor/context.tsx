@@ -99,10 +99,10 @@ function createEditorContext() {
     input.setSelectionRange(tokens[index].startIndex, tokens[index].endIndex);
   }
 
-  function onCaretMovement() {
-    if (input) {
-      updateCaret();
-    }
+  function normalize() {
+    const normalized = Parsers[format()].normalize(value());
+
+    setValue(normalized);
   }
 
   return {
@@ -112,8 +112,9 @@ function createEditorContext() {
     format,
     generator,
     normal,
+    normalize,
     onBlur,
-    onCaretMovement,
+    onCaretMovement: updateCaret,
     onHintSelect,
 
     onInput,

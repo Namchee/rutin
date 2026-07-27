@@ -65,7 +65,51 @@ function isNormal(expr: string): boolean {
   const multiWhitespace = /[^\S ]|\s{2,}/;
 
   if (multiWhitespace.test(expr)) {
-    return true;
+    return false;
+  }
+
+  const tokens = expr.trim().split(/\s+/);
+
+  // check whether the month is numeric
+  if (tokens.length >= 4) {
+    const target = tokens[3];
+
+    // range check
+    const range = target.split('-');
+    if (range.length === 2 && range.some(s => s.toLowerCase() in DayToNumber)) {
+      return false;
+    }
+
+    // plural check
+    const plurals = target.split(',');
+    if (plurals.length > 1 && plurals.some(p => p.toLowerCase() in DayToNumber)) {
+      return false;
+    }
+
+    if (target.toLowerCase() in DayToNumber) {
+      return false;
+    }
+  }
+
+  // check whether the day is numeric
+  if (tokens.length >= 5) {
+    const target = tokens[4];
+
+    // range check
+    const range = target.split('-');
+    if (range.length === 2 && range.some(s => s.toLowerCase() in DayToNumber)) {
+      return false;
+    }
+
+    // plural check
+    const plurals = target.split(',');
+    if (plurals.length > 1 && plurals.some(p => p.toLowerCase() in DayToNumber)) {
+      return false;
+    }
+
+    if (target.toLowerCase() in DayToNumber) {
+      return false;
+    }
   }
 
   return Object.keys(Macros).includes(expr.trim());
@@ -188,9 +232,31 @@ export const POSIXParser = {
   hasMacro: true,
 
   normalize(expr: string): string {
-    const normalExpr = expr.trim().replaceAll(/[^\S ]|\s{2,}/g, ' ');
+    const normalExpr = expr.trim();
+    if (normalExpr in Macros) {
+      return Macros[normalExpr as keyof typeof Macros];
+    }
 
-    return normalExpr in Macros ? Macros[normalExpr as keyof typeof Macros] : normalExpr;
+    const tokens = normalExpr.split(/\s+/);
+    if (tokens.length >= 4) {
+      const pattern = Object.keys(MonthToNumber).join('|');
+      const regex = new RegExp(`\\b(${pattern})\\b`, 'gi');
+
+      const result = tokens[3].replace(regex, (match) => MonthToNumber[match.toLowerCase() as keyof typeof MonthToNumber].toString());
+
+      tokens[3] = result;
+    }
+
+    if (tokens.length >= 5) {
+      const pattern = Object.keys(DayToNumber).join('|');
+      const regex = new RegExp(`\\b(${pattern})\\b`, 'gi');
+
+      const result = tokens[4].replace(regex, (match) => DayToNumber[match.toLowerCase() as keyof typeof DayToNumber].toString());
+
+      tokens[4] = result;
+    }
+
+    return tokens.join(' ');
   },
 
   validate(expr: string): ReturnType<ScheduleParser['validate']> {
