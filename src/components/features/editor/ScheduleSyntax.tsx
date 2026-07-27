@@ -88,11 +88,13 @@ const Labels = {
 interface AdvancedForm {
   label: string;
   example: string;
+  fn?: (syntaxes: string[]) => boolean;
 }
 
 const AdvancedForms: Record<string, AdvancedForm> = {
   'L-x': {
     example: 'L-3 = 3 days before month end',
+    fn: s => s.includes('L'),
     label: 'x days before the last day',
   },
   LW: {
@@ -114,9 +116,13 @@ const AdvancedForms: Record<string, AdvancedForm> = {
 };
 
 function getForms(format: ScheduleFormat) {
-  return Object.entries(AdvancedForms).filter(syntax =>
-    Operators[format].some(f => syntax[0].includes(f)),
-  );
+  return Object.entries(AdvancedForms).filter(syntax => {
+    if (syntax[1].fn) {
+      return syntax[1].fn(Operators[format] as unknown as string[]);
+    }
+
+    return Operators[format].some(f => syntax[0].includes(f));
+  });
 }
 
 export function ScheduleSyntax() {
