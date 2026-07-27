@@ -103,3 +103,7 @@ body {
   background-color: var(--selection);
   border-radius: 20px;
 }
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(from var(--selection) calc(l * 0.95) c h);
+}

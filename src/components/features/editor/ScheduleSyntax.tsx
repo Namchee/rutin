@@ -157,7 +157,7 @@ export function ScheduleSyntax() {
         {Object.entries(Range[format()]).map(([key, value], index) => (
           <div
             class={cn(
-              'flex items-center justify-between px-4 py-3 text-xs leading-snug transition-colors hover:bg-background',
+              'flex items-center justify-between px-4 py-3 text-xs leading-snug transition-colors',
               {
                 'bg-background': caret() === index,
               },

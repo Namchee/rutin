@@ -7,35 +7,33 @@ type IntersectionOptions = {
 };
 
 export function useIntersectionObserver(
-  target: Accessor<Element | undefined>,
   onIntersect: () => void,
   options: IntersectionOptions = {},
 ) {
-  createEffect(() => {
-    const el = target();
-    if (!el) {
-      return;
-    }
+  function ref(elem: HTMLElement) {
+    createEffect(() => {
+      const observer = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              onIntersect();
+            }
+          });
+        },
+        {
+          root: options.root?.(),
+          rootMargin: options.rootMargin,
+          threshold: options.threshold,
+        },
+      );
 
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            onIntersect();
-          }
-        });
-      },
-      {
-        root: options.root?.(),
-        rootMargin: options.rootMargin,
-        threshold: options.threshold,
-      },
-    );
+      observer.observe(elem);
 
-    observer.observe(el);
-
-    onCleanup(() => {
-      observer.disconnect();
+      onCleanup(() => {
+        observer.disconnect();
+      });
     });
-  });
+  }
+
+  return { ref };
 }
