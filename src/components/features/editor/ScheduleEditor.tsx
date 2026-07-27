@@ -48,7 +48,7 @@ export function ScheduleEditor() {
     const ref = timeoutRef();
 
     if (ref) {
-      clearInterval(ref);
+      clearTimeout(ref);
     }
   });
 
