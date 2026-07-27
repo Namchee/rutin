@@ -1,4 +1,4 @@
-import { Show } from 'solid-js';
+import { createSignal, onCleanup, Show } from 'solid-js';
 
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -22,11 +22,39 @@ const Placeholders: Record<ScheduleFormat, string> = {
 };
 
 export function ScheduleEditor() {
-  const { onInput, state, format, onBlur, onCaretMovement, normal, value, ref, normalize } = useEditorContext();
+  const { onInput, state, format, onBlur, onCaretMovement, normal, value, ref, normalize } =
+    useEditorContext();
+
+  const [copied, setCopied] = createSignal<boolean>(false);
+  const [timeoutRef, setTimeoutRef] = createSignal<ReturnType<typeof setTimeout> | undefined>();
+
+  async function onCopy() {
+    try {
+      await navigator.clipboard.writeText(value());
+    } catch {
+      return;
+    }
+
+    setCopied(true);
+
+    setTimeoutRef(
+      setTimeout(() => {
+        setCopied(false);
+      }, 2_500),
+    );
+  }
+
+  onCleanup(() => {
+    const ref = timeoutRef();
+
+    if (ref) {
+      clearInterval(ref);
+    }
+  });
 
   return (
     <div class="flex flex-col rounded-lg border border-separator">
-      <div class='flex h-16 items-center justify-between border-separator border-b p-4'>
+      <div class="flex h-16 items-center justify-between border-separator border-b p-4">
         <FormatSelector />
 
         <Show when={state() !== 'incomplete'}>
@@ -49,7 +77,7 @@ export function ScheduleEditor() {
             type="text"
             class="w-full rounded-lg border border-separator bg-background text-center font-mono text-2xl transition-shadow focus:outline-none focus:ring-2 focus:ring-content-tertiary/25"
             value={value()}
-            onInput={(e) => onInput(e.currentTarget.value)}
+            onInput={e => onInput(e.currentTarget.value)}
             onSelect={onCaretMovement}
             onKeyUp={onCaretMovement}
             onClick={onCaretMovement}
@@ -77,12 +105,17 @@ export function ScheduleEditor() {
         </div>
 
         <div class="flex items-center gap-2">
-          <Button size="sm" variant="outline">
-            <div class="i-lucide-copy" />
-            Copy
+          <Button size="sm" variant="outline" onClick={onCopy} disabled={!value() || copied()}>
+            <div
+              class={cn({
+                'i-lucide-check': copied(),
+                'i-lucide-copy': !copied(),
+              })}
+            />
+            {copied() ? 'Copied!' : 'Copy'}
           </Button>
 
-          <Button size="sm" variant="outline">
+          <Button size="sm" variant="outline" class="hidden">
             <div class="i-lucide-save" />
             Save
           </Button>
