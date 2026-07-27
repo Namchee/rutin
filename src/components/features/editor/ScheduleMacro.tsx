@@ -1,6 +1,10 @@
-import { createEffect, createSignal, For, Show } from 'solid-js';
+import { For, Show } from 'solid-js';
+
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
+import { cn } from '@/lib/css';
+
 import type { ScheduleFormat } from '@/types';
+
 import { useEditorContext } from './context';
 
 interface Macro {
@@ -18,7 +22,6 @@ const Macros: Record<ScheduleFormat, Record<string, Macro>> = {
     '@hourly': { alias: '0 * * * *', label: 'Every hour' },
     '@midnight': { alias: '0 0 * * *', label: 'Every day on midnight' },
     '@monthly': { alias: '0 0 1 * *', label: 'Every month' },
-    '@reboot': { alias: '', label: 'After reboot' },
     '@weekly': { alias: '0 0 * * 0', label: 'Every week' },
     '@yearly': { alias: '0 0 1 1 *', label: 'Every year' },
   },
@@ -45,12 +48,8 @@ function EmptyMacro() {
 }
 
 export function ScheduleMacro() {
-  const { format } = useEditorContext();
-  const [macro, setMacro] = createSignal<Record<string, Macro>>(Macros[format()]);
-
-  createEffect(() => {
-    setMacro(Macros[format()]);
-  });
+  const { format, value } = useEditorContext();
+  const formatMacro = () => Macros[format()];
 
   return (
     <div class="rounded-lg border border-separator">
@@ -61,10 +60,12 @@ export function ScheduleMacro() {
       </div>
 
       <div class="flex flex-col">
-        <Show when={Object.keys(macro()).length > 0} fallback={<EmptyMacro />}>
-          <For each={Object.entries(macro())}>
+        <Show when={Object.keys(formatMacro()).length > 0} fallback={<EmptyMacro />}>
+          <For each={Object.entries(formatMacro())}>
             {([key, macro]) => (
-              <div class="flex items-center justify-between gap-1 px-4 py-3 text-xs leading-snug">
+              <div class={cn("flex items-center justify-between gap-1 px-4 py-3 text-xs leading-snug transition-colors", {
+                "bg-surface-hover": value().trim() === key
+              })}>
                 <Tooltip positioning={{ placement: 'left' }}>
                   <TooltipTrigger class='font-medium font-mono text-content-primary'>
                     {key}

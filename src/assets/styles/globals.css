@@ -45,8 +45,6 @@
 
   --danger: var(--red-100);
   --danger-foreground: var(--red-600);
-
-  --selection: var(--grey-200);
 }
 
 html.dark {
@@ -67,8 +65,6 @@ html.dark {
 
   --danger: var(--red-950);
   --danger-foreground: var(--red-400);
-
-  --selection: var(--grey-800);
 }
 
 body {
@@ -87,7 +83,7 @@ body {
 }
 
 ::selection {
-  background-color: var(--selection);
+  background-color: var(--separator);
 }
 
 ::-webkit-scrollbar {
@@ -100,10 +96,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--selection);
+  background-color: var(--separator);
   border-radius: 20px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: oklch(from var(--selection) calc(l * 0.95) c h);
+  background-color: oklch(from var(--separator) calc(l * 0.9) c h);
 }

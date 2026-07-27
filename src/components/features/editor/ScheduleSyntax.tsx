@@ -1,4 +1,4 @@
-import { createEffect, createSignal, For, Show } from 'solid-js';
+import { For, Show } from 'solid-js';
 
 import { Code } from '@/components/ui/Code';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
@@ -121,13 +121,8 @@ function getForms(format: ScheduleFormat) {
 
 export function ScheduleSyntax() {
   const { format, caret } = useEditorContext();
-  const [advancedForms, setAdvancedForms] = createSignal<[string, AdvancedForm][]>(
-    getForms(format()),
-  );
 
-  createEffect(() => {
-    setAdvancedForms(getForms(format()));
-  });
+  const advancedForms = () => getForms(format());
 
   return (
     <div class="rounded-lg border border-separator">

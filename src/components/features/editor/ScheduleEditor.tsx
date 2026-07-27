@@ -22,11 +22,11 @@ const Placeholders: Record<ScheduleFormat, string> = {
 };
 
 export function ScheduleEditor() {
-  const { onInput, state, format, onBlur, onCaretMovement, normal, setRef } = useEditorContext();
+  const { onInput, state, format, onBlur, onCaretMovement, normal, value, ref } = useEditorContext();
 
   return (
     <div class="flex flex-col rounded-lg border border-separator">
-      <div class="flex items-center justify-between border-separator border-b p-4">
+      <div class='flex h-16 items-center justify-between border-separator border-b p-4'>
         <FormatSelector />
 
         <Show when={state() !== 'incomplete'}>
@@ -48,7 +48,8 @@ export function ScheduleEditor() {
           <input
             type="text"
             class="w-full rounded-lg border border-separator bg-background text-center font-mono text-2xl transition-shadow focus:outline-none focus:ring-2 focus:ring-content-tertiary/25"
-            onInput={onInput}
+            value={value()}
+            onInput={(e) => onInput(e.currentTarget.value)}
             onSelect={onCaretMovement}
             onKeyUp={onCaretMovement}
             onClick={onCaretMovement}
@@ -56,7 +57,7 @@ export function ScheduleEditor() {
             spellcheck={false}
             placeholder={Placeholders[format()]}
             autocomplete="off"
-            ref={setRef}
+            ref={ref}
           />
         </div>
 

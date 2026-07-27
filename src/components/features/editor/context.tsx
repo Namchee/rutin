@@ -12,10 +12,10 @@ const ScheduleLabel: Record<Exclude<ScheduleState, 'valid'>, string> = {
 };
 
 function createEditorContext() {
-  let ref: HTMLInputElement | undefined;
+  let input: HTMLInputElement | undefined;
 
-  function setRef(el: HTMLInputElement) {
-    ref = el;
+  function ref(el: HTMLInputElement) {
+    input = el;
   }
 
   const [format, setFormat] = createSignal<ScheduleFormat>('posix');
@@ -29,25 +29,27 @@ function createEditorContext() {
     createSignal<Generator<Temporal.PlainDateTime, unknown, unknown>>();
 
   const [caret, setCaret] = createSignal<number>(-1);
+  const [value, setValue] = createSignal<string>('');
 
   function updateCaret() {
-    if (!ref) {
+    if (!input) {
       return;
     }
 
-    const { value, selectionStart } = ref;
-    const trimmed = value.trim();
+    const { selectionStart } = input;
+    const val = value();
+    const trimmed = val.trim();
 
     if (selectionStart === null) {
       return;
     }
 
-    if (trimmed.length === 0 || (value.startsWith('@') && Parsers[format()].hasMacro)) {
+    if (trimmed.length === 0 || (trimmed.startsWith('@') && Parsers[format()].hasMacro)) {
       setCaret(-1);
       return;
     }
 
-    const textBeforeCaret = value.slice(0, selectionStart);
+    const textBeforeCaret = val.slice(0, selectionStart);
     const tokensBefore = textBeforeCaret.match(/\S+/g) || [];
     const isAtTrailingSpace = /\s$/.test(textBeforeCaret);
 
@@ -58,15 +60,12 @@ function createEditorContext() {
     setCaret(currentSectionIdx);
   }
 
-  function onInput() {
-    if (!ref) {
-      return;
-    }
+  function onInput(val: string) {
+    setValue(val);
 
     updateCaret();
 
-    const result = Parsers[format()].validate(ref.value);
-    console.log(result);
+    const result = Parsers[format()].validate(val);
     setState(result.status);
     setNormal(result.normal);
     setTokens(result.tokens);
@@ -85,27 +84,23 @@ function createEditorContext() {
   }
 
   function onHintSelect(index: number) {
-    if (!ref) {
-      return;
-    }
-
-    const matcher = ref.value.matchAll(/\S+/g);
+    const matcher = value().matchAll(/\S+/g);
     const tokens = Array.from(matcher, match => ({
       endIndex: match.index + match[0].length,
       startIndex: match.index,
       token: match[0],
     }));
 
-    if (tokens.length <= index) {
+    if (tokens.length <= index || !input) {
       return;
     }
 
-    ref.focus();
-    ref.setSelectionRange(tokens[index].startIndex, tokens[index].endIndex);
+    input.focus();
+    input.setSelectionRange(tokens[index].startIndex, tokens[index].endIndex);
   }
 
   function onCaretMovement() {
-    if (ref) {
+    if (input) {
       updateCaret();
     }
   }
@@ -122,11 +117,14 @@ function createEditorContext() {
     onHintSelect,
 
     onInput,
+    ref,
 
     setFormat,
-    setRef,
+    setValue,
     state,
     tokens,
+
+    value,
   } as const;
 }
 

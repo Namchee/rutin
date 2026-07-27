@@ -189,7 +189,7 @@ export function ScheduleExecutions() {
 
   return (
     <div class="flex flex-col overflow-hidden rounded-lg border border-separator">
-      <div class="flex items-center justify-between border-separator border-b p-4">
+      <div class='flex h-16 items-center justify-between border-separator border-b p-4'>
         <p class="font-medium text-content-secondary text-sm">Next executions</p>
 
         <TimezoneSelector timezone={timezone} setTimezone={setTimezone} />
@@ -200,7 +200,7 @@ export function ScheduleExecutions() {
           <For each={executions()}>
             {e => (
               <div class="flex items-center justify-between p-4">
-                <p class='font-mono text-content-secondary text-sm'>
+                <p class="font-mono text-content-secondary text-sm leading-none">
                   {formatDate(e, { timeZone: timezone() !== 'utc' ? timezone() : undefined })}
                 </p>
                 <p class="text-content-tertiary text-xs">

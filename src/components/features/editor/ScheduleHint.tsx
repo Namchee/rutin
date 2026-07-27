@@ -14,7 +14,7 @@ const Hints: Record<ScheduleFormat, string[]> = {
 };
 
 export function ScheduleHint() {
-  const { format, caret, tokens, errors, onHintSelect } = useEditorContext();
+  const { format, caret, tokens, errors, onHintSelect, value, state } = useEditorContext();
 
   return (
     <div class="scrollbar-none flex w-full max-w-full gap-2 overflow-x-auto px-4">
@@ -22,7 +22,7 @@ export function ScheduleHint() {
         <Button
           variant="ghost"
           size="sm"
-          disabled={tokens().length <= index}
+          disabled={tokens().length <= index || (state() === 'valid' && value().trim().startsWith('@'))}
           class={cn(
             'flex h-fit min-w-[21%] flex-shrink-0 flex-col items-center justify-center gap-0 py-1.5 font-mono font-normal lg:min-w-0 lg:flex-1',
             {
