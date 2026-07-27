@@ -103,6 +103,7 @@ function createEditorContext() {
     const normalized = Parsers[format()].normalize(value());
 
     setValue(normalized);
+    setTokens(normalized.split(' '));
   }
 
   return {

@@ -300,7 +300,8 @@ export const POSIXParser = {
       };
     }
 
-    const tokens = POSIXParser.normalize(trimmedExpr).split(/\s+/).filter(Boolean);
+    const rawTokens = trimmedExpr.split(/\s+/);
+    const tokens = this.normalize(trimmedExpr).split(/\s+/).filter(Boolean);
     const error: number[] = [];
 
     for (let idx = 0; idx < tokens.length && idx < 5; idx++) {
@@ -314,7 +315,7 @@ export const POSIXParser = {
         error,
         normal: isNormal(trimmedExpr),
         status: 'invalid',
-        tokens,
+        tokens: rawTokens,
       };
     }
 
@@ -323,7 +324,7 @@ export const POSIXParser = {
         error: [],
         normal: isNormal(trimmedExpr),
         status: 'incomplete',
-        tokens,
+        tokens: rawTokens,
       };
     }
 
@@ -332,7 +333,7 @@ export const POSIXParser = {
         error: [],
         normal: isNormal(trimmedExpr),
         status: 'invalid',
-        tokens,
+        tokens: rawTokens,
       }
     }
 
@@ -341,7 +342,7 @@ export const POSIXParser = {
       generator: iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),
       normal: isNormal(trimmedExpr),
       status: 'valid',
-      tokens,
+      tokens: rawTokens,
     };
   },
 };
