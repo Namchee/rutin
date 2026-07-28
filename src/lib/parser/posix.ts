@@ -36,20 +36,80 @@ const MonthToNumber = {
 const Validator = [
   createTokenValidator(/[^0-9*,\-/]/, 0, 59),
   createTokenValidator(/[^0-9*,\-/]/, 0, 23),
-  createTokenValidator(/[^0-9*,\-LW#?/]/i, 1, 31),
+  createTokenValidator(/[^0-9*,\-/]/, 1, 31),
   createTokenValidator(/[^0-9*,\-/]/, 1, 12, (token: string): string => {
     const monthRegex = new RegExp(Object.keys(MonthToNumber).join('|'), 'gi');
     return token.replace(monthRegex, matched =>
-      MonthToNumber[matched.toUpperCase() as keyof typeof MonthToNumber].toString(),
+      MonthToNumber[matched.toLowerCase() as keyof typeof MonthToNumber].toString(),
     );
   }),
-  createTokenValidator(/[^0-9*,\-LW?#]/i, 0, 6, (token: string): string => {
+  createTokenValidator(/[^0-9*,\-/]/, 0, 6, (token: string): string => {
     const dayRegex = new RegExp(Object.keys(DayToNumber).join('|'), 'gi');
     return token.replace(dayRegex, matched =>
-      DayToNumber[matched.toUpperCase() as keyof typeof DayToNumber].toString(),
+      DayToNumber[matched.toLowerCase() as keyof typeof DayToNumber].toString(),
     );
   }),
 ];
+
+const Fields = [
+  { max: 59, min: 0 },
+  { max: 23, min: 0 },
+  { max: 31, min: 1 },
+  { aliases: MonthToNumber, max: 12, min: 1 },
+  { aliases: DayToNumber, max: 6, min: 0 },
+] as const;
+
+function canonical(token: string, field: (typeof Fields)[number]): string {
+  const { max, min } = field;
+  const aliases = 'aliases' in field ? field.aliases : undefined;
+
+  let t = token;
+
+  // names -> numbers
+  if (aliases) {
+    const regex = new RegExp(`\\b(${Object.keys(aliases).join('|')})\\b`, 'gi');
+    t = t.replace(regex, m => String(aliases[m.toLowerCase() as keyof typeof aliases]));
+  }
+
+  // DON'T TRY TO NORMALIZE THESE!!
+  if (/[LW#?/]/i.test(t)) {
+    return t;
+  }
+
+  // token -> value set
+  let values: number[];
+  try {
+    values = getNumericRange(t, min, max);
+  } catch {
+    return token;
+  }
+
+  // Collapse wildcard
+  if (values.length === max - min + 1) {
+    return '*';
+  }
+
+  // Value set -> shortest equivalent form; runs of 3+ become ranges
+  const parts: string[] = [];
+  for (let i = 0; i < values.length;) {
+    let j = i;
+    while (j + 1 < values.length && values[j + 1] === values[j] + 1) {
+      j++;
+    }
+
+    if (j - i >= 2) {
+      parts.push(`${values[i]}-${values[j]}`);
+    } else {
+      for (let k = i; k <= j; k++) {
+        parts.push(String(values[k]));
+      }
+    }
+
+    i = j + 1;
+  }
+
+  return parts.join(',');
+}
 
 const Macros: Record<string, string> = {
   '@annually': '0 0 1 1 *',
@@ -60,60 +120,6 @@ const Macros: Record<string, string> = {
   '@weekly': '0 0 * * 0',
   '@yearly': '0 0 1 1 *',
 };
-
-function isNormal(expr: string): boolean {
-  const multiWhitespace = /[^\S ]|\s{2,}/;
-
-  if (multiWhitespace.test(expr)) {
-    return false;
-  }
-
-  const tokens = expr.trim().split(/\s+/);
-
-  // check whether the month is numeric
-  if (tokens.length >= 4) {
-    const target = tokens[3];
-
-    // range check
-    const range = target.split('-');
-    if (range.length === 2 && range.some(s => s.toLowerCase() in DayToNumber)) {
-      return false;
-    }
-
-    // plural check
-    const plurals = target.split(',');
-    if (plurals.length > 1 && plurals.some(p => p.toLowerCase() in DayToNumber)) {
-      return false;
-    }
-
-    if (target.toLowerCase() in DayToNumber) {
-      return false;
-    }
-  }
-
-  // check whether the day is numeric
-  if (tokens.length >= 5) {
-    const target = tokens[4];
-
-    // range check
-    const range = target.split('-');
-    if (range.length === 2 && range.some(s => s.toLowerCase() in DayToNumber)) {
-      return false;
-    }
-
-    // plural check
-    const plurals = target.split(',');
-    if (plurals.length > 1 && plurals.some(p => p.toLowerCase() in DayToNumber)) {
-      return false;
-    }
-
-    if (target.toLowerCase() in DayToNumber) {
-      return false;
-    }
-  }
-
-  return Object.keys(Macros).includes(expr.trim());
-}
 
 function nextMatch(
   curr: Temporal.PlainDateTime,
@@ -174,13 +180,20 @@ function* iterate(expr: string, start: Temporal.PlainDateTime) {
     return undefined;
   }
 
-  const ranges = [
-    getNumericRange(tokens[0], 0, 59),
-    getNumericRange(tokens[1], 0, 23),
-    getNumericRange(tokens[2], 1, 31),
-    getNumericRange(tokens[3], 1, 12),
-    getNumericRange(tokens[4], 0, 6),
-  ];
+  let ranges: number[][];
+
+  // the generator body runs inside a reactive effect, so a malformed token must not escape
+  try {
+    ranges = [
+      getNumericRange(tokens[0], 0, 59),
+      getNumericRange(tokens[1], 0, 23),
+      getNumericRange(tokens[2], 1, 31),
+      getNumericRange(tokens[3], 1, 12),
+      getNumericRange(tokens[4], 0, 6),
+    ];
+  } catch {
+    return undefined;
+  }
 
   const isDomWild = tokens[2] === '*';
   const isDowWild = tokens[4] === '*';
@@ -231,32 +244,21 @@ export const POSIXParser = {
 
   hasMacro: true,
 
+  isNormal(expr: string): boolean {
+    return this.normalize(expr) === expr;
+  },
+
   normalize(expr: string): string {
-    const normalExpr = expr.trim();
-    if (normalExpr in Macros) {
-      return Macros[normalExpr as keyof typeof Macros];
+    const trimmed = expr.trim().replaceAll(/\s+/g, ' ');
+
+    if (trimmed in Macros) {
+      return Macros[trimmed];
     }
 
-    const tokens = normalExpr.split(/\s+/);
-    if (tokens.length >= 4) {
-      const pattern = Object.keys(MonthToNumber).join('|');
-      const regex = new RegExp(`\\b(${pattern})\\b`, 'gi');
-
-      const result = tokens[3].replace(regex, (match) => MonthToNumber[match.toLowerCase() as keyof typeof MonthToNumber].toString());
-
-      tokens[3] = result;
-    }
-
-    if (tokens.length >= 5) {
-      const pattern = Object.keys(DayToNumber).join('|');
-      const regex = new RegExp(`\\b(${pattern})\\b`, 'gi');
-
-      const result = tokens[4].replace(regex, (match) => DayToNumber[match.toLowerCase() as keyof typeof DayToNumber].toString());
-
-      tokens[4] = result;
-    }
-
-    return tokens.join(' ');
+    return trimmed
+      .split(' ')
+      .map((t, i) => (i < Fields.length ? canonical(t, Fields[i]) : t))
+      .join(' ');
   },
 
   validate(expr: string): ReturnType<ScheduleParser['validate']> {
@@ -313,7 +315,7 @@ export const POSIXParser = {
     if (error.length > 0) {
       return {
         error,
-        normal: isNormal(trimmedExpr),
+        normal: this.isNormal(trimmedExpr),
         status: 'invalid',
         tokens: rawTokens,
       };
@@ -322,7 +324,7 @@ export const POSIXParser = {
     if (tokens.length < 5) {
       return {
         error: [],
-        normal: isNormal(trimmedExpr),
+        normal: this.isNormal(trimmedExpr),
         status: 'incomplete',
         tokens: rawTokens,
       };
@@ -331,7 +333,7 @@ export const POSIXParser = {
     if (tokens.length > 5) {
       return {
         error: [],
-        normal: isNormal(trimmedExpr),
+        normal: this.isNormal(trimmedExpr),
         status: 'invalid',
         tokens: rawTokens,
       }
@@ -340,7 +342,7 @@ export const POSIXParser = {
     return {
       descriptor: cronstrue.toString(POSIXParser.normalize(expr)),
       generator: iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),
-      normal: isNormal(trimmedExpr),
+      normal: this.isNormal(trimmedExpr),
       status: 'valid',
       tokens: rawTokens,
     };

@@ -223,6 +223,36 @@ describe('createTokenValidator', () => {
 
     expect(actual).toBe(expected);
   });
+
+  it.each([
+    'L',
+    'L-3',
+    'LW',
+    '15W',
+    '5L',
+    '5#3',
+    '?',
+  ])('should not allow the non-POSIX form %s', input => {
+    const min = 1;
+    const max = 31;
+
+    const expected = false;
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max)(input);
+
+    expect(actual).toBe(expected);
+  });
+
+  it('should apply the preprocessing step before validating', () => {
+    const input = 'JAN';
+
+    const min = 1;
+    const max = 12;
+
+    const expected = true;
+    const actual = createTokenValidator(/[^0-9*,\-/]/, min, max, () => '1')(input);
+
+    expect(actual).toBe(expected);
+  });
 });
 
 describe('getNumericRange', () => {
@@ -301,5 +331,45 @@ describe('getNumericRange', () => {
     const actual = getNumericRange(token, min, max);
 
     expect(actual).toEqual(expected);
+  });
+
+  // the caller scans with `find(v => v > current)`, which skips values that arrive out of order
+  it('should return values in ascending order regardless of how they were written', () => {
+    const token = '5,1';
+    const min = 0;
+    const max = 59;
+
+    const expected = [1, 5];
+    const actual = getNumericRange(token, min, max);
+
+    expect(actual).toEqual(expected);
+  });
+
+  it('should merge values already covered by a range', () => {
+    const token = '1-3,2';
+    const min = 0;
+    const max = 59;
+
+    const expected = [1, 2, 3];
+    const actual = getNumericRange(token, min, max);
+
+    expect(actual).toEqual(expected);
+  });
+
+  // Number('') is 0, so an empty part would otherwise silently add a zero
+  it('should throw when a comma-separated value is empty', () => {
+    const token = '1,,3';
+    const min = 0;
+    const max = 59;
+
+    expect(() => getNumericRange(token, min, max)).toThrow();
+  });
+
+  it('should throw when the token is not parseable', () => {
+    const token = 'L';
+    const min = 1;
+    const max = 31;
+
+    expect(() => getNumericRange(token, min, max)).toThrow();
   });
 });

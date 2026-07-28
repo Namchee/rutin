@@ -72,17 +72,6 @@ export function isValidStep(expr: string, min: number, max: number): boolean {
   return !Number.isNaN(step) && step > 0;
 }
 
-function isValidL(_expr: string, _min: number, _max: number): boolean {}
-
-function isValidW(_expr: string, _min: number, _max: number): boolean {}
-
-function isValidHash(expr: string, _min: number, _max: number): boolean {
-  const pattern = /\d+#\d+/;
-  if (!pattern.test(expr)) {
-    return false;
-  }
-}
-
 /**
  * Create a reusable token validator, that includes range, wildcard, and step support
  *
@@ -116,33 +105,6 @@ export function createTokenValidator(
 
       if (t === '*') {
         continue;
-      }
-
-      const isL = t.includes('L');
-      if (isL) {
-        if (isValidL(t, min, max)) {
-          continue;
-        }
-
-        return false;
-      }
-
-      const isW = t.includes('W');
-      if (isW) {
-        if (isValidW(t, min, max)) {
-          continue;
-        }
-
-        return false;
-      }
-
-      const isHash = t.includes('#');
-      if (isHash) {
-        if (isValidHash(t, min, max)) {
-          continue;
-        }
-
-        return false;
       }
 
       const isStep = t.includes('/');
@@ -194,6 +156,11 @@ export function getNumericRange(token: string, min: number, max: number): number
   const subTokens = token.split(',');
 
   for (const t of subTokens) {
+    // Number('') is 0, which would silently turn `1,,2` into a schedule that fires at 0
+    if (!t) {
+      throw new Error('Schedule expression is not valid!');
+    }
+
     // it's a number, just push it
     if (!Number.isNaN(Number(t))) {
       ranges.add(Number(t));
