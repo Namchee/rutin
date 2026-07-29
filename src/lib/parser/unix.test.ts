@@ -1,7 +1,7 @@
 import { Temporal } from '@js-temporal/polyfill';
 import { describe, expect, it } from 'vitest';
 
-import { POSIXParser } from './posix';
+import { UNIXParser } from './unix';
 
 /**
  * Pull the first `count` executions of an expression.
@@ -10,7 +10,7 @@ import { POSIXParser } from './posix';
  * hold for any starting point rather than fixed timestamps.
  */
 function fires(expr: string, count: number): Temporal.PlainDateTime[] {
-  const result = POSIXParser.validate(expr);
+  const result = UNIXParser.validate(expr);
 
   if (result.status !== 'valid') {
     throw new Error(`expected ${expr} to be valid, got ${result.status}`);
@@ -33,7 +33,7 @@ describe('POSIXParser.normalize', () => {
     const input = '@daily';
 
     const expected = '0 0 * * *';
-    const actual = POSIXParser.normalize(input);
+    const actual = UNIXParser.normalize(input);
 
     expect(actual).toBe(expected);
   });
@@ -42,7 +42,7 @@ describe('POSIXParser.normalize', () => {
     const input = '  0  0 *\t\t* *  ';
 
     const expected = '0 0 * * *';
-    const actual = POSIXParser.normalize(input);
+    const actual = UNIXParser.normalize(input);
 
     expect(actual).toBe(expected);
   });
@@ -51,7 +51,7 @@ describe('POSIXParser.normalize', () => {
     const input = '1,2,* * * * *';
 
     const expected = '* * * * *';
-    const actual = POSIXParser.normalize(input);
+    const actual = UNIXParser.normalize(input);
 
     expect(actual).toBe(expected);
   });
@@ -60,7 +60,7 @@ describe('POSIXParser.normalize', () => {
     const input = '2,1 * * * *';
 
     const expected = '1,2 * * * *';
-    const actual = POSIXParser.normalize(input);
+    const actual = UNIXParser.normalize(input);
 
     expect(actual).toBe(expected);
   });
@@ -69,7 +69,7 @@ describe('POSIXParser.normalize', () => {
     const input = '1,2,3 * * * *';
 
     const expected = '1-3 * * * *';
-    const actual = POSIXParser.normalize(input);
+    const actual = UNIXParser.normalize(input);
 
     expect(actual).toBe(expected);
   });
@@ -78,7 +78,7 @@ describe('POSIXParser.normalize', () => {
     const input = '1-3,2 * * * *';
 
     const expected = '1-3 * * * *';
-    const actual = POSIXParser.normalize(input);
+    const actual = UNIXParser.normalize(input);
 
     expect(actual).toBe(expected);
   });
@@ -87,7 +87,7 @@ describe('POSIXParser.normalize', () => {
     const input = '0 0 * JAN-MAR *';
 
     const expected = '0 0 * 1-3 *';
-    const actual = POSIXParser.normalize(input);
+    const actual = UNIXParser.normalize(input);
 
     expect(actual).toBe(expected);
   });
@@ -96,7 +96,7 @@ describe('POSIXParser.normalize', () => {
     const input = '0 0 * * SUN';
 
     const expected = '0 0 * * 0';
-    const actual = POSIXParser.normalize(input);
+    const actual = UNIXParser.normalize(input);
 
     expect(actual).toBe(expected);
   });
@@ -106,7 +106,7 @@ describe('POSIXParser.normalize', () => {
     const input = '*/15 * * * *';
 
     const expected = '*/15 * * * *';
-    const actual = POSIXParser.normalize(input);
+    const actual = UNIXParser.normalize(input);
 
     expect(actual).toBe(expected);
   });
@@ -115,7 +115,7 @@ describe('POSIXParser.normalize', () => {
     const input = '0 0';
 
     const expected = '0 0';
-    const actual = POSIXParser.normalize(input);
+    const actual = UNIXParser.normalize(input);
 
     expect(actual).toBe(expected);
   });
@@ -128,10 +128,10 @@ describe('POSIXParser.normalize', () => {
     '  0  0 * JAN SUN',
     '*/15 * * * *',
   ])('should be idempotent for %s', input => {
-    const once = POSIXParser.normalize(input);
+    const once = UNIXParser.normalize(input);
 
     const expected = once;
-    const actual = POSIXParser.normalize(once);
+    const actual = UNIXParser.normalize(once);
 
     expect(actual).toBe(expected);
   });
@@ -145,7 +145,7 @@ describe('POSIXParser.isNormal', () => {
     '*/15 * * * *',
   ])('should report %s as normal', input => {
     const expected = true;
-    const actual = POSIXParser.isNormal(input);
+    const actual = UNIXParser.isNormal(input);
 
     expect(actual).toBe(expected);
   });
@@ -159,16 +159,16 @@ describe('POSIXParser.isNormal', () => {
     '@daily',
   ])('should report %s as not normal', input => {
     const expected = false;
-    const actual = POSIXParser.isNormal(input);
+    const actual = UNIXParser.isNormal(input);
 
     expect(actual).toBe(expected);
   });
 
   it('should report a normalized expression as normal', () => {
-    const input = POSIXParser.normalize('  0  0 * JAN,FEB SUN');
+    const input = UNIXParser.normalize('  0  0 * JAN,FEB SUN');
 
     const expected = true;
-    const actual = POSIXParser.isNormal(input);
+    const actual = UNIXParser.isNormal(input);
 
     expect(actual).toBe(expected);
   });
@@ -179,7 +179,7 @@ describe('POSIXParser.validate', () => {
     const input = '0 0 * * *';
 
     const expected = 'valid';
-    const actual = POSIXParser.validate(input).status;
+    const actual = UNIXParser.validate(input).status;
 
     expect(actual).toBe(expected);
   });
@@ -188,7 +188,7 @@ describe('POSIXParser.validate', () => {
     const input = '0 0 *';
 
     const expected = 'incomplete';
-    const actual = POSIXParser.validate(input).status;
+    const actual = UNIXParser.validate(input).status;
 
     expect(actual).toBe(expected);
   });
@@ -197,7 +197,7 @@ describe('POSIXParser.validate', () => {
     const input = '0 0 * * * *';
 
     const expected = 'invalid';
-    const actual = POSIXParser.validate(input).status;
+    const actual = UNIXParser.validate(input).status;
 
     expect(actual).toBe(expected);
   });
@@ -205,7 +205,7 @@ describe('POSIXParser.validate', () => {
   it('should report which fields are out of bounds', () => {
     const input = '99 0 * * 9';
 
-    const result = POSIXParser.validate(input);
+    const result = UNIXParser.validate(input);
 
     const expected = [0, 4];
     const actual = result.status === 'valid' ? [] : result.error;
@@ -217,7 +217,7 @@ describe('POSIXParser.validate', () => {
     const input = '0 0 * JAN SUN';
 
     const expected = ['0', '0', '*', 'JAN', 'SUN'];
-    const actual = POSIXParser.validate(input).tokens;
+    const actual = UNIXParser.validate(input).tokens;
 
     expect(actual).toEqual(expected);
   });
@@ -226,7 +226,7 @@ describe('POSIXParser.validate', () => {
     const input = '@daily';
 
     const expected = ['0', '0', '*', '*', '*'];
-    const actual = POSIXParser.validate(input).tokens;
+    const actual = UNIXParser.validate(input).tokens;
 
     expect(actual).toEqual(expected);
   });
@@ -235,7 +235,7 @@ describe('POSIXParser.validate', () => {
     const input = '@dai';
 
     const expected = 'incomplete';
-    const actual = POSIXParser.validate(input).status;
+    const actual = UNIXParser.validate(input).status;
 
     expect(actual).toBe(expected);
   });
@@ -244,7 +244,7 @@ describe('POSIXParser.validate', () => {
     const input = '@nope';
 
     const expected = 'invalid';
-    const actual = POSIXParser.validate(input).status;
+    const actual = UNIXParser.validate(input).status;
 
     expect(actual).toBe(expected);
   });
@@ -253,7 +253,7 @@ describe('POSIXParser.validate', () => {
     const input = '1,,2 * * * *';
 
     const expected = 'invalid';
-    const actual = POSIXParser.validate(input).status;
+    const actual = UNIXParser.validate(input).status;
 
     expect(actual).toBe(expected);
   });
@@ -269,7 +269,7 @@ describe('POSIXParser.validate', () => {
     '0 0 ? * 5',
   ])('should reject the non-POSIX expression %s', input => {
     const expected = 'invalid';
-    const actual = POSIXParser.validate(input).status;
+    const actual = UNIXParser.validate(input).status;
 
     expect(actual).toBe(expected);
   });
