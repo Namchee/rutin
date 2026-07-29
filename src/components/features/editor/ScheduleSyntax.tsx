@@ -15,9 +15,9 @@ const Operators = {
   amazon: ['-', ',', '*', '/', '?', 'L', 'W', '#'],
   'cf-workers': ['-', ',', '*', '/', 'L', 'W', '#'],
   node: ['-', ',', '*', '/', '?', 'L', 'W', '#'],
-  posix: ['-', ',', '*', '/'],
   quartz: ['-', ',', '*', '/', '?', 'L', 'W', '#'],
   systemd: [',', '..', '*'],
+  unix: ['-', ',', '*', '/'],
 } as const;
 
 const Range: Record<ScheduleFormat, Record<string, FieldRange>> = {
@@ -48,14 +48,6 @@ const Range: Record<ScheduleFormat, Record<string, FieldRange>> = {
     year: { optional: true, range: ['1970-2099'] },
   },
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
-  posix: {
-    minute: { optional: false, range: ['0-59'] },
-    hour: { optional: false, range: ['0-23'] },
-    date: { optional: false, range: ['1-31'] },
-    month: { optional: false, range: ['1-12'] },
-    day: { optional: false, range: ['0-6', 'SUN-SAT'] },
-  },
-  // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   quartz: {
     second: { optional: true, range: ['0-59'] },
     minute: { optional: false, range: ['0-59'] },
@@ -70,6 +62,14 @@ const Range: Record<ScheduleFormat, Record<string, FieldRange>> = {
     day: { optional: false, range: ['Mon-Sun'] },
     date: { optional: false, range: ['1970-01-01 - 2099-12-31'] },
     time: { optional: false, range: ['00:00-23:59'] },
+  },
+  // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
+  unix: {
+    minute: { optional: false, range: ['0-59'] },
+    hour: { optional: false, range: ['0-23'] },
+    date: { optional: false, range: ['1-31'] },
+    month: { optional: false, range: ['1-12'] },
+    day: { optional: false, range: ['0-6', 'SUN-SAT'] },
   },
 };
 

@@ -172,7 +172,7 @@ function nextMatch(
 }
 
 function* iterate(expr: string, start: Temporal.PlainDateTime) {
-  const tokens = POSIXParser.normalize(expr).trim().split(/\s+/);
+  const tokens = UNIXParser.normalize(expr).trim().split(/\s+/);
 
   // to be parsed, the expression must be complete
   if (tokens.length !== 5) {
@@ -201,11 +201,11 @@ function* iterate(expr: string, start: Temporal.PlainDateTime) {
   }
 }
 
-export const POSIXParser = {
+export const UNIXParser = {
   convert(expr: string, format: ScheduleFormat): string {
     switch (format) {
-      case 'posix': {
-        return POSIXParser.normalize(expr);
+      case 'unix': {
+        return UNIXParser.normalize(expr);
       }
 
       case 'quartz': {
@@ -261,7 +261,7 @@ export const POSIXParser = {
       // it's complete
       if (trimmedExpr in Macros) {
         return {
-          descriptor: cronstrue.toString(POSIXParser.normalize(expr)),
+          descriptor: cronstrue.toString(UNIXParser.normalize(expr)),
           generator: iterate(Macros[trimmedExpr], Temporal.Now.plainDateTimeISO()),
           normal: false,
           status: 'valid',
@@ -332,7 +332,7 @@ export const POSIXParser = {
     }
 
     return {
-      descriptor: cronstrue.toString(POSIXParser.normalize(expr)),
+      descriptor: cronstrue.toString(UNIXParser.normalize(expr)),
       generator: iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),
       normal: this.isNormal(trimmedExpr),
       status: 'valid',

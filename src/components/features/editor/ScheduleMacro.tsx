@@ -16,15 +16,6 @@ const Macros: Record<ScheduleFormat, Record<string, Macro>> = {
   amazon: {},
   'cf-workers': {},
   node: {},
-  posix: {
-    '@annually': { alias: '0 0 1 1 *', label: 'Every year' },
-    '@daily': { alias: '0 0 * * *', label: 'Every day' },
-    '@hourly': { alias: '0 * * * *', label: 'Every hour' },
-    '@midnight': { alias: '0 0 * * *', label: 'Every day on midnight' },
-    '@monthly': { alias: '0 0 1 * *', label: 'Every month' },
-    '@weekly': { alias: '0 0 * * 0', label: 'Every week' },
-    '@yearly': { alias: '0 0 1 1 *', label: 'Every year' },
-  },
   quartz: {},
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   systemd: {
@@ -36,6 +27,15 @@ const Macros: Record<ScheduleFormat, Record<string, Macro>> = {
     yearly: { alias: '*-01-01 00:00:00', label: 'Every year on 1st date' },
     quarterly: { alias: '*-01,04,07,10-01 00:00:00', label: 'Every quarter year' },
     semianually: { alias: '*-01,07-01 00:00:00', label: 'Twice per year' },
+  },
+  unix: {
+    '@annually': { alias: '0 0 1 1 *', label: 'Every year' },
+    '@daily': { alias: '0 0 * * *', label: 'Every day' },
+    '@hourly': { alias: '0 * * * *', label: 'Every hour' },
+    '@midnight': { alias: '0 0 * * *', label: 'Every day on midnight' },
+    '@monthly': { alias: '0 0 1 * *', label: 'Every month' },
+    '@weekly': { alias: '0 0 * * 0', label: 'Every week' },
+    '@yearly': { alias: '0 0 1 1 *', label: 'Every year' },
   },
 };
 
@@ -63,11 +63,15 @@ export function ScheduleMacro() {
         <Show when={Object.keys(formatMacro()).length > 0} fallback={<EmptyMacro />}>
           <For each={Object.entries(formatMacro())}>
             {([key, macro]) => (
-              <div class={cn("flex items-center justify-between gap-1 px-4 py-3 text-xs leading-snug transition-colors", {
-                "bg-surface-hover": value().trim() === key
-              })}>
+              <div
+                class={cn(
+                  'flex items-center justify-between gap-1 px-4 py-3 text-xs leading-snug transition-colors',
+                  {
+                    'bg-surface-hover': value().trim() === key,
+                  },
+                )}>
                 <Tooltip positioning={{ placement: 'left' }}>
-                  <TooltipTrigger class='font-medium font-mono text-content-primary'>
+                  <TooltipTrigger class="font-medium font-mono text-content-primary">
                     {key}
                   </TooltipTrigger>
 

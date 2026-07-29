@@ -26,9 +26,9 @@ import { useEditorContext } from './context';
 
 // biome-ignore assist/source/useSortedKeys: Need to preserve order
 const Formats: Record<ScheduleFormat, Format> = {
-  posix: {
+  unix: {
     description: '5 fields ⋅ Classic CRON',
-    label: 'POSIX',
+    label: 'UNIX',
   },
   quartz: {
     description: '6 - 7 fields ⋅ Java-based',

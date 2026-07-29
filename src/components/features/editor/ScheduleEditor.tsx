@@ -16,9 +16,9 @@ const Placeholders: Record<ScheduleFormat, string> = {
   amazon: '* * * * * *',
   'cf-workers': '* * * * *',
   node: '* * * * * *',
-  posix: '* * * * *',
   quartz: '* * * * * * *',
   systemd: '* *-*-* *:*:*',
+  unix: '* * * * *',
 };
 
 export function ScheduleEditor() {

@@ -8,9 +8,9 @@ const Hints: Record<ScheduleFormat, string[]> = {
   amazon: ['Minute', 'Hour', 'Date', 'Month', 'Day', 'Year'],
   'cf-workers': ['Minute', 'Hour', 'Date', 'Month', 'Day'],
   node: ['[Second]', 'Minute', 'Hour', 'Date', 'Month', 'Day'],
-  posix: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
   quartz: ['[Second]', 'Minute', 'Hour', 'Date', 'Month', 'Day', '[Year]'],
   systemd: ['Day', 'Year-Month-Day', 'Hour:Minute:Second'],
+  unix: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
 };
 
 export function ScheduleHint() {
@@ -22,7 +22,9 @@ export function ScheduleHint() {
         <Button
           variant="ghost"
           size="sm"
-          disabled={tokens().length <= index || (state() === 'valid' && value().trim().startsWith('@'))}
+          disabled={
+            tokens().length <= index || (state() === 'valid' && value().trim().startsWith('@'))
+          }
           class={cn(
             'flex h-fit min-w-[21%] flex-shrink-0 flex-col items-center justify-center gap-0 py-1.5 font-mono font-normal lg:min-w-0 lg:flex-1',
             {

@@ -1,7 +1,7 @@
 import type { Temporal } from '@js-temporal/polyfill';
 
 import type { ScheduleFormat } from '@/types';
-import { POSIXParser } from './posix';
+import { UNIXParser } from './unix';
 
 interface BaseValidationResult {
   normal: boolean;
@@ -34,5 +34,5 @@ export interface ScheduleParser {
 }
 
 export const Parsers: Record<ScheduleFormat, ScheduleParser> = {
-  posix: POSIXParser,
+  unix: UNIXParser,
 };

@@ -18,7 +18,7 @@ function createEditorContext() {
     input = el;
   }
 
-  const [format, setFormat] = createSignal<ScheduleFormat>('posix');
+  const [format, setFormat] = createSignal<ScheduleFormat>('unix');
 
   const [state, setState] = createSignal<ScheduleState>('incomplete');
   const [tokens, setTokens] = createSignal<string[]>([]);
