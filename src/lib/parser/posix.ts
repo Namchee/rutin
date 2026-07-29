@@ -36,14 +36,14 @@ const MonthToNumber = {
 const Validator = [
   createTokenValidator(/[^0-9*,\-/]/, 0, 59),
   createTokenValidator(/[^0-9*,\-/]/, 0, 23),
-  createTokenValidator(/[^0-9*,\-/]/, 1, 31),
+  createTokenValidator(/[^0-9*,\-/]/i, 1, 31),
   createTokenValidator(/[^0-9*,\-/]/, 1, 12, (token: string): string => {
     const monthRegex = new RegExp(Object.keys(MonthToNumber).join('|'), 'gi');
     return token.replace(monthRegex, matched =>
       MonthToNumber[matched.toLowerCase() as keyof typeof MonthToNumber].toString(),
     );
   }),
-  createTokenValidator(/[^0-9*,\-/]/, 0, 6, (token: string): string => {
+  createTokenValidator(/[^0-9*,\-/]/i, 0, 6, (token: string): string => {
     const dayRegex = new RegExp(Object.keys(DayToNumber).join('|'), 'gi');
     return token.replace(dayRegex, matched =>
       DayToNumber[matched.toLowerCase() as keyof typeof DayToNumber].toString(),
@@ -59,7 +59,7 @@ const Fields = [
   { aliases: DayToNumber, max: 6, min: 0 },
 ] as const;
 
-function canonical(token: string, field: (typeof Fields)[number]): string {
+function collapseExpressions(token: string, field: (typeof Fields)[number]): string {
   const { max, min } = field;
   const aliases = 'aliases' in field ? field.aliases : undefined;
 
@@ -71,12 +71,8 @@ function canonical(token: string, field: (typeof Fields)[number]): string {
     t = t.replace(regex, m => String(aliases[m.toLowerCase() as keyof typeof aliases]));
   }
 
-  // DON'T TRY TO NORMALIZE THESE!!
-  if (/[LW#?/]/i.test(t)) {
-    return t;
-  }
-
   // token -> value set
+  const hasStep = t.includes('/');
   let values: number[];
   try {
     values = getNumericRange(t, min, max);
@@ -84,12 +80,15 @@ function canonical(token: string, field: (typeof Fields)[number]): string {
     return token;
   }
 
-  // Collapse wildcard
   if (values.length === max - min + 1) {
     return '*';
   }
 
-  // Value set -> shortest equivalent form; runs of 3+ become ranges
+  if (hasStep) {
+    return t;
+  }
+
+  // Find shortest equivalent form
   const parts: string[] = [];
   for (let i = 0; i < values.length;) {
     let j = i;
@@ -180,20 +179,13 @@ function* iterate(expr: string, start: Temporal.PlainDateTime) {
     return undefined;
   }
 
-  let ranges: number[][];
-
-  // the generator body runs inside a reactive effect, so a malformed token must not escape
-  try {
-    ranges = [
-      getNumericRange(tokens[0], 0, 59),
-      getNumericRange(tokens[1], 0, 23),
-      getNumericRange(tokens[2], 1, 31),
-      getNumericRange(tokens[3], 1, 12),
-      getNumericRange(tokens[4], 0, 6),
-    ];
-  } catch {
-    return undefined;
-  }
+  const ranges = [
+    getNumericRange(tokens[0], 0, 59),
+    getNumericRange(tokens[1], 0, 23),
+    getNumericRange(tokens[2], 1, 31),
+    getNumericRange(tokens[3], 1, 12),
+    getNumericRange(tokens[4], 0, 6),
+  ];
 
   const isDomWild = tokens[2] === '*';
   const isDowWild = tokens[4] === '*';
@@ -257,7 +249,7 @@ export const POSIXParser = {
 
     return trimmed
       .split(' ')
-      .map((t, i) => (i < Fields.length ? canonical(t, Fields[i]) : t))
+      .map((t, i) => (i < Fields.length ? collapseExpressions(t, Fields[i]) : t))
       .join(' ');
   },
 

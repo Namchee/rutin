@@ -14,7 +14,7 @@
 export function isValidRange(expr: string, min: number, max: number): boolean {
   const tokens = expr.split('-').filter(Boolean);
 
-  if (tokens.length !== 2) {
+  if (tokens.length !== 2 || expr.length - 1 !== tokens.join('').length) {
     return false;
   }
 
@@ -72,6 +72,63 @@ export function isValidStep(expr: string, min: number, max: number): boolean {
   return !Number.isNaN(step) && step > 0;
 }
 
+function isValidL(expr: string, _min: number, max: number): boolean {
+  // Just L or LW
+  if (expr === 'L' || expr === 'LW') {
+    return true;
+  }
+
+  // Anchored: must be exactly \d+L, with dow in 1..7
+  const dowMatch = /^(\d+)L$/.exec(expr);
+  if (dowMatch) {
+    return Number(dowMatch[1]) >= 1 && Number(dowMatch[1]) <= 7;
+  }
+
+  // L-x syntax: must be exactly L-<non-negative digits in [0, max-1]>
+  const parts = expr.split('-');
+  if (parts.length !== 2 || parts[0] !== 'L' || parts[1].length === 0) {
+    return false;
+  }
+  const n = Number(parts[1]);
+  return !Number.isNaN(n) && n >= 0 && n < max;
+}
+
+function isValidW(expr: string, min: number, max: number): boolean {
+  if (expr === 'W') {
+    return true;
+  }
+
+  // Anchored + range-checked: must be exactly \d+W, with digit in [min, max]
+  const match = /^(\d+)W$/.exec(expr);
+  if (!match) {
+    return false;
+  }
+
+  const n = Number(match[1]);
+  return n >= min && n <= max;
+}
+
+function isValidHash(expr: string): boolean {
+  const m = /^(\d+)#(\d+)$/.exec(expr);
+  if (!m) {
+    return false;
+  }
+
+  const dow = Number(m[1]);
+  const n = Number(m[2]);
+
+  return dow >= 1 && dow <= 7 && n >= 1 && n <= 5;
+}
+
+function isValidNumber(expr: string, min: number, max: number): boolean {
+  if (!/^\d+$/.test(expr)) {
+    return false;
+  }
+
+  const n = Number(expr);
+  return n >= min && n <= max;
+}
+
 /**
  * Create a reusable token validator, that includes range, wildcard, and step support
  *
@@ -103,33 +160,20 @@ export function createTokenValidator(
         return false;
       }
 
-      if (t === '*') {
-        continue;
-      }
+      // Each sub-token must match exactly one family.
+      // The families are mutually exclusive and the validators
+      // are fully anchored, so a token matches at most one.
+      const matched =
+        t === '*' ||
+        t === '?' ||
+        isValidL(t, min, max) ||
+        isValidW(t, min, max) ||
+        isValidHash(t) ||
+        isValidStep(t, min, max) ||
+        isValidRange(t, min, max) ||
+        isValidNumber(t, min, max);
 
-      const isStep = t.includes('/');
-
-      if (isStep) {
-        if (isValidStep(t, min, max)) {
-          continue;
-        }
-
-        return false;
-      }
-
-      const isRange = t.includes('-');
-
-      if (isRange) {
-        if (isValidRange(t, min, max)) {
-          continue;
-        }
-
-        return false;
-      }
-
-      const singular = Number(t);
-
-      if (Number.isNaN(singular) || singular < min || singular > max) {
+      if (!matched) {
         return false;
       }
     }
@@ -156,13 +200,9 @@ export function getNumericRange(token: string, min: number, max: number): number
   const subTokens = token.split(',');
 
   for (const t of subTokens) {
-    // Number('') is 0, which would silently turn `1,,2` into a schedule that fires at 0
-    if (!t) {
-      throw new Error('Schedule expression is not valid!');
-    }
-
-    // it's a number, just push it
-    if (!Number.isNaN(Number(t))) {
+    // L, W, #, ? and empty sub-tokens are not valid POSIX.
+    // Fall through to the throw at the end of the loop.
+    if (/^\d+$/.test(t)) {
       ranges.add(Number(t));
 
       continue;
