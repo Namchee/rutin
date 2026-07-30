@@ -1,6 +1,7 @@
 import type { Temporal } from '@js-temporal/polyfill';
 
 import type { ScheduleFormat } from '@/types';
+import { CloudflareWorkersParser } from './cf-workers';
 import { UNIXParser } from './unix';
 
 interface BaseValidationResult {
@@ -34,5 +35,6 @@ export interface ScheduleParser {
 }
 
 export const Parsers: Record<ScheduleFormat, ScheduleParser> = {
+  'cf-workers': CloudflareWorkersParser,
   unix: UNIXParser,
 };

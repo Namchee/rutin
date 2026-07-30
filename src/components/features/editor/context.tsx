@@ -106,6 +106,19 @@ function createEditorContext() {
     setTokens(normalized.split(' '));
   }
 
+  function updateFormat(format: ScheduleFormat) {
+    setFormat(format);
+
+    const result = Parsers[format].validate(value());
+    setState(result.status);
+    setNormal(result.normal);
+    setTokens(result.tokens);
+
+    setDescriptor(result.status === 'valid' ? result.descriptor : ScheduleLabel[result.status]);
+    setErrors(result.status !== 'valid' ? result.error : []);
+    setGenerator(result.status === 'valid' ? result.generator : undefined);
+  }
+
   return {
     caret,
     descriptor,
@@ -121,7 +134,7 @@ function createEditorContext() {
     onInput,
     ref,
 
-    setFormat,
+    setFormat: updateFormat,
     setValue,
     state,
     tokens,

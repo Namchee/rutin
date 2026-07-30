@@ -12,7 +12,7 @@ const DayToNumber = {
   fri: 5,
   mon: 1,
   sat: 6,
-  sun: 0,
+  sun: 7,
   thu: 4,
   tue: 2,
   wed: 3,
@@ -36,14 +36,14 @@ const MonthToNumber = {
 const Validator = [
   createTokenValidator(/[^0-9*,\-/]/, 0, 59),
   createTokenValidator(/[^0-9*,\-/]/, 0, 23),
-  createTokenValidator(/[^0-9*,\-/]/i, 1, 31),
+  createTokenValidator(/[^0-9*,\-/LW]/i, 1, 31),
   createTokenValidator(/[^0-9*,\-/]/, 1, 12, (token: string): string => {
     const monthRegex = new RegExp(Object.keys(MonthToNumber).join('|'), 'gi');
     return token.replace(monthRegex, matched =>
       MonthToNumber[matched.toLowerCase() as keyof typeof MonthToNumber].toString(),
     );
   }),
-  createTokenValidator(/[^0-9*,\-/]/i, 0, 6, (token: string): string => {
+  createTokenValidator(/[^0-9*,\-/L#]/i, 1, 7, (token: string): string => {
     const dayRegex = new RegExp(Object.keys(DayToNumber).join('|'), 'gi');
     return token.replace(dayRegex, matched =>
       DayToNumber[matched.toLowerCase() as keyof typeof DayToNumber].toString(),
@@ -110,35 +110,170 @@ function collapseExpressions(token: string, field: (typeof Fields)[number]): str
   return parts.join(',');
 }
 
-const Macros: Record<string, string> = {
-  '@annually': '0 0 1 1 *',
-  '@daily': '0 0 * * *',
-  '@hourly': '0 * * * *',
-  '@midnight': '0 0 * * *',
-  '@monthly': '0 0 1 * *',
-  '@weekly': '0 0 * * 0',
-  '@yearly': '0 0 1 1 *',
-};
+function daysInMonth(year: number, month: number): number {
+  return new Temporal.PlainDate(year, month, 1).add({ months: 1 }).subtract({ days: 1 }).day;
+}
+
+function dayOfWeekFor(year: number, month: number, day: number): number {
+  return Temporal.PlainDate.from({ day, month, year }).dayOfWeek;
+}
+
+function nearestWeekdayToDay(year: number, month: number, target: number): number {
+  const day = Math.min(target, daysInMonth(year, month));
+  const dow = dayOfWeekFor(year, month, day);
+  if (dow === 6) {
+    // Saturday -> Friday
+    return day === 1 ? 3 : day - 1;
+  }
+  if (dow === 7) {
+    // Sunday -> Monday
+    const last = daysInMonth(year, month);
+    return day === last ? day - 2 : day + 1;
+  }
+  return day;
+}
+
+function lastWeekdayOfMonth(year: number, month: number): number {
+  const last = daysInMonth(year, month);
+  const dow = dayOfWeekFor(year, month, last);
+  if (dow === 6) {
+    return last - 1;
+  }
+  if (dow === 7) {
+    return last - 2;
+  }
+  return last;
+}
+
+function nthDayOfWeekInMonth(year: number, month: number, dow: number, n: number): number | null {
+  let count = 0;
+  const last = daysInMonth(year, month);
+  for (let d = 1; d <= last; d++) {
+    if (dayOfWeekFor(year, month, d) === dow) {
+      count++;
+      if (count === n) return d;
+    }
+  }
+
+  return null;
+}
+
+function lastDayOfWeekInMonth(year: number, month: number, dow: number): number {
+  const last = daysInMonth(year, month);
+  for (let d = last; d >= 1; d--) {
+    if (dayOfWeekFor(year, month, d) === dow) {
+      return d;
+    }
+  }
+  return last;
+}
+
+type DayMatcher = (year: number, month: number, day: number) => boolean;
+
+function compileDOMToken(token: string): DayMatcher | null {
+  if (token === 'L') return (y, m, d) => d === daysInMonth(y, m);
+  if (token === 'LW') return (y, m, d) => d === lastWeekdayOfMonth(y, m);
+  const w = /^(\d+)W$/.exec(token);
+  if (w) {
+    const target = Number(w[1]);
+    return (y, m, d) => d === nearestWeekdayToDay(y, m, target);
+  }
+
+  return null;
+}
+
+function compileDOWToken(token: string): DayMatcher | null {
+  // 1=Mon..7=Sun
+  if (token === 'L') {
+    return (y, m, d) => dayOfWeekFor(y, m, d) === 6;
+  }
+  const l = /^(\d+)L$/.exec(token);
+  if (l) {
+    const dow = Number(l[1]);
+    return (y, m, d) => d === lastDayOfWeekInMonth(y, m, dow);
+  }
+  const w = /^(\d+)W$/.exec(token);
+  if (w) {
+    const target = Number(w[1]);
+    return (y, m, d) => d === nearestWeekdayToDay(y, m, target);
+  }
+  const hash = /^(\d+)#(\d+)$/.exec(token);
+  if (hash) {
+    const dow = Number(hash[1]);
+    const n = Number(hash[2]);
+    return (y, m, d) => d === nthDayOfWeekInMonth(y, m, dow, n);
+  }
+
+  return null;
+}
+
+interface CompiledDayField {
+  matchers: DayMatcher[];
+  hasSpecial: boolean;
+}
+
+function compileDayField(token: string, field: 'dom' | 'dow'): CompiledDayField {
+  if (!/[LW#]/.test(token)) {
+    const values = getNumericRange(token, field === 'dom' ? 1 : 0, field === 'dom' ? 31 : 7);
+    const set = new Set(values);
+    const isNumeric = (y: number, m: number, d: number) => {
+      if (field === 'dom') {
+        return set.has(d);
+      }
+
+      return set.has(dayOfWeekFor(y, m, d));
+    };
+
+    return { hasSpecial: false, matchers: [isNumeric] };
+  }
+
+  const compileOne = field === 'dom' ? compileDOMToken : compileDOWToken;
+  const parts = token.split(',');
+  const matchers: DayMatcher[] = [];
+
+  for (const part of parts) {
+    const special = compileOne(part);
+    if (special) {
+      matchers.push(special);
+      continue;
+    }
+
+    const values = getNumericRange(part, field === 'dom' ? 1 : 0, field === 'dom' ? 31 : 7);
+    const set = new Set(values);
+    const isNumeric = (y: number, m: number, d: number) => {
+      if (field === 'dom') {
+        return set.has(d);
+      }
+
+      return set.has(dayOfWeekFor(y, m, d));
+    };
+    matchers.push(isNumeric);
+  }
+
+  return { hasSpecial: true, matchers };
+}
 
 function nextMatch(
   curr: Temporal.PlainDateTime,
   ranges: number[][],
+  domCompiled: CompiledDayField,
+  dowCompiled: CompiledDayField,
   isDomWild: boolean,
   isDowWild: boolean,
 ): Temporal.PlainDateTime | null {
   const limit = curr.add({ years: YEAR_LIMIT });
 
   while (Temporal.PlainDateTime.compare(curr, limit) <= 0) {
-    if (!ranges[3].includes(curr.month)) {
-      const nextMonth = ranges[3].find(m => m > curr.month) ?? ranges[3][0];
+    if (!ranges[2].includes(curr.month)) {
+      const nextMonth = ranges[2].find(m => m > curr.month) ?? ranges[2][0];
       const year = nextMonth <= curr.month ? curr.year + 1 : curr.year;
       curr = curr.with({ day: 1, hour: 0, minute: 0, month: nextMonth, second: 0, year });
 
       continue;
     }
 
-    const domMatch = ranges[2].includes(curr.day);
-    const dowMatch = ranges[4].includes(curr.dayOfWeek % 7);
+    const domMatch = domCompiled.matchers.some(m => m(curr.year, curr.month, curr.day));
+    const dowMatch = dowCompiled.matchers.some(m => m(curr.year, curr.month, curr.day));
     const dateValid = isDomWild || isDowWild ? domMatch && dowMatch : domMatch || dowMatch;
     if (!dateValid) {
       curr = curr.add({ days: 1 }).with({ hour: 0, minute: 0, second: 0 });
@@ -171,11 +306,11 @@ function nextMatch(
   return null;
 }
 
-export const UNIXParser = {
+export const CloudflareWorkersParser = {
   convert(expr: string, format: ScheduleFormat): string {
     switch (format) {
       case 'unix': {
-        return this.normalize(expr);
+        return CloudflareWorkersParser.normalize(expr);
       }
 
       case 'quartz': {
@@ -221,10 +356,11 @@ export const UNIXParser = {
     const ranges = [
       getNumericRange(tokens[0], 0, 59),
       getNumericRange(tokens[1], 0, 23),
-      getNumericRange(tokens[2], 1, 31),
       getNumericRange(tokens[3], 1, 12),
-      getNumericRange(tokens[4], 0, 6),
     ];
+
+    const domCompiled = compileDayField(tokens[2], 'dom');
+    const dowCompiled = compileDayField(tokens[4], 'dow');
 
     const isDomWild = tokens[2] === '*';
     const isDowWild = tokens[4] === '*';
@@ -233,19 +369,22 @@ export const UNIXParser = {
       .with({ microsecond: 0, millisecond: 0, nanosecond: 0, second: 0 })
       .add({ minutes: 1 });
 
-    let next = nextMatch(curr, ranges, isDomWild, isDowWild);
+    let next = nextMatch(curr, ranges, domCompiled, dowCompiled, isDomWild, isDowWild);
     while (next !== null) {
       yield next;
-      next = nextMatch(next.add({ minutes: 1 }), ranges, isDomWild, isDowWild);
+      next = nextMatch(
+        next.add({ minutes: 1 }),
+        ranges,
+        domCompiled,
+        dowCompiled,
+        isDomWild,
+        isDowWild,
+      );
     }
   },
 
   normalize(expr: string): string {
     const trimmed = expr.trim().replaceAll(/\s+/g, ' ');
-
-    if (trimmed in Macros) {
-      return Macros[trimmed];
-    }
 
     return trimmed
       .split(' ')
@@ -255,44 +394,6 @@ export const UNIXParser = {
 
   validate(expr: string): ReturnType<ScheduleParser['validate']> {
     const trimmedExpr = expr.trim();
-
-    // handle macro validation
-    if (expr.startsWith('@')) {
-      // it's complete
-      if (trimmedExpr in Macros) {
-        return {
-          descriptor: cronstrue.toString(UNIXParser.normalize(expr)),
-          generator: this.iterate(Macros[trimmedExpr], Temporal.Now.plainDateTimeISO()),
-          normal: false,
-          status: 'valid',
-          tokens: Macros[trimmedExpr].split(' '),
-        };
-      }
-
-      let mightBeValid = false;
-      for (const macro of Object.keys(Macros)) {
-        if (macro.startsWith(expr)) {
-          mightBeValid = true;
-          break;
-        }
-      }
-
-      if (!mightBeValid) {
-        return {
-          error: [],
-          normal: true, // do not attempt to normalize
-          status: 'invalid',
-          tokens: [],
-        };
-      }
-
-      return {
-        error: [],
-        normal: true, // do not attempt to normalize
-        status: 'incomplete',
-        tokens: [],
-      };
-    }
 
     const rawTokens = trimmedExpr.split(/\s+/);
     const tokens = this.normalize(trimmedExpr).split(/\s+/).filter(Boolean);
@@ -328,11 +429,11 @@ export const UNIXParser = {
         normal: this.isNormal(trimmedExpr),
         status: 'invalid',
         tokens: rawTokens,
-      }
+      };
     }
 
     return {
-      descriptor: cronstrue.toString(UNIXParser.normalize(expr)),
+      descriptor: cronstrue.toString(CloudflareWorkersParser.normalize(expr)),
       generator: this.iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),
       normal: this.isNormal(trimmedExpr),
       status: 'valid',
