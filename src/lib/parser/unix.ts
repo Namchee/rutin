@@ -309,7 +309,7 @@ export const UNIXParser = {
         error,
         normal: this.isNormal(trimmedExpr),
         status: 'invalid',
-        tokens: rawTokens,
+        tokens: rawTokens.filter(Boolean),
       };
     }
 
@@ -318,7 +318,7 @@ export const UNIXParser = {
         error: [],
         normal: this.isNormal(trimmedExpr),
         status: 'incomplete',
-        tokens: rawTokens,
+        tokens: rawTokens.filter(Boolean),
       };
     }
 
@@ -327,7 +327,7 @@ export const UNIXParser = {
         error: [],
         normal: this.isNormal(trimmedExpr),
         status: 'invalid',
-        tokens: rawTokens,
+        tokens: rawTokens.filter(Boolean),
       }
     }
 
@@ -336,7 +336,7 @@ export const UNIXParser = {
       generator: this.iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),
       normal: this.isNormal(trimmedExpr),
       status: 'valid',
-      tokens: rawTokens,
+      tokens: rawTokens.filter(Boolean),
     };
   },
 };
