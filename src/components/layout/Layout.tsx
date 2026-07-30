@@ -28,7 +28,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
         <Topbar expanded={expanded} setExpanded={setExpanded} />
 
         <main class="flex-1 border-separator border-x">
-          <div class="mx-auto max-w-6xl px-4 py-8">{children}</div>
+          <div class='mx-auto h-full max-w-6xl px-4 py-8'>{children}</div>
         </main>
 
         <footer class="flex flex-col items-center justify-center gap-2 rounded-b-lg border-separator border-x p-2 text-content-tertiary text-xs md:flex-row">

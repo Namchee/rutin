@@ -2,30 +2,16 @@ import { A } from "@solidjs/router";
 
 export default function NotFound() {
   return (
-    <main class="mx-auto p-4 text-center text-gray-700">
-      <h1 class="max-6-xs my-16 font-thin text-6xl text-sky-700 uppercase">
-        Not Found
-      </h1>
-      <p class="mt-8">
-        Visit{" "}
-        <a
-          href="https://solidjs.com"
-          target="_blank"
-          class="text-sky-600 hover:underline" rel="noopener"
-        >
-          solidjs.com
-        </a>{" "}
-        to learn how to build Solid apps.
+    <div class="flex h-full flex-col justify-center gap-4">
+      <h1 class="font-bold text-5xl md:text-7xl">404</h1>
+
+      <p class='text-2xl text-content-tertiary leading-none md:text-3xl'>
+        Yep... you are totally lost.
       </p>
-      <p class="my-4">
-        <A href="/" class="text-sky-600 hover:underline">
-          Home
-        </A>
-        {" - "}
-        <A href="/about" class="text-sky-600 hover:underline">
-          About Page
-        </A>
-      </p>
-    </main>
+
+      <A href="/" class="mt-8 flex items-center gap-1 text-content-secondary">
+        <span>Bring me home</span> <div class="i-lucide-arrow-right size-4" />
+      </A>
+    </div>
   );
 }
