@@ -43,7 +43,7 @@ const Formats: Record<ScheduleFormat, Format> = {
     label: 'Amazon',
   },
   'cf-workers': {
-    description: '5 fields ⋅ Day start with 0',
+    description: '5 fields ⋅ Day start with 1 to 7',
     label: 'Cloudflare Workers',
   },
   systemd: {
