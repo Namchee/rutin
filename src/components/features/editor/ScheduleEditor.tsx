@@ -98,7 +98,7 @@ export function ScheduleEditor() {
 
       <div class="flex items-center justify-between border-separator border-t p-4">
         <div>
-          <Button size="sm" disabled={normal()} onClick={normalize}>
+          <Button size="sm" disabled={normal() || value().length === 0} onClick={normalize}>
             <div class="i-lucide-wrench text-brand-foreground" />
             Normalize
           </Button>
