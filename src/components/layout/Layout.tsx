@@ -31,17 +31,23 @@ export function Layout({ children }: Readonly<LayoutProps>) {
           <div class="mx-auto max-w-6xl px-4 py-8">{children}</div>
         </main>
 
-        <footer class="flex items-center justify-center gap-2 rounded-b-lg border-separator border-x p-2 text-content-tertiary text-xs">
+        <footer class="flex flex-col items-center justify-center gap-2 rounded-b-lg border-separator border-x p-2 text-content-tertiary text-xs md:flex-row">
           <div class="flex">
             <span class="block text-content-secondary">Rutin</span>&nbsp;&mdash; Your one stop CRON
-            playground.
+            playground
           </div>
 
-          <A
-            href="https://www.github.com/Namchee/rutin"
-            class="flex items-center gap-0.5 transition-colors hover:text-content-secondary">
-            <div class="i-me-github" /> <span class='font-mono'>#123456</span>
-          </A>
+          <span class="hidden md:block">&bull;</span>
+
+          <div class="flex items-center">
+            <A
+              href="https://www.github.com/Namchee/rutin"
+              class="group flex items-center text-content-secondary">
+              <div class="i-me-github -mt-[1.5px] mr-1 size-[11px] transition-colors group-hover:text-content-primary" />{' '}
+              <span class="transition-colors group-hover:text-content-primary">Namchee/rutin</span>
+              <span class="font-mono text-content-tertiary">#fe5fb3</span>
+            </A>
+          </div>
         </footer>
       </div>
     </div>
