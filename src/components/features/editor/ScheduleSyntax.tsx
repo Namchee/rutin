@@ -45,7 +45,6 @@ const Range: Record<ScheduleFormat, Record<string, FieldRange>> = {
     date: { optional: false, range: ['1-31'] },
     month: { optional: false, range: ['1-12'] },
     day: { optional: false, range: ['0-6', 'SUN-SAT'] },
-    year: { optional: true, range: ['1970-2099'] },
   },
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   quartz: {

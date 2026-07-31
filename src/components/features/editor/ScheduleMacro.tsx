@@ -15,7 +15,15 @@ interface Macro {
 const Macros: Record<ScheduleFormat, Record<string, Macro>> = {
   amazon: {},
   'cf-workers': {},
-  node: {},
+  node: {
+    '@annually': { alias: '0 0 1 1 *', label: 'Every year' },
+    '@daily': { alias: '0 0 * * *', label: 'Every day' },
+    '@hourly': { alias: '0 * * * *', label: 'Every hour' },
+    '@midnight': { alias: '0 0 * * *', label: 'Every day on midnight' },
+    '@monthly': { alias: '0 0 1 * *', label: 'Every month' },
+    '@weekly': { alias: '0 0 * * 0', label: 'Every week' },
+    '@yearly': { alias: '0 0 1 1 *', label: 'Every year' },
+  },
   quartz: {},
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   systemd: {

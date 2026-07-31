@@ -367,6 +367,8 @@ export const CloudflareWorkersParser = {
     }
   },
 
+  hasMacro: false,
+
   isNormal(expr: string): boolean {
     return this.normalize(expr) === expr;
   },
@@ -473,7 +475,7 @@ export const CloudflareWorkersParser = {
         normal: this.isNormal(trimmedExpr),
         status: 'invalid',
         tokens: rawTokens.filter(Boolean),
-      }
+      };
     }
   },
 };
