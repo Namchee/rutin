@@ -110,7 +110,6 @@ function createEditorContext() {
     setFormat(format);
 
     const result = Parsers[format].validate(value());
-    console.log(result);
     setState(result.status);
     setNormal(result.normal);
     setTokens(result.tokens);

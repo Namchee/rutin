@@ -24,8 +24,6 @@ const normalize = (expr: string) => CloudflareWorkersParser.normalize(expr);
 const isNormal = (expr: string) => CloudflareWorkersParser.isNormal(expr);
 
 describe('CloudflareWorkersParser', () => {
-  // ─────────────────────────── Validate ───────────────────────────
-
   describe('validate', () => {
     it('accepts a complete 5-field expression', () => {
       expect(validate('0 12 * * *').status).toBe('valid');
@@ -54,7 +52,6 @@ describe('CloudflareWorkersParser', () => {
     });
 
     it('rejects a field with a non-numeric, non-modifier character', () => {
-      // @ is not in any allowed regex
       expect(validate('0 12 * * @').status).toBe('invalid');
     });
 
@@ -128,8 +125,6 @@ describe('CloudflareWorkersParser', () => {
     });
   });
 
-  // ─────────────────────────── isNormal ───────────────────────────
-
   describe('isNormal', () => {
     it.each([
       '0 0 * * *',
@@ -156,8 +151,6 @@ describe('CloudflareWorkersParser', () => {
     });
   });
 
-  // ─────────────────────────── Convert ───────────────────────────
-
   describe('convert', () => {
     it('converts from unix by normalizing', () => {
       expect(CloudflareWorkersParser.convert('0 12 * * *', 'unix')).toBe('0 12 * * *');
@@ -168,7 +161,6 @@ describe('CloudflareWorkersParser', () => {
     });
 
     it('strips the seconds field from a 6-token quartz expression', () => {
-      // slice(1) drops the leading token; result is a 5-token cf-workers expression
       expect(CloudflareWorkersParser.convert('0 12 * * * *', 'quartz')).toBe('12 * * * *');
     });
 
@@ -177,12 +169,9 @@ describe('CloudflareWorkersParser', () => {
     });
 
     it('returns empty string for a quartz expression with the wrong shape', () => {
-      // 5 tokens is not a valid quartz expression (needs 6 or 7)
       expect(CloudflareWorkersParser.convert('0 12 * * *', 'quartz')).toBe('');
     });
   });
-
-  // ─────────────────────────── Iterator: basics ───────────────────────────
 
   describe('iterate (basic syntax)', () => {
     it('honours a step', () => {
@@ -191,14 +180,11 @@ describe('CloudflareWorkersParser', () => {
     });
 
     it('honours a range', () => {
-      // Iterator starts strictly AFTER START, so day 1 at 00:00 (which equals
-      // START) is skipped. The first match is day 2.
       const dates = fires('0 0 1-5 * *', 4);
       expect(dates.map(d => d.day)).toEqual([2, 3, 4, 5]);
     });
 
     it('honours a list of values', () => {
-      // Same reason as above: first day-1 fire is at START, skipped.
       const dates = fires('0 0 1,15,28 * *', 4);
       expect(dates.map(d => d.day)).toEqual([15, 28, 1, 15]);
     });
@@ -219,19 +205,16 @@ describe('CloudflareWorkersParser', () => {
     });
 
     it('AND-s the date fields when day-of-week is wild', () => {
-      // "0 0 1 * *" fires on the 1st of every month, regardless of weekday
       const dates = fires('0 0 1 * *', 4);
       expect(dates.every(d => d.day === 1)).toBe(true);
     });
 
     it('AND-s the date fields when day-of-month is wild', () => {
-      // "0 0 * * 5" fires only on Fridays
       const dates = fires('0 0 * * 5', 4);
       expect(dates.every(d => d.dayOfWeek === 5)).toBe(true);
     });
 
     it('OR-s the date fields when both are restricted (POSIX quirk)', () => {
-      // "0 0 1 * 5" fires on the 1st OR on Fridays
       const dates = fires('0 0 1 * 5', 12);
       const matchesEither = dates.every(d => d.day === 1 || d.dayOfWeek === 5);
       const hasFridayOnly = dates.some(d => d.day !== 1 && d.dayOfWeek === 5);
@@ -247,8 +230,6 @@ describe('CloudflareWorkersParser', () => {
       expect(isStrictlyIncreasing).toBe(true);
     });
   });
-
-  // ─────────────────────────── Iterator: names ───────────────────────────
 
   describe('iterate (day and month names)', () => {
     it('honours day name SUN (Sun=7 in local convention)', () => {
@@ -271,8 +252,6 @@ describe('CloudflareWorkersParser', () => {
       expect(dates.every(d => d.month >= 1 && d.month <= 3)).toBe(true);
     });
   });
-
-  // ─────────────────────────── Iterator: L, W, # ───────────────────────────
 
   describe('iterate (L, W, # in DoM/DoW)', () => {
     describe('DoW: L (Saturday)', () => {
@@ -373,14 +352,12 @@ describe('CloudflareWorkersParser', () => {
       it('L-3 fires 3 days before the end of the month', () => {
         const dates = fires('0 12 L-3 * *', 4);
 
-        // Jul 2026: 31-3=28; Aug: 31-3=28; Sep: 30-3=27; Oct: 31-3=28
         expect(dates.map(d => d.day)).toEqual([28, 28, 27, 28]);
       });
 
       it('L-5 fires 5 days before the end of the month', () => {
         const dates = fires('0 12 L-5 * *', 4);
 
-        // Jul 2026: 31-5=26; Aug: 26; Sep: 30-5=25; Oct: 26
         expect(dates.map(d => d.day)).toEqual([26, 26, 25, 26]);
       });
     });

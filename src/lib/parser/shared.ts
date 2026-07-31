@@ -89,6 +89,7 @@ function isValidL(expr: string, _min: number, max: number): boolean {
   if (parts.length !== 2 || parts[0] !== 'L' || parts[1].length === 0) {
     return false;
   }
+
   const n = Number(parts[1]);
   return !Number.isNaN(n) && n >= 0 && n < max;
 }

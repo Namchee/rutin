@@ -67,7 +67,7 @@ function collapseExpressions(token: string, field: (typeof Fields)[number]): str
 
   // names -> numbers
   if (aliases) {
-    const regex = new RegExp(`\\b(${Object.keys(aliases).join('|')})\\b`, 'gi');
+    const regex = new RegExp(`(${Object.keys(aliases).join('|')})`, 'gi');
     t = t.replace(regex, m => String(aliases[m.toLowerCase() as keyof typeof aliases]));
   }
 
@@ -77,7 +77,7 @@ function collapseExpressions(token: string, field: (typeof Fields)[number]): str
   try {
     values = getNumericRange(t, min, max);
   } catch {
-    return token;
+    return t;
   }
 
   if (values.length === max - min + 1) {
@@ -458,12 +458,22 @@ export const CloudflareWorkersParser = {
       };
     }
 
-    return {
-      descriptor: cronstrue.toString(CloudflareWorkersParser.normalize(expr)),
-      generator: this.iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),
-      normal: this.isNormal(trimmedExpr),
-      status: 'valid',
-      tokens: rawTokens.filter(Boolean),
-    };
+    try {
+      return {
+        descriptor: cronstrue.toString(CloudflareWorkersParser.normalize(expr)),
+        generator: this.iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),
+        normal: this.isNormal(trimmedExpr),
+        status: 'valid',
+        tokens: rawTokens.filter(Boolean),
+      };
+      // handle cronstrue error
+    } catch {
+      return {
+        error: [],
+        normal: this.isNormal(trimmedExpr),
+        status: 'invalid',
+        tokens: rawTokens.filter(Boolean),
+      }
+    }
   },
 };
