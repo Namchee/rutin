@@ -37,7 +37,7 @@ export function ScheduleHint() {
           data-hint
           onClick={() => onHintSelect(index)}>
           <span
-            class={cn('font-medium font-mono text-lg leading-normal', {
+            class={cn('max-w-full truncate font-medium font-mono text-lg leading-normal', {
               'text-content-primary': !errors().includes(index),
               'text-danger-foreground': errors().includes(index),
             })}>
