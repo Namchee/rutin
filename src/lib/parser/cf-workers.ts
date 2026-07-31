@@ -171,12 +171,27 @@ function lastDayOfWeekInMonth(year: number, month: number, dow: number): number 
 type DayMatcher = (year: number, month: number, day: number) => boolean;
 
 function compileDOMToken(token: string): DayMatcher | null {
-  if (token === 'L') return (y, m, d) => d === daysInMonth(y, m);
-  if (token === 'LW') return (y, m, d) => d === lastWeekdayOfMonth(y, m);
+  if (token === 'L') {
+    return (y, m, d) => d === daysInMonth(y, m);
+  }
+
+  if (token === 'LW') {
+    return (y, m, d) => d === lastWeekdayOfMonth(y, m);
+  }
+
   const w = /^(\d+)W$/.exec(token);
   if (w) {
     const target = Number(w[1]);
     return (y, m, d) => d === nearestWeekdayToDay(y, m, target);
+  }
+
+  const lx = /^L-(\d+)$/.exec(token);
+  if (lx) {
+    const n = Number(lx[1]);
+    return (y, m, d) => {
+      const target = daysInMonth(y, m) - n;
+      return d === target && target >= 1;
+    };
   }
 
   return null;
@@ -202,6 +217,18 @@ function compileDOWToken(token: string): DayMatcher | null {
     const dow = Number(hash[1]);
     const n = Number(hash[2]);
     return (y, m, d) => d === nthDayOfWeekInMonth(y, m, dow, n);
+  }
+
+  // L-x
+  const lx = /^L-(\d+)$/.exec(token);
+  if (lx) {
+    const n = Number(lx[1]);
+    let dow = 6 - n;
+    while (dow <= 0) {
+      dow += 7;
+    }
+
+    return (y, m, d) => dayOfWeekFor(y, m, d) === dow;
   }
 
   return null;
@@ -247,6 +274,7 @@ function compileDayField(token: string, field: 'dom' | 'dow'): CompiledDayField 
 
       return set.has(dayOfWeekFor(y, m, d));
     };
+
     matchers.push(isNumeric);
   }
 
@@ -338,8 +366,6 @@ export const CloudflareWorkersParser = {
       }
     }
   },
-
-  hasMacro: true,
 
   isNormal(expr: string): boolean {
     return this.normalize(expr) === expr;

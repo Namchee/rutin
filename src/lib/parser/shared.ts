@@ -200,8 +200,6 @@ export function getNumericRange(token: string, min: number, max: number): number
   const subTokens = token.split(',');
 
   for (const t of subTokens) {
-    // L, W, #, ? and empty sub-tokens are not valid POSIX.
-    // Fall through to the throw at the end of the loop.
     if (/^\d+$/.test(t)) {
       ranges.add(Number(t));
 
