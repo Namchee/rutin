@@ -14,7 +14,12 @@ export default defineConfig({
   build: {
     target: 'esnext',
   },
-  plugins: [solidStart(), uno(), nitro()],
+  plugins: [solidStart(), uno(), nitro({
+    preset: 'cloudflare-pages',
+    rollupConfig: {
+      external: ['node:async_hooks'],
+    },
+  })],
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
