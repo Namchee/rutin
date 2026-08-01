@@ -1,4 +1,4 @@
-import type { Temporal } from '@js-temporal/polyfill';
+import { Temporal } from '@js-temporal/polyfill';
 
 import type { ScheduleFormat } from '@/types';
 
@@ -114,6 +114,130 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
       }
 
       return parts.join(',');
+    },
+
+    compileDayField(token: string, field: 'dom' | 'dow'): CompiledDayField {
+      if (!/[LW#]/.test(token)) {
+        const values = this.getNumericRange(
+          token,
+          field === 'dom' ? 1 : 0,
+          field === 'dom' ? 31 : 7,
+        );
+        const set = new Set(values);
+        const isNumeric = (y: number, m: number, d: number) => {
+          if (field === 'dom') {
+            return set.has(d);
+          }
+
+          return set.has(dayOfWeekFor(y, m, d));
+        };
+
+        return { hasSpecial: false, matchers: [isNumeric] };
+      }
+
+      const compileOne = field === 'dom' ? compileDOMToken : compileDOWToken;
+      const parts = token.split(',');
+      const matchers: DayMatcher[] = [];
+
+      for (const part of parts) {
+        const special = compileOne(part);
+        if (special) {
+          matchers.push(special);
+          continue;
+        }
+
+        const values = getNumericRange(part, field === 'dom' ? 1 : 0, field === 'dom' ? 31 : 7);
+        const set = new Set(values);
+        const isNumeric = (y: number, m: number, d: number) => {
+          if (field === 'dom') {
+            return set.has(d);
+          }
+
+          return set.has(dayOfWeekFor(y, m, d));
+        };
+
+        matchers.push(isNumeric);
+      }
+
+      return { hasSpecial: true, matchers };
+    },
+
+    /**
+     * Compile Date of Month expression to create date matching utilities.
+     *
+     * @param {string} expr Date of Month expression
+     * @returns A `DayMatcher` object if the expression is not a wildcard.
+     * `null` otherwise.
+     */
+    compileDOMToken(expr: string): DayMatcher | null {
+      if (expr === 'L') {
+        return (y, m, d) => d === this.daysInMonth(y, m);
+      }
+
+      if (expr === 'LW') {
+        return (y, m, d) => d === this.lastWeekdayOfMonth(y, m);
+      }
+
+      const w = /^(\d+)W$/.exec(expr);
+      if (w) {
+        const target = Number(w[1]);
+        return (y, m, d) => d === nearestWeekdayToDay(y, m, target);
+      }
+
+      const lx = /^L-(\d+)$/.exec(expr);
+      if (lx) {
+        const n = Number(lx[1]);
+        return (y, m, d) => {
+          const target = daysInMonth(y, m) - n;
+          return d === target && target >= 1;
+        };
+      }
+
+      return null;
+    },
+
+    /**
+     * Compile Weekday expression to create date matching utilities.
+     *
+     * @param {string} token Weekday expression
+     * @returns A `DayMatcher` object if the expression is not a wildcard.
+     * `null` otherwise.
+     */
+    compileDOWToken(token: string): DayMatcher | null {
+      // 1=Mon..7=Sun
+      if (token === 'L') {
+        return (y, m, d) => this.dayOfWeekFor(y, m, d) === 6;
+      }
+      const l = /^(\d+)L$/.exec(token);
+      if (l) {
+        const dow = Number(l[1]);
+        return (y, m, d) => d === this.lastDayOfWeekInMonth(y, m, dow);
+      }
+      const w = /^(\d+)W$/.exec(token);
+      if (w) {
+        const target = Number(w[1]);
+        return (y, m, d) => d === this.nearestWeekdayToDay(y, m, target);
+      }
+      const hash = /^(\d+)#(\d+)$/.exec(token);
+      if (hash) {
+        const dow = Number(hash[1]);
+        const n = Number(hash[2]);
+        return (y, m, d) => d === this.nthDayOfWeekInMonth(y, m, dow, n);
+      }
+
+      // L-x
+      const lx = /^L-(\d+)$/.exec(token);
+      if (lx) {
+        const n = Number(lx[1]);
+        let dow = 6 - n;
+        while (dow <= 0) {
+          dow += 7;
+        }
+
+        return (y, m, d) => this.dayOfWeekFor(y, m, d) === dow;
+      }
+
+      return null;
     },
 
     /**
@@ -404,6 +528,14 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
       return n >= min && n <= max;
     },
 
+    /**
+     * Create a date time generator for the current expression.
+     *
+     * @param {string} expr Schedule expression
+     * @param {Temporal.PlainDateTime} start Starting date time
+     * @returns {Generator<Temporal.PlainDateTime, unknown, unknown>} Generator object that yields
+     * `Temporal.PlainDateTime` object
+     */
     *iterate(expr: string, start: Temporal.PlainDateTime) {
       const tokens = this.normalize(expr).trim().split(/\s+/);
 
@@ -428,10 +560,11 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
         .with({ microsecond: 0, millisecond: 0, nanosecond: 0, second: 0 })
         .add({ minutes: 1 });
 
-      let next = nextMatch(curr, ranges, domCompiled, dowCompiled, isDomWild, isDowWild);
+      let next = this.nextMatch(curr, ranges, domCompiled, dowCompiled, isDomWild, isDowWild);
       while (next !== null) {
         yield next;
-        next = nextMatch(
+
+        next = this.nextMatch(
           next.add({ minutes: 1 }),
           ranges,
           domCompiled,
@@ -442,117 +575,40 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
       }
     },
 
-    compileDOMToken(token: string): DayMatcher | null {
-      if (token === 'L') {
-        return (y, m, d) => d === daysInMonth(y, m);
+    /**
+     * Find the last weekday in a month.
+     *
+     * @param {number} year Current year
+     * @param {number} month Current month
+     * @param {number} dow Weekday
+     * @returns {number} Last day of the month
+     */
+    lastDayOfWeekInMonth(year: number, month: number, dow: number): number {
+      const last = this.daysInMonth(year, month);
+      for (let d = last; d >= 1; d--) {
+        if (this.dayOfWeekFor(year, month, d) === dow) {
+          return d;
+        }
       }
-
-      if (token === 'LW') {
-        return (y, m, d) => d === lastWeekdayOfMonth(y, m);
-      }
-
-      const w = /^(\d+)W$/.exec(token);
-      if (w) {
-        const target = Number(w[1]);
-        return (y, m, d) => d === nearestWeekdayToDay(y, m, target);
-      }
-
-      const lx = /^L-(\d+)$/.exec(token);
-      if (lx) {
-        const n = Number(lx[1]);
-        return (y, m, d) => {
-          const target = daysInMonth(y, m) - n;
-          return d === target && target >= 1;
-        };
-      }
-
-      return null;
+      return last;
     },
 
-    compileDOWToken(token: string): DayMatcher | null {
-      // 1=Mon..7=Sun
-      if (token === 'L') {
-        return (y, m, d) => dayOfWeekFor(y, m, d) === 6;
-      }
-      const l = /^(\d+)L$/.exec(token);
-      if (l) {
-        const dow = Number(l[1]);
-        return (y, m, d) => d === lastDayOfWeekInMonth(y, m, dow);
-      }
-      const w = /^(\d+)W$/.exec(token);
-      if (w) {
-        const target = Number(w[1]);
-        return (y, m, d) => d === nearestWeekdayToDay(y, m, target);
-      }
-      const hash = /^(\d+)#(\d+)$/.exec(token);
-      if (hash) {
-        const dow = Number(hash[1]);
-        const n = Number(hash[2]);
-        return (y, m, d) => d === nthDayOfWeekInMonth(y, m, dow, n);
-      }
-
-      // L-x
-      const lx = /^L-(\d+)$/.exec(token);
-      if (lx) {
-        const n = Number(lx[1]);
-        let dow = 6 - n;
-        while (dow <= 0) {
-          dow += 7;
-        }
-
-        return (y, m, d) => dayOfWeekFor(y, m, d) === dow;
-      }
-
-      return null;
-    },
-
-    compileDayField(token: string, field: 'dom' | 'dow'): CompiledDayField {
-      if (!/[LW#]/.test(token)) {
-        const values = this.getNumericRange(token, field === 'dom' ? 1 : 0, field === 'dom' ? 31 : 7);
-        const set = new Set(values);
-        const isNumeric = (y: number, m: number, d: number) => {
-          if (field === 'dom') {
-            return set.has(d);
-          }
-
-          return set.has(dayOfWeekFor(y, m, d));
-        };
-
-        return { hasSpecial: false, matchers: [isNumeric] };
-      }
-
-      const compileOne = field === 'dom' ? compileDOMToken : compileDOWToken;
-      const parts = token.split(',');
-      const matchers: DayMatcher[] = [];
-
-      for (const part of parts) {
-        const special = compileOne(part);
-        if (special) {
-          matchers.push(special);
-          continue;
-        }
-
-        const values = getNumericRange(part, field === 'dom' ? 1 : 0, field === 'dom' ? 31 : 7);
-        const set = new Set(values);
-        const isNumeric = (y: number, m: number, d: number) => {
-          if (field === 'dom') {
-            return set.has(d);
-          }
-
-          return set.has(dayOfWeekFor(y, m, d));
-        };
-
-        matchers.push(isNumeric);
-      }
-
-      return { hasSpecial: true, matchers };
-    }
-
+    /**
+     * Find next date time that matches the current expression.
+     *
+     * @param {Temporal.PlainDateTime} curr Current date time
+     * @param {number[][]} ranges Valid time range
+     * @param {CompiledDayField} dom Date of month matcher
+     * @param {CompiledDayField} dow Weekday matcher
+     * @param {boolean} isDomWild Whether or not the date of month is a wildcard
+     * @param {boolean} isDowWild Whether or not the weekday is a wildcard
+     * @returns {Temporal.PlainDateTime | null} Next matched date time.
+     */
     nextMatch(
       curr: Temporal.PlainDateTime,
       ranges: number[][],
-      domCompiled: CompiledDayField,
-      dowCompiled: CompiledDayField,
+      dom: CompiledDayField,
+      dow: CompiledDayField,
       isDomWild: boolean,
       isDowWild: boolean,
     ): Temporal.PlainDateTime | null {
@@ -567,8 +623,8 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
           continue;
         }
 
-        const domMatch = domCompiled.matchers.some(m => m(curr.year, curr.month, curr.day));
-        const dowMatch = dowCompiled.matchers.some(m => m(curr.year, curr.month, curr.day));
+        const domMatch = dom.matchers.some(m => m(curr.year, curr.month, curr.day));
+        const dowMatch = dow.matchers.some(m => m(curr.year, curr.month, curr.day));
         const dateValid = isDomWild || isDowWild ? domMatch && dowMatch : domMatch || dowMatch;
         if (!dateValid) {
           curr = curr.add({ days: 1 }).with({ hour: 0, minute: 0, second: 0 });
@@ -601,6 +657,12 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
       return null;
     },
 
+    /**
+     * Perform a normalization on the current expression
+     *
+     * @param expr
+     * @returns
+     */
     normalize(expr: string): string {
       const trimmed = expr.trim().replaceAll(/\s+/g, ' ');
 
@@ -609,10 +671,21 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
         .map((t, i) => (i < fields.length ? this.collapseExpressions(t, fields[i]) : t))
         .join(' ');
     },
+
+    nthDayOfWeekInMonth(year: number, month: number, dow: number, n: number): number | null {
+      let count = 0;
+      const last = daysInMonth(year, month);
+      for (let d = 1; d <= last; d++) {
+        if (dayOfWeekFor(year, month, d) === dow) {
+          count++;
+          if (count === n) return d;
+        }
+      }
+
+      return null;
+    },
   };
 }
-
-
 
 export const Parsers: Record<ScheduleFormat, ScheduleParser> = {
   'cf-workers': CloudflareWorkersParser,
