@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createTokenValidator, getNumericRange } from './shared';
+
+import { createTokenValidator } from './validator';
 
 describe('createTokenValidator', () => {
   const SEC = (min: number, max: number) =>
@@ -113,84 +114,5 @@ describe('createTokenValidator', () => {
     ['1,2,3-5', DOW, true],
   ])('valid: %s', (input, validator, expected) => {
     expect(validator(input)).toBe(expected);
-  });
-});
-
-describe('getNumericRange', () => {
-  it('should return only one value', () => {
-    const token = '1';
-    const min = 0;
-    const max = 59;
-
-    const expected = [1];
-    const actual = getNumericRange(token, min, max);
-
-    expect(actual).toEqual(expected);
-  });
-
-  it('should return list separated values', () => {
-    const token = '1,2,3';
-    const min = 0;
-    const max = 59;
-
-    const expected = [1, 2, 3];
-    const actual = getNumericRange(token, min, max);
-
-    expect(actual).toEqual(expected);
-  });
-
-  it('should return range', () => {
-    const token = '0-50';
-    const min = 0;
-    const max = 59;
-
-    const expected = Array.from({ length: 51 }, (_, i) => i);
-    const actual = getNumericRange(token, min, max);
-
-    expect(actual).toEqual(expected);
-  });
-
-  it('should return all valid ranges if the value is a wildcard', () => {
-    const token = '*';
-    const min = 0;
-    const max = 59;
-
-    const expected = Array.from({ length: 60 }, (_, i) => i);
-    const actual = getNumericRange(token, min, max);
-
-    expect(actual).toEqual(expected);
-  });
-
-  it('should return steps range correctly', () => {
-    const token = '*/10';
-    const min = 0;
-    const max = 59;
-
-    const expected = [0, 10, 20, 30, 40, 50];
-    const actual = getNumericRange(token, min, max);
-
-    expect(actual).toEqual(expected);
-  });
-
-  it('should return steps range correctly starting from a specific value', () => {
-    const token = '5/10';
-    const min = 0;
-    const max = 59;
-
-    const expected = [5, 15, 25, 35, 45, 55];
-    const actual = getNumericRange(token, min, max);
-
-    expect(actual).toEqual(expected);
-  });
-
-  it('should be able to parse range within steps', () => {
-    const token = '10-30/5';
-    const min = 0;
-    const max = 59;
-
-    const expected = [10, 15, 20, 25, 30];
-    const actual = getNumericRange(token, min, max);
-
-    expect(actual).toEqual(expected);
   });
 });

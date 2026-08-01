@@ -3,49 +3,7 @@ import { For, Show } from 'solid-js';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
 import { cn } from '@/lib/css';
 
-import type { ScheduleFormat } from '@/types';
-
-import { useEditorContext } from './context';
-
-interface Macro {
-  label: string;
-  alias: string;
-}
-
-const Macros: Record<ScheduleFormat, Record<string, Macro>> = {
-  amazon: {},
-  'cf-workers': {},
-  node: {
-    '@annually': { alias: '0 0 1 1 *', label: 'Every year' },
-    '@daily': { alias: '0 0 * * *', label: 'Every day' },
-    '@hourly': { alias: '0 * * * *', label: 'Every hour' },
-    '@midnight': { alias: '0 0 * * *', label: 'Every day on midnight' },
-    '@monthly': { alias: '0 0 1 * *', label: 'Every month' },
-    '@weekly': { alias: '0 0 * * 0', label: 'Every week' },
-    '@yearly': { alias: '0 0 1 1 *', label: 'Every year' },
-  },
-  quartz: {},
-  // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
-  systemd: {
-    minutely: { alias: '*-*-* *:*:00', label: 'Every minute' },
-    hourly: { alias: '*-*-* *:00:00', label: 'Every hour' },
-    daily: { alias: '*-*-* 00:00:00', label: 'Every day' },
-    weekly: { alias: 'Mon *-*-* 00:00:00', label: 'Every week on Mondays' },
-    monthly: { alias: '*-*-01 00:00:00', label: 'Every month on 1st day' },
-    yearly: { alias: '*-01-01 00:00:00', label: 'Every year on 1st date' },
-    quarterly: { alias: '*-01,04,07,10-01 00:00:00', label: 'Every quarter year' },
-    semianually: { alias: '*-01,07-01 00:00:00', label: 'Twice per year' },
-  },
-  unix: {
-    '@annually': { alias: '0 0 1 1 *', label: 'Every year' },
-    '@daily': { alias: '0 0 * * *', label: 'Every day' },
-    '@hourly': { alias: '0 * * * *', label: 'Every hour' },
-    '@midnight': { alias: '0 0 * * *', label: 'Every day on midnight' },
-    '@monthly': { alias: '0 0 1 * *', label: 'Every month' },
-    '@weekly': { alias: '0 0 * * 0', label: 'Every week' },
-    '@yearly': { alias: '0 0 1 1 *', label: 'Every year' },
-  },
-};
+import { Macros, useEditorContext } from './context';
 
 function EmptyMacro() {
   return (
