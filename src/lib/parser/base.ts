@@ -1,40 +1,8 @@
 import { Temporal } from '@js-temporal/polyfill';
 
-import type { ScheduleFormat } from '@/types';
+import { toString as describeSchedule } from 'cronstrue';
 
-import { CloudflareWorkersParser } from './cf-workers';
-import { NodeParser } from './node';
-import { UNIXParser } from './unix';
-
-interface BaseValidationResult {
-  normal: boolean;
-  tokens: string[];
-}
-
-interface ValidSchedule extends BaseValidationResult {
-  status: 'valid';
-  generator: Generator<Temporal.PlainDateTime, unknown, unknown>;
-  descriptor: string;
-}
-
-interface IncompleteSchedule extends BaseValidationResult {
-  status: 'incomplete';
-  error: number[];
-}
-
-interface InvalidSchedule extends BaseValidationResult {
-  status: 'invalid';
-  error: number[];
-}
-
-export type ValidationResult = ValidSchedule | IncompleteSchedule | InvalidSchedule;
-
-export interface ScheduleParser {
-  hasMacro: boolean;
-  convert: (expr: string, from: ScheduleFormat) => string;
-  validate: (expr: string) => ValidationResult;
-  normalize: (expr: string) => string;
-}
+import type { ScheduleParser } from './types';
 
 interface Field {
   readonly max: number;
@@ -43,6 +11,8 @@ interface Field {
 }
 
 interface ScheduleParserOptions {
+  minimumTokens: number;
+  maximumTokens: number;
   fields: Field[];
 }
 
@@ -53,7 +23,7 @@ interface CompiledDayField {
   hasSpecial: boolean;
 }
 
-export function createScheduleParser({ fields }: ScheduleParserOptions) {
+export function createScheduleParser({ fields, minimumTokens, maximumTokens }: ScheduleParserOptions) {
   return {
     /**
      * Collapse redundant CRON expressions into most compact form, usually
@@ -116,6 +86,14 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
       return parts.join(',');
     },
 
+    /**
+     * Perform compilation to day of month / week for easier comparison
+     *
+     * @param {string} token Expression to validate
+     * @param {string} field Field of interest, may be `dom` or `dow`
+     * @returns {CompiledDayField} A 'compiled' day field that will be used
+     * for later iteration
+     */
     compileDayField(token: string, field: 'dom' | 'dow'): CompiledDayField {
       if (!/[LW#]/.test(token)) {
         const values = this.getNumericRange(
@@ -129,13 +107,13 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
             return set.has(d);
           }
 
-          return set.has(dayOfWeekFor(y, m, d));
+          return set.has(this.dayOfWeek(y, m, d));
         };
 
         return { hasSpecial: false, matchers: [isNumeric] };
       }
 
-      const compileOne = field === 'dom' ? compileDOMToken : compileDOWToken;
+      const compileOne = field === 'dom' ? this.compileDOMToken : this.compileDOWToken;
       const parts = token.split(',');
       const matchers: DayMatcher[] = [];
 
@@ -146,14 +124,18 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
           continue;
         }
 
-        const values = getNumericRange(part, field === 'dom' ? 1 : 0, field === 'dom' ? 31 : 7);
+        const values = this.getNumericRange(
+          part,
+          field === 'dom' ? 1 : 0,
+          field === 'dom' ? 31 : 7,
+        );
         const set = new Set(values);
         const isNumeric = (y: number, m: number, d: number) => {
           if (field === 'dom') {
             return set.has(d);
           }
 
-          return set.has(dayOfWeekFor(y, m, d));
+          return set.has(this.dayOfWeek(y, m, d));
         };
 
         matchers.push(isNumeric);
@@ -181,14 +163,14 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
       const w = /^(\d+)W$/.exec(expr);
       if (w) {
         const target = Number(w[1]);
-        return (y, m, d) => d === nearestWeekdayToDay(y, m, target);
+        return (y, m, d) => d === this.nearestWeekdayToDay(y, m, target);
       }
 
       const lx = /^L-(\d+)$/.exec(expr);
       if (lx) {
         const n = Number(lx[1]);
         return (y, m, d) => {
-          const target = daysInMonth(y, m) - n;
+          const target = this.daysInMonth(y, m) - n;
           return d === target && target >= 1;
         };
       }
@@ -206,7 +188,7 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
     compileDOWToken(token: string): DayMatcher | null {
       // 1=Mon..7=Sun
       if (token === 'L') {
-        return (y, m, d) => this.dayOfWeekFor(y, m, d) === 6;
+        return (y, m, d) => this.dayOfWeek(y, m, d) === 6;
       }
       const l = /^(\d+)L$/.exec(token);
       if (l) {
@@ -234,7 +216,7 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
           dow += 7;
         }
 
-        return (y, m, d) => this.dayOfWeekFor(y, m, d) === dow;
+        return (y, m, d) => this.dayOfWeek(y, m, d) === dow;
       }
 
       return null;
@@ -288,6 +270,29 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
 
         return true;
       };
+    },
+
+    /**
+     * Get the weekday of current date
+     *
+     * @param {number} year Current year
+     * @param {number} month Current month
+     * @param {number} day Current date
+     * @returns {number} Numeric weekday representation
+     */
+    dayOfWeek(year: number, month: number, day: number): number {
+      return Temporal.PlainDate.from({ day, month, year }).dayOfWeek;
+    },
+
+    /**
+     * Get number of days in a certain month
+     *
+     * @param {number} year Current year
+     * @param {number} month Current month
+     * @returns {number} Number of day in that month
+     */
+    daysInMonth(year: number, month: number): number {
+      return new Temporal.PlainDate(year, month, 1).add({ months: 1 }).subtract({ days: 1 }).day;
     },
 
     /**
@@ -363,6 +368,16 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
       }
 
       return Array.from(ranges).sort((a, b) => a - b);
+    },
+
+    /**
+     * Checks whether the provided expression is already normalized or not.
+     *
+     * @param {string} expr Expression to check
+     * @returns A boolean
+     */
+    isNormal(expr: string): boolean {
+      return this.normalize(expr) === expr;
     },
 
     /**
@@ -576,21 +591,63 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
     },
 
     /**
-     * Find the last weekday in a month.
+     * Find the the specified last day of week of the current month (e.g: last friday of the month)
      *
      * @param {number} year Current year
      * @param {number} month Current month
-     * @param {number} dow Weekday
-     * @returns {number} Last day of the month
+     * @param {number} dow Weekday numeric representation
+     * @returns {number} Numeric representation of specified last day of week of the current month
      */
     lastDayOfWeekInMonth(year: number, month: number, dow: number): number {
       const last = this.daysInMonth(year, month);
       for (let d = last; d >= 1; d--) {
-        if (this.dayOfWeekFor(year, month, d) === dow) {
+        if (this.dayOfWeek(year, month, d) === dow) {
           return d;
         }
       }
       return last;
+    },
+
+    /**
+     * Get the last weekday of the month
+     *
+     * @param {number} year Current year
+     * @param {number} month Current month
+     * @returns {number} Numeric representation of last weekday of the month
+     */
+    lastWeekdayOfMonth(year: number, month: number): number {
+      const last = this.daysInMonth(year, month);
+      const dow = this.dayOfWeek(year, month, last);
+      if (dow === 6) {
+        return last - 1;
+      }
+      if (dow === 7) {
+        return last - 2;
+      }
+      return last;
+    },
+
+    /**
+     * Get the nearest weekday from a day.
+     *
+     * @param {number} year Current year
+     * @param {number} month Current month
+     * @param {number} target Numeric representation of the day
+     * @returns
+     */
+    nearestWeekdayToDay(year: number, month: number, target: number): number {
+      const day = Math.min(target, this.daysInMonth(year, month));
+      const dow = this.dayOfWeek(year, month, day);
+      if (dow === 6) {
+        // Saturday -> Friday
+        return day === 1 ? 3 : day - 1;
+      }
+      if (dow === 7) {
+        // Sunday -> Monday
+        const last = this.daysInMonth(year, month);
+        return day === last ? day - 2 : day + 1;
+      }
+      return day;
     },
 
     /**
@@ -602,7 +659,7 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
      * @param {CompiledDayField} dow Weekday matcher
      * @param {boolean} isDomWild Whether or not the date of month is a wildcard
      * @param {boolean} isDowWild Whether or not the weekday is a wildcard
-     * @returns {Temporal.PlainDateTime | null} Next matched date time.
+     * @returns {Temporal.PlainDateTime} Next matched date time.
      */
     nextMatch(
       curr: Temporal.PlainDateTime,
@@ -611,10 +668,8 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
       dow: CompiledDayField,
       isDomWild: boolean,
       isDowWild: boolean,
-    ): Temporal.PlainDateTime | null {
-      const limit = curr.add({ years: YEAR_LIMIT });
-
-      while (Temporal.PlainDateTime.compare(curr, limit) <= 0) {
+    ): Temporal.PlainDateTime {
+      while (true) {
         if (!ranges[2].includes(curr.month)) {
           const nextMonth = ranges[2].find(m => m > curr.month) ?? ranges[2][0];
           const year = nextMonth <= curr.month ? curr.year + 1 : curr.year;
@@ -653,15 +708,18 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
 
         return curr;
       }
-
-      return null;
     },
 
     /**
-     * Perform a normalization on the current expression
+     * Perform a normalization on the current expression.
      *
-     * @param expr
-     * @returns
+     * A normalization is a process that:
+     *   1. Removes extratenous whitespaces
+     *   2. Replaces day / month alias with numerical values
+     *   3. Simplify range operations
+     *
+     * @param {string} expr Expression to normalize
+     * @returns {string} Normalized expression
      */
     normalize(expr: string): string {
       const trimmed = expr.trim().replaceAll(/\s+/g, ' ');
@@ -672,23 +730,88 @@ export function createScheduleParser({ fields }: ScheduleParserOptions) {
         .join(' ');
     },
 
+    /**
+     * Get nth weekday of the month.
+     *
+     * @param {number} year Current year
+     * @param {number} month Current month
+     * @param {number} dow Current weekday
+     * @param {number} n xth day to get
+     * @returns {number | null} A number representing weekday. in Temporal
+     * value instead of Date
+     */
     nthDayOfWeekInMonth(year: number, month: number, dow: number, n: number): number | null {
       let count = 0;
-      const last = daysInMonth(year, month);
+      const last = this.daysInMonth(year, month);
       for (let d = 1; d <= last; d++) {
-        if (dayOfWeekFor(year, month, d) === dow) {
+        if (this.dayOfWeek(year, month, d) === dow) {
           count++;
-          if (count === n) return d;
+          if (count === n) {
+            return d;
+          }
         }
       }
 
       return null;
     },
+
+    validate(expr: string): ReturnType<ScheduleParser['validate']> {
+      const trimmedExpr = expr.trim();
+
+      const rawTokens = trimmedExpr.split(/\s+/);
+      const tokens = this.normalize(trimmedExpr).split(/\s+/).filter(Boolean);
+      const error: number[] = [];
+
+      for (let idx = 0; idx < tokens.length && idx < maximumTokens; idx++) {
+        if (!Validator[idx](tokens[idx])) {
+          error.push(idx);
+        }
+      }
+
+      if (error.length > 0) {
+        return {
+          error,
+          normal: this.isNormal(trimmedExpr),
+          status: 'invalid',
+          tokens: rawTokens.filter(Boolean),
+        };
+      }
+
+      if (tokens.length < minimumTokens) {
+        return {
+          error: [],
+          normal: this.isNormal(trimmedExpr),
+          status: 'incomplete',
+          tokens: rawTokens.filter(Boolean),
+        };
+      }
+
+      if (tokens.length > maximumTokens) {
+        return {
+          error: [],
+          normal: this.isNormal(trimmedExpr),
+          status: 'invalid',
+          tokens: rawTokens.filter(Boolean),
+        };
+      }
+
+      try {
+        return {
+          descriptor: describeSchedule(this.normalize(expr)),
+          generator: this.iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),
+          normal: this.isNormal(trimmedExpr),
+          status: 'valid',
+          tokens: rawTokens.filter(Boolean),
+        };
+        // handle cronstrue error
+      } catch {
+        return {
+          error: [],
+          normal: this.isNormal(trimmedExpr),
+          status: 'invalid',
+          tokens: rawTokens.filter(Boolean),
+        };
+      }
+    },
   };
 }
-
-export const Parsers: Record<ScheduleFormat, ScheduleParser> = {
-  'cf-workers': CloudflareWorkersParser,
-  node: NodeParser,
-  unix: UNIXParser,
-};
