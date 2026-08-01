@@ -17,7 +17,7 @@ export default defineConfig({
   plugins: [solidStart(), uno(), nitro({
     preset: 'cloudflare-pages',
     rollupConfig: {
-      external: ['node:async_hooks', 'node:buffer'],
+      external: ['node:async_hooks'],
     },
   })],
   resolve: {
