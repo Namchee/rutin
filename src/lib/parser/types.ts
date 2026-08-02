@@ -2,7 +2,8 @@ import type { Temporal } from '@js-temporal/polyfill';
 
 interface BaseValidationResult {
   normal: boolean;
-  tokens: string[];
+  tokens: (string
+    | null)[];
 }
 
 interface ValidSchedule extends BaseValidationResult {

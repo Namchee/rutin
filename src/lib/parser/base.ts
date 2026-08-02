@@ -5,16 +5,23 @@ import type { ScheduleParser } from './types';
 import { isValidRange, isValidStep } from './validator';
 
 interface Field {
-  readonly max: number;
-  readonly min: number;
-  readonly aliases?: Record<string, number>;
+  max: number;
+  min: number;
+  aliases?: Record<string, number>;
+}
+
+interface TokenizationResult {
+  raw: (string
+    | null)[];
+  result: string[];
 }
 
 interface ScheduleParserOptions {
   tokenRange: [number, number];
   validators: ((token: string) => boolean)[];
-  macros?: Record<string, string>;
   fields: Field[];
+  macros?: Record<string, string>;
+  tokenizer?: (expr: string) => TokenizationResult;
 }
 
 type DayMatcher = (year: number, month: number, day: number) => boolean;
@@ -29,6 +36,7 @@ export function createScheduleParser({
   tokenRange,
   validators,
   macros,
+  tokenizer,
 }: ScheduleParserOptions) {
   return {
     /**
@@ -107,7 +115,12 @@ export function createScheduleParser({
           field === 'dom' ? 1 : 0,
           field === 'dom' ? 31 : 7,
         );
-        const set = new Set(values);
+        // 0 and 7 are both Sunday
+        const set = new Set(
+          field === 'dow'
+            ? values.map(d => d === 0 ? 7 : d)
+            : values,
+        );
         const isNumeric = (y: number, m: number, d: number) => {
           if (field === 'dom') {
             return set.has(d);
@@ -135,7 +148,12 @@ export function createScheduleParser({
           field === 'dom' ? 1 : 0,
           field === 'dom' ? 31 : 7,
         );
-        const set = new Set(values);
+        // 0 and 7 are both Sunday
+        const set = new Set(
+          field === 'dow'
+            ? values.map(d => d === 0 ? 7 : d)
+            : values,
+        );
         const isNumeric = (y: number, m: number, d: number) => {
           if (field === 'dom') {
             return set.has(d);
@@ -589,8 +607,16 @@ export function createScheduleParser({
         };
       }
 
-      const rawTokens = trimmedExpr.split(/\s+/);
-      const tokens = this.normalize(trimmedExpr).split(/\s+/).filter(Boolean);
+      let rawTokens: (string | null)[] = trimmedExpr.split(/\s+/);
+      let tokens = this.normalize(trimmedExpr).split(/\s+/).filter(Boolean);
+
+      if (tokenizer) {
+        const { raw, result } = tokenizer(trimmedExpr);
+
+        rawTokens = raw;
+        tokens = result;
+      }
+
       const error: number[] = [];
 
       for (let idx = 0; idx < tokens.length && idx < tokenRange[1]; idx++) {

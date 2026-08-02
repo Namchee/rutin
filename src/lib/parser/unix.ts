@@ -49,7 +49,7 @@ const Fields = [
   { max: 23, min: 0 },
   { max: 31, min: 1 },
   { aliases: MonthToNumber, max: 12, min: 1 },
-  { aliases: DayToNumber, max: 6, min: 0 },
+  { aliases: DayToNumber, max: 7, min: 0 },
 ];
 
 const Macros: Record<string, string> = {
