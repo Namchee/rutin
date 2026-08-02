@@ -1,25 +1,31 @@
 import { Temporal } from '@js-temporal/polyfill';
 
 import { toString as describeSchedule } from 'cronstrue';
-import type { ScheduleParser } from './types';
+import type { FieldName, ScheduleParser } from './types';
 import { isValidRange, isValidStep } from './validator';
 
-interface Field {
+interface FieldDef {
   max: number;
   min: number;
   aliases?: Record<string, number>;
 }
 
-interface TokenizationResult {
-  raw: (string
-    | null)[];
-  result: string[];
+export type FieldDefs = Partial<Record<FieldName, FieldDef>>;
+
+export type TokenMap = Partial<Record<FieldName, string>>;
+
+export interface TokenizationResult {
+  /** Raw tokens in their original positions. Inserted tokens (e.g. prepended seconds) are `null`. */
+  raw: (string | null)[];
+  /** Named tokens keyed by `FieldName`. */
+  tokens: TokenMap;
 }
 
 interface ScheduleParserOptions {
-  tokenRange: [number, number];
-  validators: ((token: string) => boolean)[];
-  fields: Field[];
+  fields: FieldDefs;
+  fieldOrder: FieldName[];
+  validators: Partial<Record<FieldName, (token: string) => boolean>>;
+  tokenRange?: [number, number];
   macros?: Record<string, string>;
   tokenizer?: (expr: string) => TokenizationResult;
 }
@@ -33,12 +39,39 @@ interface CompiledDayField {
 
 export function createScheduleParser({
   fields,
-  tokenRange,
+  fieldOrder,
   validators,
+  tokenRange,
   macros,
   tokenizer,
 }: ScheduleParserOptions) {
   return {
+    /**
+     * Replace aliases in token values (e.g. `SUN` -> `0`) using the
+     * field definitions' `aliases` records. Operates on the named-token
+     * map, so the position order doesn't matter.
+     */
+    applyAliases(tokens: TokenMap): TokenMap {
+      const out: TokenMap = {};
+      for (const [name, value] of Object.entries(tokens)) {
+        if (typeof value !== 'string') {
+          continue;
+        }
+
+        const def = fields[name as keyof typeof fields];
+        if (!def?.aliases) {
+          out[name as FieldName] = value;
+          continue;
+        }
+        const aliases = def.aliases;
+        const regex = new RegExp(`(${Object.keys(aliases).join('|')})`, 'gi');
+        out[name as FieldName] = value.replace(regex, m =>
+          String(aliases[m.toLowerCase() as keyof typeof aliases]),
+        );
+      }
+      return out;
+    },
+
     /**
      * Collapse redundant CRON expressions into most compact form, usually
      * related with numeric range and wildcards.
@@ -46,10 +79,10 @@ export function createScheduleParser({
      * Used during normalization phase.
      *
      * @param {string} token Token to be collapsed
-     * @param {Field} field Field rules that should be used when collapsing.
+     * @param {FieldDef} field Field rules that should be used when collapsing.
      * @returns {string} A more compact form of the token
      */
-    collapseExpressions(token: string, field: Field): string {
+    collapseExpressions(token: string, field: FieldDef): string {
       const { max, min } = field;
       const aliases = 'aliases' in field ? field.aliases : undefined;
 
@@ -116,11 +149,7 @@ export function createScheduleParser({
           field === 'dom' ? 31 : 7,
         );
         // 0 and 7 are both Sunday
-        const set = new Set(
-          field === 'dow'
-            ? values.map(d => d === 0 ? 7 : d)
-            : values,
-        );
+        const set = new Set(field === 'dow' ? values.map(d => (d === 0 ? 7 : d)) : values);
         const isNumeric = (y: number, m: number, d: number) => {
           if (field === 'dom') {
             return set.has(d);
@@ -132,7 +161,11 @@ export function createScheduleParser({
         return { hasSpecial: false, matchers: [isNumeric] };
       }
 
-      const compileOne = field === 'dom' ? this.compileDOMToken : this.compileDOWToken;
+      const compileDOM = this.compileDOMToken.bind(this);
+      const compileDOW = this.compileDOWToken.bind(this);
+      const getNumericRange = this.getNumericRange;
+      const dayOfWeekFn = this.dayOfWeek;
+      const compileOne = field === 'dom' ? compileDOM : compileDOW;
       const parts = token.split(',');
       const matchers: DayMatcher[] = [];
 
@@ -143,23 +176,15 @@ export function createScheduleParser({
           continue;
         }
 
-        const values = this.getNumericRange(
-          part,
-          field === 'dom' ? 1 : 0,
-          field === 'dom' ? 31 : 7,
-        );
+        const values = getNumericRange(part, field === 'dom' ? 1 : 0, field === 'dom' ? 31 : 7);
         // 0 and 7 are both Sunday
-        const set = new Set(
-          field === 'dow'
-            ? values.map(d => d === 0 ? 7 : d)
-            : values,
-        );
+        const set = new Set(field === 'dow' ? values.map(d => (d === 0 ? 7 : d)) : values);
         const isNumeric = (y: number, m: number, d: number) => {
           if (field === 'dom') {
             return set.has(d);
           }
 
-          return set.has(this.dayOfWeek(y, m, d));
+          return set.has(dayOfWeekFn(y, m, d));
         };
 
         matchers.push(isNumeric);
@@ -176,25 +201,29 @@ export function createScheduleParser({
      * `null` otherwise.
      */
     compileDOMToken(expr: string): DayMatcher | null {
+      const daysInMonth = this.daysInMonth.bind(this);
+      const lastWeekdayOfMonth = this.lastWeekdayOfMonth.bind(this);
+      const nearestWeekdayToDay = this.nearestWeekdayToDay.bind(this);
+
       if (expr === 'L') {
-        return (y, m, d) => d === this.daysInMonth(y, m);
+        return (y, m, d) => d === daysInMonth(y, m);
       }
 
       if (expr === 'LW') {
-        return (y, m, d) => d === this.lastWeekdayOfMonth(y, m);
+        return (y, m, d) => d === lastWeekdayOfMonth(y, m);
       }
 
       const w = /^(\d+)W$/.exec(expr);
       if (w) {
         const target = Number(w[1]);
-        return (y, m, d) => d === this.nearestWeekdayToDay(y, m, target);
+        return (y, m, d) => d === nearestWeekdayToDay(y, m, target);
       }
 
       const lx = /^L-(\d+)$/.exec(expr);
       if (lx) {
         const n = Number(lx[1]);
         return (y, m, d) => {
-          const target = this.daysInMonth(y, m) - n;
+          const target = daysInMonth(y, m) - n;
           return d === target && target >= 1;
         };
       }
@@ -211,24 +240,29 @@ export function createScheduleParser({
      */
     compileDOWToken(token: string): DayMatcher | null {
       // 1=Mon..7=Sun
+      const dayOfWeek = this.dayOfWeek.bind(this);
+      const lastDayOfWeekInMonth = this.lastDayOfWeekInMonth.bind(this);
+      const nearestWeekdayToDay = this.nearestWeekdayToDay.bind(this);
+      const nthDayOfWeekInMonth = this.nthDayOfWeekInMonth.bind(this);
+
       if (token === 'L') {
-        return (y, m, d) => this.dayOfWeek(y, m, d) === 6;
+        return (y, m, d) => dayOfWeek(y, m, d) === 6;
       }
       const l = /^(\d+)L$/.exec(token);
       if (l) {
         const dow = Number(l[1]);
-        return (y, m, d) => d === this.lastDayOfWeekInMonth(y, m, dow);
+        return (y, m, d) => d === lastDayOfWeekInMonth(y, m, dow);
       }
       const w = /^(\d+)W$/.exec(token);
       if (w) {
         const target = Number(w[1]);
-        return (y, m, d) => d === this.nearestWeekdayToDay(y, m, target);
+        return (y, m, d) => d === nearestWeekdayToDay(y, m, target);
       }
       const hash = /^(\d+)#(\d+)$/.exec(token);
       if (hash) {
         const dow = Number(hash[1]);
         const n = Number(hash[2]);
-        return (y, m, d) => d === this.nthDayOfWeekInMonth(y, m, dow, n);
+        return (y, m, d) => d === nthDayOfWeekInMonth(y, m, dow, n);
       }
 
       // L-x
@@ -240,7 +274,7 @@ export function createScheduleParser({
           dow += 7;
         }
 
-        return (y, m, d) => this.dayOfWeek(y, m, d) === dow;
+        return (y, m, d) => dayOfWeek(y, m, d) === dow;
       }
 
       return null;
@@ -362,42 +396,75 @@ export function createScheduleParser({
      * @returns {Generator<Temporal.PlainDateTime, unknown, unknown>} Generator object that yields
      * `Temporal.PlainDateTime` object
      */
-    *iterate(expr: string, start: Temporal.PlainDateTime) {
-      const tokens = this.normalize(expr).trim().split(/\s+/);
+    *iterate(expr: string, start: Temporal.PlainDateTime): Generator<Temporal.PlainDateTime, unknown, unknown> {
+      const { tokens } = this.tokenize(expr);
+      const present = (n: FieldName) => tokens[n] !== undefined;
 
-      // to be parsed, the expression must be complete
-      if (tokens.length !== 5) {
+      if (Object.keys(tokens).length === 0) {
         return undefined;
       }
 
-      const ranges = [
-        this.getNumericRange(tokens[0], 0, 59),
-        this.getNumericRange(tokens[1], 0, 23),
-        this.getNumericRange(tokens[3], 1, 12),
-      ];
+      const ranges: Partial<Record<FieldName, number[]>> = {};
+      for (const name of fieldOrder) {
+        const value = tokens[name];
+        if (value === undefined) {
+          continue;
+        }
 
-      const domCompiled = this.compileDayField(tokens[2], 'dom');
-      const dowCompiled = this.compileDayField(tokens[4], 'dow');
+        if ((name === 'dayOfMonth' || name === 'dayOfWeek') && /[LW#]/.test(value)) {
+          continue;
+        }
 
-      const isDomWild = tokens[2] === '*';
-      const isDowWild = tokens[4] === '*';
+        const def = fields[name];
+        if (!def) {
+          continue;
+        }
 
-      const curr = start
-        .with({ microsecond: 0, millisecond: 0, nanosecond: 0, second: 0 })
-        .add({ minutes: 1 });
+        ranges[name] = this.getNumericRange(value, def.min, def.max);
+      }
 
-      let next = this.nextMatch(curr, ranges, domCompiled, dowCompiled, isDomWild, isDowWild);
-      while (next !== null) {
-        yield next;
+      const domCompiled = this.compileDayField(tokens.dayOfMonth, 'dom');
+      const dowCompiled = this.compileDayField(tokens.dayOfWeek, 'dow');
 
-        next = this.nextMatch(
-          next.add({ minutes: 1 }),
+      const isDomWild = tokens.dayOfMonth === '*';
+      const isDowWild = tokens.dayOfWeek === '*';
+
+      const hasSeconds = present('second');
+
+      const base = start.with({
+        microsecond: 0,
+        millisecond: 0,
+        nanosecond: 0,
+        second: 0,
+      });
+
+      // 5-field: minute-precision. 6-field with seconds: second-precision.
+      let curr = hasSeconds ? base.add({ seconds: 1 }) : base.add({ minutes: 1, seconds: 0 });
+
+      while (true) {
+        const matched = this.nextMatch(
+          curr,
           ranges,
           domCompiled,
           dowCompiled,
           isDomWild,
           isDowWild,
         );
+        if (matched === null) return;
+
+        if (hasSeconds && ranges.second) {
+          // For 6-field, yield each second in the second range at this matched minute.
+          const seconds = [...ranges.second].sort((a, b) => a - b);
+          for (const sec of seconds) {
+            const candidate = matched.with({ second: sec });
+            if (Temporal.PlainDateTime.compare(candidate, base) <= 0) continue;
+            yield candidate;
+          }
+          curr = matched.add({ minutes: 1, seconds: 0 });
+        } else {
+          yield matched;
+          curr = matched.add({ minutes: 1, seconds: 0 });
+        }
       }
     },
 
@@ -444,7 +511,7 @@ export function createScheduleParser({
      * @param {number} year Current year
      * @param {number} month Current month
      * @param {number} target Numeric representation of the day
-     * @returns
+     * @returns {number} Numeric representation of nearest weekday
      */
     nearestWeekdayToDay(year: number, month: number, target: number): number {
       const day = Math.min(target, this.daysInMonth(year, month));
@@ -464,8 +531,10 @@ export function createScheduleParser({
     /**
      * Find next date time that matches the current expression.
      *
+     * Works in *named fields* (minute, hour, month), not positions.
+     *
      * @param {Temporal.PlainDateTime} curr Current date time
-     * @param {number[][]} ranges Valid time range
+     * @param {Partial<Record<FieldName, number[]>>} ranges Valid time range per field
      * @param {CompiledDayField} dom Date of month matcher
      * @param {CompiledDayField} dow Weekday matcher
      * @param {boolean} isDomWild Whether or not the date of month is a wildcard
@@ -474,15 +543,22 @@ export function createScheduleParser({
      */
     nextMatch(
       curr: Temporal.PlainDateTime,
-      ranges: number[][],
+      ranges: Partial<Record<FieldName, number[]>>,
       dom: CompiledDayField,
       dow: CompiledDayField,
       isDomWild: boolean,
       isDowWild: boolean,
-    ): Temporal.PlainDateTime {
+    ): Temporal.PlainDateTime | null {
+      const monthRange = ranges.month;
+      const hourRange = ranges.hour;
+      const minuteRange = ranges.minute;
+      if (!monthRange || !hourRange || !minuteRange) {
+        return null;
+      }
+
       while (true) {
-        if (!ranges[2].includes(curr.month)) {
-          const nextMonth = ranges[2].find(m => m > curr.month) ?? ranges[2][0];
+        if (!monthRange.includes(curr.month)) {
+          const nextMonth = monthRange.find(m => m > curr.month) ?? monthRange[0];
           const year = nextMonth <= curr.month ? curr.year + 1 : curr.year;
           curr = curr.with({ day: 1, hour: 0, minute: 0, month: nextMonth, second: 0, year });
 
@@ -497,8 +573,8 @@ export function createScheduleParser({
           continue;
         }
 
-        if (!ranges[1].includes(curr.hour)) {
-          const nextHour = ranges[1].find(h => h > curr.hour) ?? ranges[1][0];
+        if (!hourRange.includes(curr.hour)) {
+          const nextHour = hourRange.find(h => h > curr.hour) ?? hourRange[0];
           curr = (nextHour <= curr.hour ? curr.add({ days: 1 }) : curr).with({
             hour: nextHour,
             minute: 0,
@@ -508,8 +584,8 @@ export function createScheduleParser({
           continue;
         }
 
-        if (!ranges[0].includes(curr.minute)) {
-          const nextMin = ranges[0].find(m => m > curr.minute) ?? ranges[0][0];
+        if (!minuteRange.includes(curr.minute)) {
+          const nextMin = minuteRange.find(m => m > curr.minute) ?? minuteRange[0];
           curr = (nextMin <= curr.minute ? curr.add({ hours: 1 }) : curr).with({
             minute: nextMin,
             second: 0,
@@ -533,12 +609,38 @@ export function createScheduleParser({
      * @returns {string} Normalized expression
      */
     normalize(expr: string): string {
-      const trimmed = expr.trim().replaceAll(/\s+/g, ' ');
+      const { raw, tokens } = this.tokenize(expr);
 
-      return trimmed
-        .split(' ')
-        .map((t, i) => (i < fields.length ? this.collapseExpressions(t, fields[i]) : t))
-        .join(' ');
+      const collapsed: string[] = [];
+      for (const name of fieldOrder) {
+        const value = tokens[name];
+        if (value === undefined) continue;
+        const def = fields[name];
+        if (!def) {
+          collapsed.push(value);
+        } else {
+          collapsed.push(this.collapseExpressions(value, def));
+        }
+      }
+
+      let idx = 0;
+      const out: (string | null)[] = raw.map(r => {
+        if (r === null) {
+          return null;
+        }
+
+        const c = collapsed[idx++];
+        return c ?? r;
+      });
+
+      while (idx < collapsed.length) {
+        out.push(collapsed[idx++]);
+      }
+
+      return out
+        .filter(t => t !== null)
+        .join(' ')
+        .trim();
     },
 
     /**
@@ -564,6 +666,38 @@ export function createScheduleParser({
       }
 
       return null;
+    },
+
+    /**
+     * Tokenize an expression into named fields.
+     *
+     * If a `tokenizer` is configured, it's used to handle dialect-specific
+     * field layouts (e.g. node's 5/6-field, quartz's 7-field). Otherwise a
+     * default tokenizer maps the n-th whitespace-separated token to the n-th
+     * entry of `fieldOrder`.
+     *
+     * The returned tokens have aliases (e.g. `SUN` -> `0`) preprocessed using
+     * the `fields` config, so callers (iterate, normalize) don't need to
+     * re-run name substitution.
+     */
+    tokenize(expr: string): TokenizationResult {
+      if (tokenizer) {
+        const result = tokenizer(expr);
+        return {
+          raw: result.raw,
+          tokens: this.applyAliases(result.tokens),
+        };
+      }
+
+      const trimmed = expr.trim().replaceAll(/\s+/g, ' ');
+      const parts = trimmed.length > 0 ? trimmed.split(' ') : [];
+      const tokens: TokenMap = {};
+      const raw: (string | null)[] = parts;
+      for (let i = 0; i < parts.length && i < fieldOrder.length; i++) {
+        tokens[fieldOrder[i]] = parts[i];
+      }
+
+      return { raw, tokens: this.applyAliases(tokens) };
     },
 
     validate(expr: string): ReturnType<ScheduleParser['validate']> {
@@ -607,21 +741,23 @@ export function createScheduleParser({
         };
       }
 
-      let rawTokens: (string | null)[] = trimmedExpr.split(/\s+/);
-      let tokens = this.normalize(trimmedExpr).split(/\s+/).filter(Boolean);
+      const tokenized = this.tokenize(trimmedExpr);
+      const { raw: rawTokens, tokens } = tokenized;
+      const presentCount = Object.keys(tokens).length;
 
-      if (tokenizer) {
-        const { raw, result } = tokenizer(trimmedExpr);
+      // Defaults to [fieldOrder.length, fieldOrder.length] when not configured.
+      const range = tokenRange ?? [fieldOrder.length, fieldOrder.length];
 
-        rawTokens = raw;
-        tokens = result;
-      }
+      const error: FieldName[] = [];
 
-      const error: number[] = [];
-
-      for (let idx = 0; idx < tokens.length && idx < tokenRange[1]; idx++) {
-        if (!validators[idx](tokens[idx])) {
-          error.push(idx);
+      // Validate each *present* field by name. If a validator isn't configured
+      // for a name, skip it (the parser didn't define validation for that field).
+      for (const name of fieldOrder) {
+        const value = tokens[name];
+        if (value === undefined) continue;
+        const validator = validators[name];
+        if (validator && !validator(value)) {
+          error.push(name);
         }
       }
 
@@ -634,7 +770,7 @@ export function createScheduleParser({
         };
       }
 
-      if (tokens.length < tokenRange[0]) {
+      if (presentCount < range[0]) {
         return {
           error: [],
           normal: this.isNormal(trimmedExpr),
@@ -643,7 +779,7 @@ export function createScheduleParser({
         };
       }
 
-      if (tokens.length > tokenRange[1]) {
+      if (presentCount > range[1]) {
         return {
           error: [],
           normal: this.isNormal(trimmedExpr),

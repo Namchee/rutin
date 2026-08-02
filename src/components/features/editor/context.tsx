@@ -61,7 +61,8 @@ function createEditorContext() {
   const [format, setFormat] = createSignal<ScheduleFormat>('unix');
 
   const [state, setState] = createSignal<ScheduleState>('incomplete');
-  const [tokens, setTokens] = createSignal<string[]>([]);
+  const [tokens, setTokens] = createSignal<(string
+    | null)[]>([]);
   const [descriptor, setDescriptor] = createSignal<string>(ScheduleLabel.incomplete);
   const [normal, setNormal] = createSignal<boolean>(true);
   const [errors, setErrors] = createSignal<number[]>([]);

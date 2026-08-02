@@ -1,9 +1,17 @@
 import type { Temporal } from '@js-temporal/polyfill';
 
+export type FieldName =
+  | 'second'
+  | 'minute'
+  | 'hour'
+  | 'dayOfMonth'
+  | 'month'
+  | 'dayOfWeek'
+  | 'year';
+
 interface BaseValidationResult {
   normal: boolean;
-  tokens: (string
-    | null)[];
+  tokens?: Partial<Record<FieldName, string>>;
 }
 
 interface ValidSchedule extends BaseValidationResult {
@@ -14,12 +22,12 @@ interface ValidSchedule extends BaseValidationResult {
 
 interface IncompleteSchedule extends BaseValidationResult {
   status: 'incomplete';
-  error: number[];
+  error: FieldName[];
 }
 
 interface InvalidSchedule extends BaseValidationResult {
   status: 'invalid';
-  error: number[];
+  error: FieldName[];
 }
 
 export type ValidationResult = ValidSchedule | IncompleteSchedule | InvalidSchedule;

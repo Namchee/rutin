@@ -26,45 +26,40 @@ const MonthToNumber = {
   sep: 9,
 };
 
-const Validator = [
-  createTokenValidator(/[^0-9*,\-/]/, 0, 59),
-  createTokenValidator(/[^0-9*,\-/]/, 0, 23),
-  createTokenValidator(/[^0-9*,\-/]/i, 1, 31),
-  createTokenValidator(/[^0-9*,\-/]/, 1, 12, (token: string): string => {
-    const monthRegex = new RegExp(Object.keys(MonthToNumber).join('|'), 'gi');
-    return token.replace(monthRegex, matched =>
-      MonthToNumber[matched.toLowerCase() as keyof typeof MonthToNumber].toString(),
-    );
-  }),
-  createTokenValidator(/[^0-9*,\-/]/i, 0, 6, (token: string): string => {
-    const dayRegex = new RegExp(Object.keys(DayToNumber).join('|'), 'gi');
-    return token.replace(dayRegex, matched =>
-      DayToNumber[matched.toLowerCase() as keyof typeof DayToNumber].toString(),
-    );
-  }),
-];
-
-const Fields = [
-  { max: 59, min: 0 },
-  { max: 23, min: 0 },
-  { max: 31, min: 1 },
-  { aliases: MonthToNumber, max: 12, min: 1 },
-  { aliases: DayToNumber, max: 7, min: 0 },
-];
-
-const Macros: Record<string, string> = {
-  '@annually': '0 0 1 1 *',
-  '@daily': '0 0 * * *',
-  '@hourly': '0 * * * *',
-  '@midnight': '0 0 * * *',
-  '@monthly': '0 0 1 * *',
-  '@weekly': '0 0 * * 0',
-  '@yearly': '0 0 1 1 *',
-};
-
 export const UNIXParser = createScheduleParser({
-  fields: Fields,
-  macros: Macros,
+  fields: {
+    minute: { max: 59, min: 0 },
+    hour: { max: 23, min: 0 },
+    dayOfMonth: { max: 31, min: 1 },
+    month: { aliases: MonthToNumber, max: 12, min: 1 },
+    dayOfWeek: { aliases: DayToNumber, max: 7, min: 0 },
+  },
+  fieldOrder: ['minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek'],
   tokenRange: [5, 5],
-  validators: Validator,
+  validators: {
+    minute: createTokenValidator(/[^0-9*,\-/]/, 0, 59),
+    hour: createTokenValidator(/[^0-9*,\-/]/, 0, 23),
+    dayOfMonth: createTokenValidator(/[^0-9*,\-/]/i, 1, 31),
+    month: createTokenValidator(/[^0-9*,\-/]/, 1, 12, (token: string): string => {
+      const monthRegex = new RegExp(Object.keys(MonthToNumber).join('|'), 'gi');
+      return token.replace(monthRegex, matched =>
+        MonthToNumber[matched.toLowerCase() as keyof typeof MonthToNumber].toString(),
+      );
+    }),
+    dayOfWeek: createTokenValidator(/[^0-9*,\-/]/i, 0, 6, (token: string): string => {
+      const dayRegex = new RegExp(Object.keys(DayToNumber).join('|'), 'gi');
+      return token.replace(dayRegex, matched =>
+        DayToNumber[matched.toLowerCase() as keyof typeof DayToNumber].toString(),
+      );
+    }),
+  },
+  macros: {
+    '@annually': '0 0 1 1 *',
+    '@daily': '0 0 * * *',
+    '@hourly': '0 * * * *',
+    '@midnight': '0 0 * * *',
+    '@monthly': '0 0 1 * *',
+    '@weekly': '0 0 * * 0',
+    '@yearly': '0 0 1 1 *',
+  },
 });

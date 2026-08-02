@@ -23,7 +23,7 @@ export function ScheduleHint() {
           variant="ghost"
           size="sm"
           disabled={
-            tokens().length <= index || (state() === 'valid' && value().trim().startsWith('@'))
+            tokens().length <= index || (state() === 'valid' && value().trim().startsWith('@') || tokens()[index] === null)
           }
           class={cn(
             'flex h-fit min-w-[21%] flex-shrink-0 flex-col items-center justify-center gap-0 py-1.5 font-mono font-normal lg:min-w-0 lg:flex-1',
