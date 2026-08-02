@@ -595,32 +595,11 @@ export function createScheduleParser({
      * @returns {string} Normalized expression
      */
     normalize(expr: string): string {
-      const { raw, tokens } = this.tokenize(expr);
+      const tokens = tokenizer(expr.trim());
 
       const collapsed: string[] = [];
       for (const name of fieldOrder) {
-        const value = tokens[name];
-        if (value === undefined) continue;
-        const def = fields[name];
-        if (!def) {
-          collapsed.push(value);
-        } else {
-          collapsed.push(this.collapseExpressions(value, def));
-        }
-      }
 
-      let idx = 0;
-      const out: (string | null)[] = raw.map(r => {
-        if (r === null) {
-          return null;
-        }
-
-        const c = collapsed[idx++];
-        return c ?? r;
-      });
-
-      while (idx < collapsed.length) {
-        out.push(collapsed[idx++]);
       }
 
       return out
@@ -695,23 +674,15 @@ export function createScheduleParser({
         };
       }
 
-      const tokenized = this.tokenize(trimmedExpr);
-      const { raw: rawTokens, tokens } = tokenized;
-      const presentCount = Object.keys(tokens).length;
-
-      // Defaults to [fieldOrder.length, fieldOrder.length] when not configured.
-      const range = tokenRange ?? [fieldOrder.length, fieldOrder.length];
-
+      const tokens = tokenizer(trimmedExpr);
+      const normalizedTokens = tokenizer(this.normalize(trimmedExpr));
       const error: FieldName[] = [];
 
-      // Validate each *present* field by name. If a validator isn't configured
-      // for a name, skip it (the parser didn't define validation for that field).
-      for (const name of fieldOrder) {
-        const value = tokens[name];
-        if (value === undefined) continue;
-        const validator = validators[name];
-        if (validator && !validator(value)) {
-          error.push(name);
+      for (const [token, value] of Object.entries(normalizedTokens)) {
+        const fn = validators[token as FieldName];
+
+        if (fn && !fn(value)) {
+          error.push(token as FieldName);
         }
       }
 
@@ -720,25 +691,30 @@ export function createScheduleParser({
           error,
           normal: this.isNormal(trimmedExpr),
           status: 'invalid',
-          tokens: rawTokens.filter(Boolean),
+          tokens,
         };
       }
 
-      if (presentCount < range[0]) {
+      const availableTokens = Object.keys(normalizedTokens).length;
+      const requiredFields = Object.entries(fields).filter(f => !f[1].optional).length;
+
+      if (availableTokens < requiredFields) {
         return {
           error: [],
           normal: this.isNormal(trimmedExpr),
           status: 'incomplete',
-          tokens: rawTokens.filter(Boolean),
+          tokens,
         };
       }
 
-      if (presentCount > range[1]) {
+      const rawTokens = trimmedExpr.split(/\s+/).filter(Boolean).length;
+
+      if (rawTokens > requiredFields) {
         return {
           error: [],
           normal: this.isNormal(trimmedExpr),
           status: 'invalid',
-          tokens: rawTokens.filter(Boolean),
+          tokens,
         };
       }
 
@@ -748,7 +724,7 @@ export function createScheduleParser({
           generator: this.iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),
           normal: this.isNormal(trimmedExpr),
           status: 'valid',
-          tokens: rawTokens.filter(Boolean),
+          tokens,
         };
         // handle cronstrue error
       } catch {
@@ -756,7 +732,7 @@ export function createScheduleParser({
           error: [],
           normal: this.isNormal(trimmedExpr),
           status: 'invalid',
-          tokens: rawTokens.filter(Boolean),
+          tokens,
         };
       }
     },
