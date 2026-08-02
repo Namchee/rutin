@@ -4,30 +4,18 @@ import { toString as describeSchedule } from 'cronstrue';
 import type { FieldName, ScheduleParser } from './types';
 import { isValidRange, isValidStep } from './validator';
 
-interface FieldDef {
+interface Field {
   max: number;
   min: number;
   aliases?: Record<string, number>;
-}
-
-export type FieldDefs = Partial<Record<FieldName, FieldDef>>;
-
-export type TokenMap = Partial<Record<FieldName, string>>;
-
-export interface TokenizationResult {
-  /** Raw tokens in their original positions. Inserted tokens (e.g. prepended seconds) are `null`. */
-  raw: (string | null)[];
-  /** Named tokens keyed by `FieldName`. */
-  tokens: TokenMap;
+  optional?: boolean;
 }
 
 interface ScheduleParserOptions {
-  fields: FieldDefs;
-  fieldOrder: FieldName[];
+  fields: Partial<Record<FieldName, Field>>;
   validators: Partial<Record<FieldName, (token: string) => boolean>>;
-  tokenRange?: [number, number];
+  tokenizer: (expr: string) => Partial<Record<FieldName, string>>;
   macros?: Record<string, string>;
-  tokenizer?: (expr: string) => TokenizationResult;
 }
 
 type DayMatcher = (year: number, month: number, day: number) => boolean;
@@ -39,9 +27,7 @@ interface CompiledDayField {
 
 export function createScheduleParser({
   fields,
-  fieldOrder,
   validators,
-  tokenRange,
   macros,
   tokenizer,
 }: ScheduleParserOptions) {
@@ -79,10 +65,10 @@ export function createScheduleParser({
      * Used during normalization phase.
      *
      * @param {string} token Token to be collapsed
-     * @param {FieldDef} field Field rules that should be used when collapsing.
+     * @param {Field} field Field rules that should be used when collapsing.
      * @returns {string} A more compact form of the token
      */
-    collapseExpressions(token: string, field: FieldDef): string {
+    collapseExpressions(token: string, field: Field): string {
       const { max, min } = field;
       const aliases = 'aliases' in field ? field.aliases : undefined;
 
@@ -668,43 +654,11 @@ export function createScheduleParser({
       return null;
     },
 
-    /**
-     * Tokenize an expression into named fields.
-     *
-     * If a `tokenizer` is configured, it's used to handle dialect-specific
-     * field layouts (e.g. node's 5/6-field, quartz's 7-field). Otherwise a
-     * default tokenizer maps the n-th whitespace-separated token to the n-th
-     * entry of `fieldOrder`.
-     *
-     * The returned tokens have aliases (e.g. `SUN` -> `0`) preprocessed using
-     * the `fields` config, so callers (iterate, normalize) don't need to
-     * re-run name substitution.
-     */
-    tokenize(expr: string): TokenizationResult {
-      if (tokenizer) {
-        const result = tokenizer(expr);
-        return {
-          raw: result.raw,
-          tokens: this.applyAliases(result.tokens),
-        };
-      }
-
-      const trimmed = expr.trim().replaceAll(/\s+/g, ' ');
-      const parts = trimmed.length > 0 ? trimmed.split(' ') : [];
-      const tokens: TokenMap = {};
-      const raw: (string | null)[] = parts;
-      for (let i = 0; i < parts.length && i < fieldOrder.length; i++) {
-        tokens[fieldOrder[i]] = parts[i];
-      }
-
-      return { raw, tokens: this.applyAliases(tokens) };
-    },
-
     validate(expr: string): ReturnType<ScheduleParser['validate']> {
       const trimmedExpr = expr.trim();
 
       // handle macro validation
-      if (expr.startsWith('@') && macros) {
+      if (trimmedExpr.startsWith('@') && macros) {
         // it's complete
         if (trimmedExpr in macros) {
           return {
@@ -712,7 +666,7 @@ export function createScheduleParser({
             generator: this.iterate(macros[trimmedExpr], Temporal.Now.plainDateTimeISO()),
             normal: false,
             status: 'valid',
-            tokens: macros[trimmedExpr].split(' '),
+            tokens: tokenizer(macros[trimmedExpr]),
           };
         }
 
@@ -729,7 +683,7 @@ export function createScheduleParser({
             error: [],
             normal: true, // do not attempt to normalize
             status: 'invalid',
-            tokens: [],
+            tokens: {},
           };
         }
 
@@ -737,7 +691,7 @@ export function createScheduleParser({
           error: [],
           normal: true, // do not attempt to normalize
           status: 'incomplete',
-          tokens: [],
+          tokens: {},
         };
       }
 

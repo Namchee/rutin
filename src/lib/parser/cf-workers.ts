@@ -27,7 +27,6 @@ const MonthToNumber = {
 };
 
 export const CloudflareWorkersParser = createScheduleParser({
-  fieldOrder: ['minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek'],
   fields: {
     dayOfMonth: { max: 31, min: 1 },
     dayOfWeek: { aliases: DayToNumber, max: 7, min: 1 },
@@ -35,7 +34,17 @@ export const CloudflareWorkersParser = createScheduleParser({
     minute: { max: 59, min: 0 },
     month: { aliases: MonthToNumber, max: 12, min: 1 },
   },
-  tokenRange: [5, 5],
+  tokenizer: (expr: string) => {
+    const tokens = expr.trim().split(/\s+/).filter(Boolean);
+
+    return {
+      dayOfMonth: tokens[2],
+      dayOfWeek: tokens[4],
+      hour: tokens[1],
+      minute: tokens[0],
+      month: tokens[3],
+    };
+  },
   validators: {
     dayOfMonth: createTokenValidator(/[^0-9*,\-/LW]/i, 1, 31),
     dayOfWeek: createTokenValidator(/[^0-9*,\-/L#]/i, 1, 7, (token: string): string => {

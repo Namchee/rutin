@@ -1,5 +1,4 @@
 import { createScheduleParser } from './base';
-import type { TokenizationResult } from './base';
 import { createTokenValidator } from './validator';
 
 const DayToNumber = {
@@ -27,55 +26,48 @@ const MonthToNumber = {
   sep: 9,
 };
 
-/**
- * Node-cron tokenizer.
- *
- * Supports 5-field (no seconds) and 6-field (with seconds) expressions.
- * In 5-field mode, the seconds field is inserted as '0'.
- */
-const nodeTokenizer = (expr: string): TokenizationResult => {
-  const result = expr.trim().split(/\s+/).filter(Boolean);
-  const raw: (string | null)[] = [...result];
-  const tokens: TokenizationResult['tokens'] = {};
-
-  if (result.length === 5) {
-    // Insert '0' for the seconds field at the front.
-    result.unshift('0');
-    raw.unshift(null);
-  }
-
-  const fieldNames = ['second', 'minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek'] as const;
-  for (let i = 0; i < result.length && i < fieldNames.length; i++) {
-    tokens[fieldNames[i]] = result[i];
-  }
-
-  return { raw, tokens };
-};
-
 export const NodeScheduleParser = createScheduleParser({
   fields: {
-    second: { max: 59, min: 0 },
-    minute: { max: 59, min: 0 },
-    hour: { max: 23, min: 0 },
     dayOfMonth: { max: 31, min: 1 },
-    month: { aliases: MonthToNumber, max: 12, min: 1 },
     // 7 is Sunday
     dayOfWeek: { aliases: DayToNumber, max: 7, min: 0 },
+    hour: { max: 23, min: 0 },
+    minute: { max: 59, min: 0 },
+    month: { aliases: MonthToNumber, max: 12, min: 1 },
+    second: { max: 59, min: 0 },
   },
-  fieldOrder: ['second', 'minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek'],
-  tokenRange: [5, 6],
+  macros: {
+    '@annually': '0 0 1 1 *',
+    '@daily': '0 0 * * *',
+    '@hourly': '0 * * * *',
+    '@midnight': '0 0 * * *',
+    '@monthly': '0 0 1 * *',
+    '@weekly': '0 0 * * 0',
+    '@yearly': '0 0 1 1 *',
+  },
+  tokenizer: (expr: string) => {
+    const tokens = expr.trim().split(/\s+/);
+
+    if (tokens.length <= 5) {
+      return {
+        dayOfMonth: tokens[2],
+        dayOfWeek: tokens[4],
+        hour: tokens[1],
+        minute: tokens[0],
+        month: tokens[3],
+      };
+    }
+
+    return {
+      dayOfMonth: tokens[2],
+      dayOfWeek: tokens[4],
+      hour: tokens[1],
+      minute: tokens[0],
+      month: tokens[3],
+    };
+  },
   validators: {
-    second: createTokenValidator(/[^0-9*,\-/]/, 0, 59),
-    minute: createTokenValidator(/[^0-9*,\-/]/, 0, 59),
-    hour: createTokenValidator(/[^0-9*,\-/]/, 0, 23),
     dayOfMonth: createTokenValidator(/[^0-9*,\-/LW?]/i, 1, 31),
-    month: createTokenValidator(/[^0-9*,\-/]/, 1, 12, (token: string): string => {
-      if (token === '?') return '*';
-      const monthRegex = new RegExp(Object.keys(MonthToNumber).join('|'), 'gi');
-      return token.replace(monthRegex, matched =>
-        MonthToNumber[matched.toLowerCase() as keyof typeof MonthToNumber].toString(),
-      );
-    }),
     dayOfWeek: createTokenValidator(/[^0-9*,\-/L#?]/i, 1, 7, (token: string): string => {
       if (token === '?') return '*';
       const dayRegex = new RegExp(Object.keys(DayToNumber).join('|'), 'gi');
@@ -83,6 +75,15 @@ export const NodeScheduleParser = createScheduleParser({
         DayToNumber[matched.toLowerCase() as keyof typeof DayToNumber].toString(),
       );
     }),
+    hour: createTokenValidator(/[^0-9*,\-/]/, 0, 23),
+    minute: createTokenValidator(/[^0-9*,\-/]/, 0, 59),
+    month: createTokenValidator(/[^0-9*,\-/]/, 1, 12, (token: string): string => {
+      if (token === '?') return '*';
+      const monthRegex = new RegExp(Object.keys(MonthToNumber).join('|'), 'gi');
+      return token.replace(monthRegex, matched =>
+        MonthToNumber[matched.toLowerCase() as keyof typeof MonthToNumber].toString(),
+      );
+    }),
+    second: createTokenValidator(/[^0-9*,\-/]/, 0, 59),
   },
-  tokenizer: nodeTokenizer,
 });
