@@ -8,7 +8,7 @@ import { Macros, useEditorContext } from './context';
 function EmptyMacro() {
   return (
     <div class="grid min-h-24 place-items-center p-4 text-content-tertiary text-xs">
-      This format doesn't support macro syntax
+      This dialect doesn't support macro syntax
     </div>
   );
 }

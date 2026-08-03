@@ -1,5 +1,5 @@
 import type { Temporal } from '@js-temporal/polyfill';
-import type { FieldName, TokenMap } from '@/types';
+import type { FieldName, NormalizedSchedule, TokenMap } from '@/types';
 
 interface BaseValidationResult {
   normal: boolean;
@@ -20,11 +20,6 @@ interface IncompleteSchedule extends BaseValidationResult {
 interface InvalidSchedule extends BaseValidationResult {
   status: 'invalid';
   error: FieldName[];
-}
-
-interface NormalizedSchedule {
-  value: string;
-  tokens: string;
 }
 
 export type ValidationResult = ValidSchedule | IncompleteSchedule | InvalidSchedule;

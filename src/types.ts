@@ -15,3 +15,7 @@ export type FieldName =
   | 'month'
   | 'dayOfWeek'
   | 'year';
+export interface NormalizedSchedule {
+  value: string;
+  tokens: TokenMap;
+}

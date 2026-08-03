@@ -1,7 +1,7 @@
 import { Temporal } from '@js-temporal/polyfill';
 
 import { toString as describeSchedule } from 'cronstrue';
-import type { FieldName, TokenMap } from '@/types';
+import type { FieldName, NormalizedSchedule, TokenMap } from '@/types';
 import type { ScheduleParser } from './types';
 import { isValidRange, isValidStep } from './validator';
 
@@ -370,7 +370,7 @@ export function createScheduleParser({
      * @returns A boolean
      */
     isNormal(expr: string): boolean {
-      return this.normalize(expr) === expr;
+      return this.normalize(expr).value === expr;
     },
 
     /**
@@ -596,19 +596,26 @@ export function createScheduleParser({
      * @param {string} expr Expression to normalize
      * @returns {string} Normalized expression
      */
-    normalize(expr: string): string {
+    normalize(expr: string): NormalizedSchedule {
       const tokens = tokenizer(expr.trim());
+      const normalizedTokens: TokenMap = {};
 
       const collapsed: string[] = [];
       for (const name of fieldOrder) {
         const fieldName = name as FieldName;
 
         if (tokens[fieldName] && fields[fieldName]) {
-          collapsed.push(this.collapseExpressions(tokens[fieldName], fields[fieldName]));
+          const endResult = this.collapseExpressions(tokens[fieldName], fields[fieldName]);
+
+          collapsed.push(endResult);
+          normalizedTokens[fieldName] = endResult;
         }
       }
 
-      return collapsed.filter(Boolean).join(' ');
+      return {
+        tokens: normalizedTokens,
+        value: collapsed.filter(Boolean).join(' '),
+      };
     },
 
     /**
@@ -644,7 +651,7 @@ export function createScheduleParser({
         // it's complete
         if (trimmedExpr in macros) {
           return {
-            descriptor: describeSchedule(this.normalize(expr)),
+            descriptor: describeSchedule(this.normalize(expr).value),
             generator: this.iterate(macros[trimmedExpr], Temporal.Now.plainDateTimeISO()),
             normal: false,
             status: 'valid',
@@ -678,7 +685,7 @@ export function createScheduleParser({
       }
 
       const tokens = tokenizer(trimmedExpr);
-      const normalizedTokens = this.applyAliases(tokenizer(this.normalize(trimmedExpr)));
+      const normalizedTokens = this.applyAliases(this.normalize(trimmedExpr).tokens);
       const error: FieldName[] = [];
 
       for (const [token, value] of Object.entries(normalizedTokens)) {
@@ -723,7 +730,7 @@ export function createScheduleParser({
 
       try {
         return {
-          descriptor: describeSchedule(this.normalize(expr)),
+          descriptor: describeSchedule(this.normalize(expr).value),
           generator: this.iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),
           normal: this.isNormal(trimmedExpr),
           status: 'valid',

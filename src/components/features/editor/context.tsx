@@ -140,10 +140,10 @@ function createEditorContext() {
   }
 
   function normalize() {
-    const normalized = Parsers[format()].normalize(value());
+    const { value: normalizedValue, tokens } = Parsers[format()].normalize(value());
 
-    setValue(normalized);
-    setTokens(normalized.split(' '));
+    setValue(normalizedValue);
+    setTokens(tokens);
   }
 
   function updateFormat(format: ScheduleFormat) {

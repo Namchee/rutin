@@ -1,16 +1,61 @@
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/css';
-import type { ScheduleFormat } from '@/types';
+import type { FieldName, ScheduleFormat } from '@/types';
 
 import { useEditorContext } from './context';
 
-const Hints: Record<ScheduleFormat, string[]> = {
-  amazon: ['Minute', 'Hour', 'Date', 'Month', 'Day', 'Year'],
-  'cf-workers': ['Minute', 'Hour', 'Date', 'Month', 'Day'],
-  node: ['[Second]', 'Minute', 'Hour', 'Date', 'Month', 'Day'],
-  quartz: ['[Second]', 'Minute', 'Hour', 'Date', 'Month', 'Day', '[Year]'],
-  systemd: ['Day', 'Year-Month-Day', 'Hour:Minute:Second'],
-  unix: ['Minute', 'Hour', 'Date', 'Month', 'Day'],
+interface HintEntry {
+  field: FieldName;
+  label: string;
+  /** When true, the field is optional in this dialect; rendered as `[label]`. */
+  optional?: boolean;
+}
+
+const Hints: Record<ScheduleFormat, HintEntry[]> = {
+  amazon: [
+    { field: 'minute', label: 'Minute' },
+    { field: 'hour', label: 'Hour' },
+    { field: 'dayOfMonth', label: 'Date' },
+    { field: 'month', label: 'Month' },
+    { field: 'dayOfWeek', label: 'Day' },
+    { field: 'year', label: 'Year' },
+  ],
+  'cf-workers': [
+    { field: 'minute', label: 'Minute' },
+    { field: 'hour', label: 'Hour' },
+    { field: 'dayOfMonth', label: 'Date' },
+    { field: 'month', label: 'Month' },
+    { field: 'dayOfWeek', label: 'Day' },
+  ],
+  node: [
+    { field: 'second', label: 'Second', optional: true },
+    { field: 'minute', label: 'Minute' },
+    { field: 'hour', label: 'Hour' },
+    { field: 'dayOfMonth', label: 'Date' },
+    { field: 'month', label: 'Month' },
+    { field: 'dayOfWeek', label: 'Day' },
+  ],
+  quartz: [
+    { field: 'second', label: 'Second', optional: true },
+    { field: 'minute', label: 'Minute' },
+    { field: 'hour', label: 'Hour' },
+    { field: 'dayOfMonth', label: 'Date' },
+    { field: 'month', label: 'Month' },
+    { field: 'dayOfWeek', label: 'Day' },
+    { field: 'year', label: 'Year', optional: true },
+  ],
+  systemd: [
+    { field: 'dayOfWeek', label: 'Day' },
+    { field: 'dayOfMonth', label: 'Year-Month-Day' },
+    { field: 'hour', label: 'Hour:Minute:Second' },
+  ],
+  unix: [
+    { field: 'minute', label: 'Minute' },
+    { field: 'hour', label: 'Hour' },
+    { field: 'dayOfMonth', label: 'Date' },
+    { field: 'month', label: 'Month' },
+    { field: 'dayOfWeek', label: 'Day' },
+  ],
 };
 
 export function ScheduleHint() {
@@ -18,35 +63,41 @@ export function ScheduleHint() {
 
   return (
     <div class="scrollbar-none flex w-full max-w-full gap-2 overflow-x-auto px-4">
-      {Hints[format()].map((hint, index) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled={
-            tokens().length <= index || (state() === 'valid' && value().trim().startsWith('@') || tokens()[index] === null)
-          }
-          class={cn(
-            'flex h-fit min-w-[21%] flex-shrink-0 flex-col items-center justify-center gap-0 py-1.5 font-mono font-normal lg:min-w-0 lg:flex-1',
-            {
-              'bg-danger text-danger-foreground hover:bg-danger dark:bg-danger/50':
-                errors().includes(index),
-              'bg-surface-hover': caret() === index && !errors().includes(index),
-              'text-content-secondary': !errors().includes(index),
-            },
-          )}
-          data-hint
-          onClick={() => onHintSelect(index)}>
-          <span
-            class={cn('max-w-full truncate font-medium font-mono text-lg leading-normal', {
-              'text-content-primary': !errors().includes(index),
-              'text-danger-foreground': errors().includes(index),
-            })}>
-            {tokens().length <= index ? '-' : tokens()[index]}
-          </span>
+      {Hints[format()].map((hint, index) => {
+        const tokenValue = tokens()[hint.field];
+        const isPresent = tokenValue !== undefined;
+        const displayLabel = hint.optional ? `[${hint.label}]` : hint.label;
 
-          <span>{hint}</span>
-        </Button>
-      ))}
+        return (
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={
+              !isPresent || (state() === 'valid' && value().trim().startsWith('@'))
+            }
+            class={cn(
+              'flex h-fit min-w-[21%] flex-shrink-0 flex-col items-center justify-center gap-0 py-1.5 font-mono font-normal lg:min-w-0 lg:flex-1',
+              {
+                'bg-danger text-danger-foreground hover:bg-danger dark:bg-danger/50':
+                  errors().includes(hint.field),
+                'bg-surface-hover': caret() === index && !errors().includes(hint.field),
+                'text-content-secondary': !errors().includes(hint.field),
+              },
+            )}
+            data-hint
+            onClick={() => onHintSelect(index)}>
+            <span
+              class={cn('max-w-full truncate font-medium font-mono text-lg leading-normal', {
+                'text-content-primary': !errors().includes(hint.field),
+                'text-danger-foreground': errors().includes(hint.field),
+              })}>
+              {tokenValue ?? '-'}
+            </span>
+
+            <span>{displayLabel}</span>
+          </Button>
+        );
+      })}
     </div>
   );
 }
