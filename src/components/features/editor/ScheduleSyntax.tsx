@@ -50,7 +50,7 @@ const Range: Record<ScheduleFormat, Record<string, FieldRange>> = {
   quartz: {
     second: { optional: true, range: ['0-59'] },
     minute: { optional: false, range: ['0-59'] },
-    hours: { optional: false, range: ['0-23'] },
+    hour: { optional: false, range: ['0-23'] },
     date: { optional: false, range: ['1-31'] },
     month: { optional: false, range: ['1-12'] },
     day: { optional: false, range: ['0-6', 'SUN-SAT'] },
