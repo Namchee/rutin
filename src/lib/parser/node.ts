@@ -26,7 +26,8 @@ const MonthToNumber = {
   sep: 9,
 };
 
-export const NodeScheduleParser = createScheduleParser({
+export const NodeParser = createScheduleParser({
+  fieldOrder: ['second', 'minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek'],
   fields: {
     dayOfMonth: { max: 31, min: 1 },
     // 7 is Sunday
@@ -68,22 +69,10 @@ export const NodeScheduleParser = createScheduleParser({
   },
   validators: {
     dayOfMonth: createTokenValidator(/[^0-9*,\-/LW?]/i, 1, 31),
-    dayOfWeek: createTokenValidator(/[^0-9*,\-/L#?]/i, 1, 7, (token: string): string => {
-      if (token === '?') return '*';
-      const dayRegex = new RegExp(Object.keys(DayToNumber).join('|'), 'gi');
-      return token.replace(dayRegex, matched =>
-        DayToNumber[matched.toLowerCase() as keyof typeof DayToNumber].toString(),
-      );
-    }),
+    dayOfWeek: createTokenValidator(/[^0-9*,\-/L#?]/i, 0, 7),
     hour: createTokenValidator(/[^0-9*,\-/]/, 0, 23),
     minute: createTokenValidator(/[^0-9*,\-/]/, 0, 59),
-    month: createTokenValidator(/[^0-9*,\-/]/, 1, 12, (token: string): string => {
-      if (token === '?') return '*';
-      const monthRegex = new RegExp(Object.keys(MonthToNumber).join('|'), 'gi');
-      return token.replace(monthRegex, matched =>
-        MonthToNumber[matched.toLowerCase() as keyof typeof MonthToNumber].toString(),
-      );
-    }),
+    month: createTokenValidator(/[^0-9*,\-/]/, 1, 12),
     second: createTokenValidator(/[^0-9*,\-/]/, 0, 59),
   },
 });

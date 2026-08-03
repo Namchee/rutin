@@ -168,19 +168,14 @@ export function isValidW(expr: string, min: number, max: number): boolean {
  * @param {string} regex Allowed expression for the token
  * @param {number} min Numeric lower bound of the token
  * @param {number} max Numeric upper bound of the token
- * @param {(string) => string} preprocess Preprocessing step for the token before checked
- * for validity. Usually used to normalize aliases. Optional.
  * @returns {(string) => boolean} A function that returns a boolean indicating the validity of the token.
  */
 export function createTokenValidator(
   regex: RegExp,
   min: number,
   max: number,
-  preprocess?: (token: string) => string,
 ): (token: string) => boolean {
   return (token: string) => {
-    token = preprocess ? preprocess(token) : token;
-
     const badToken = regex.test(token);
     if (badToken) {
       return false;

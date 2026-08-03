@@ -5,3 +5,13 @@ export interface Format {
 }
 
 export type ScheduleGenerator = Generator<Date, void, void> | undefined;
+
+export type TokenMap = Partial<Record<FieldName, string>>;
+export type FieldName =
+  | 'second'
+  | 'minute'
+  | 'hour'
+  | 'dayOfMonth'
+  | 'month'
+  | 'dayOfWeek'
+  | 'year';

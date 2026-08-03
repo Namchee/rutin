@@ -1,7 +1,7 @@
 import type { Temporal } from '@js-temporal/polyfill';
 import { createContext, createSignal, type JSXElement, useContext } from 'solid-js';
 import { Parsers } from '@/lib/parsers';
-import type { ScheduleFormat } from '@/types';
+import type { FieldName, ScheduleFormat, TokenMap } from '@/types';
 
 export type ScheduleState = 'valid' | 'invalid' | 'incomplete';
 export type ScheduleType = 'macro' | 'normal';
@@ -61,11 +61,10 @@ function createEditorContext() {
   const [format, setFormat] = createSignal<ScheduleFormat>('unix');
 
   const [state, setState] = createSignal<ScheduleState>('incomplete');
-  const [tokens, setTokens] = createSignal<(string
-    | null)[]>([]);
+  const [tokens, setTokens] = createSignal<TokenMap>({});
   const [descriptor, setDescriptor] = createSignal<string>(ScheduleLabel.incomplete);
   const [normal, setNormal] = createSignal<boolean>(true);
-  const [errors, setErrors] = createSignal<number[]>([]);
+  const [errors, setErrors] = createSignal<FieldName[]>([]);
   const [generator, setGenerator] =
     createSignal<Generator<Temporal.PlainDateTime, unknown, unknown>>();
 
@@ -106,7 +105,7 @@ function createEditorContext() {
 
     updateCaret();
 
-    const result = Parsers[format()].validate(val);
+    const result = Parsers[format()].process(val);
     setState(result.status);
     setNormal(result.normal);
     setTokens(result.tokens);
@@ -150,7 +149,7 @@ function createEditorContext() {
   function updateFormat(format: ScheduleFormat) {
     setFormat(format);
 
-    const result = Parsers[format].validate(value());
+    const result = Parsers[format].process(value());
     setState(result.status);
     setNormal(result.normal);
     setTokens(result.tokens);

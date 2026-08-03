@@ -1,7 +1,8 @@
 import { Temporal } from '@js-temporal/polyfill';
 
 import { toString as describeSchedule } from 'cronstrue';
-import type { FieldName, ScheduleParser } from './types';
+import type { FieldName, TokenMap } from '@/types';
+import type { ScheduleParser } from './types';
 import { isValidRange, isValidStep } from './validator';
 
 interface Field {
@@ -13,8 +14,9 @@ interface Field {
 
 interface ScheduleParserOptions {
   fields: Partial<Record<FieldName, Field>>;
+  fieldOrder: FieldName[];
   validators: Partial<Record<FieldName, (token: string) => boolean>>;
-  tokenizer: (expr: string) => Partial<Record<FieldName, string>>;
+  tokenizer: (expr: string) => TokenMap;
   macros?: Record<string, string>;
 }
 
@@ -27,16 +29,12 @@ interface CompiledDayField {
 
 export function createScheduleParser({
   fields,
+  fieldOrder,
   validators,
   macros,
   tokenizer,
 }: ScheduleParserOptions) {
   return {
-    /**
-     * Replace aliases in token values (e.g. `SUN` -> `0`) using the
-     * field definitions' `aliases` records. Operates on the named-token
-     * map, so the position order doesn't matter.
-     */
     applyAliases(tokens: TokenMap): TokenMap {
       const out: TokenMap = {};
       for (const [name, value] of Object.entries(tokens)) {
@@ -49,6 +47,7 @@ export function createScheduleParser({
           out[name as FieldName] = value;
           continue;
         }
+
         const aliases = def.aliases;
         const regex = new RegExp(`(${Object.keys(aliases).join('|')})`, 'gi');
         out[name as FieldName] = value.replace(regex, m =>
@@ -382,8 +381,11 @@ export function createScheduleParser({
      * @returns {Generator<Temporal.PlainDateTime, unknown, unknown>} Generator object that yields
      * `Temporal.PlainDateTime` object
      */
-    *iterate(expr: string, start: Temporal.PlainDateTime): Generator<Temporal.PlainDateTime, unknown, unknown> {
-      const { tokens } = this.tokenize(expr);
+    *iterate(
+      expr: string,
+      start: Temporal.PlainDateTime,
+    ): Generator<Temporal.PlainDateTime, unknown, unknown> {
+      const tokens = tokenizer(expr);
       const present = (n: FieldName) => tokens[n] !== undefined;
 
       if (Object.keys(tokens).length === 0) {
@@ -409,8 +411,8 @@ export function createScheduleParser({
         ranges[name] = this.getNumericRange(value, def.min, def.max);
       }
 
-      const domCompiled = this.compileDayField(tokens.dayOfMonth, 'dom');
-      const dowCompiled = this.compileDayField(tokens.dayOfWeek, 'dow');
+      const domCompiled = this.compileDayField(tokens.dayOfMonth ?? '', 'dom');
+      const dowCompiled = this.compileDayField(tokens.dayOfWeek ?? '', 'dow');
 
       const isDomWild = tokens.dayOfMonth === '*';
       const isDowWild = tokens.dayOfWeek === '*';
@@ -599,13 +601,14 @@ export function createScheduleParser({
 
       const collapsed: string[] = [];
       for (const name of fieldOrder) {
+        const fieldName = name as FieldName;
 
+        if (tokens[fieldName] && fields[fieldName]) {
+          collapsed.push(this.collapseExpressions(tokens[fieldName], fields[fieldName]));
+        }
       }
 
-      return out
-        .filter(t => t !== null)
-        .join(' ')
-        .trim();
+      return collapsed.filter(Boolean).join(' ');
     },
 
     /**
@@ -633,7 +636,7 @@ export function createScheduleParser({
       return null;
     },
 
-    validate(expr: string): ReturnType<ScheduleParser['validate']> {
+    process(expr: string): ReturnType<ScheduleParser['process']> {
       const trimmedExpr = expr.trim();
 
       // handle macro validation
@@ -675,7 +678,7 @@ export function createScheduleParser({
       }
 
       const tokens = tokenizer(trimmedExpr);
-      const normalizedTokens = tokenizer(this.normalize(trimmedExpr));
+      const normalizedTokens = this.applyAliases(tokenizer(this.normalize(trimmedExpr)));
       const error: FieldName[] = [];
 
       for (const [token, value] of Object.entries(normalizedTokens)) {

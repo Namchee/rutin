@@ -27,6 +27,7 @@ const MonthToNumber = {
 };
 
 export const CloudflareWorkersParser = createScheduleParser({
+  fieldOrder: ['minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek'],
   fields: {
     dayOfMonth: { max: 31, min: 1 },
     dayOfWeek: { aliases: DayToNumber, max: 7, min: 1 },
@@ -47,19 +48,9 @@ export const CloudflareWorkersParser = createScheduleParser({
   },
   validators: {
     dayOfMonth: createTokenValidator(/[^0-9*,\-/LW]/i, 1, 31),
-    dayOfWeek: createTokenValidator(/[^0-9*,\-/L#]/i, 1, 7, (token: string): string => {
-      const dayRegex = new RegExp(Object.keys(DayToNumber).join('|'), 'gi');
-      return token.replace(dayRegex, matched =>
-        DayToNumber[matched.toLowerCase() as keyof typeof DayToNumber].toString(),
-      );
-    }),
+    dayOfWeek: createTokenValidator(/[^0-9*,\-/L#]/i, 1, 7),
     hour: createTokenValidator(/[^0-9*,\-/]/, 0, 23),
     minute: createTokenValidator(/[^0-9*,\-/]/, 0, 59),
-    month: createTokenValidator(/[^0-9*,\-/]/, 1, 12, (token: string): string => {
-      const monthRegex = new RegExp(Object.keys(MonthToNumber).join('|'), 'gi');
-      return token.replace(monthRegex, matched =>
-        MonthToNumber[matched.toLowerCase() as keyof typeof MonthToNumber].toString(),
-      );
-    }),
+    month: createTokenValidator(/[^0-9*,\-/]/, 1, 12),
   },
 });
