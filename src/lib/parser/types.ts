@@ -4,6 +4,7 @@ import type { FieldName, NormalizedSchedule, TokenMap } from '@/types';
 interface BaseValidationResult {
   normal: boolean;
   tokens: TokenMap;
+  positions?: Record<FieldName, number>;
 }
 
 interface ValidSchedule extends BaseValidationResult {

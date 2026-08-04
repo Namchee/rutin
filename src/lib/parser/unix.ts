@@ -45,7 +45,10 @@ export const UNIXParser = createScheduleParser({
     '@yearly': '0 0 1 1 *',
   },
   tokenizer: (expr: string) => {
-    const tokens = expr.trim().split(/\s+/).filter(Boolean);
+    const tokens = Array.from(expr.trim().matchAll(/\S+/g), match => ({
+      position: [match.index, match.index + match[0].length] as [number, number],
+      value: match[0],
+    }));
 
     return {
       dayOfMonth: tokens[2],

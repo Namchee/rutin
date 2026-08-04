@@ -59,11 +59,11 @@ const Hints: Record<ScheduleFormat, HintEntry[]> = {
 };
 
 export function ScheduleHint() {
-  const { format, caret, tokens, errors, onHintSelect, value, state } = useEditorContext();
+  const { format, currentToken, tokens, errors, onHintSelect, value, state } = useEditorContext();
 
   return (
     <div class="scrollbar-none flex w-full max-w-full gap-2 overflow-x-auto px-4">
-      {Hints[format()].map((hint, index) => {
+      {Hints[format()].map((hint) => {
         const tokenValue = tokens()[hint.field];
         const isPresent = tokenValue !== undefined;
         const displayLabel = hint.optional ? `[${hint.label}]` : hint.label;
@@ -80,12 +80,12 @@ export function ScheduleHint() {
               {
                 'bg-danger text-danger-foreground hover:bg-danger dark:bg-danger/50':
                   errors().includes(hint.field),
-                'bg-surface-hover': caret() === index && !errors().includes(hint.field),
+                'bg-surface-hover': currentToken() === hint.field && !errors().includes(hint.field),
                 'text-content-secondary': !errors().includes(hint.field),
               },
             )}
             data-hint
-            onClick={() => onHintSelect(index)}>
+            onClick={() => onHintSelect(hint.field)}>
             <span
               class={cn('max-w-full truncate font-medium font-mono text-lg leading-normal', {
                 'text-content-primary': !errors().includes(hint.field),

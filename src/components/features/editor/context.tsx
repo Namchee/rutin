@@ -68,10 +68,10 @@ function createEditorContext() {
   const [generator, setGenerator] =
     createSignal<Generator<Temporal.PlainDateTime, unknown, unknown>>();
 
-  const [caret, setCaret] = createSignal<number>(-1);
+  const [currentToken, setCurrentToken] = createSignal<FieldName | undefined>(undefined);
   const [value, setValue] = createSignal<string>('');
 
-  function updateCaret() {
+  function updateCurrentToken() {
     if (!input) {
       return;
     }
@@ -85,7 +85,7 @@ function createEditorContext() {
     }
 
     if (trimmed.length === 0 || (trimmed.startsWith('@') && Object.keys(Macros[format()]).length > 0)) {
-      setCaret(-1);
+      setCurrentToken(undefined);
       return;
     }
 
@@ -103,7 +103,7 @@ function createEditorContext() {
   function onInput(val: string) {
     setValue(val);
 
-    updateCaret();
+    updateCurrentToken();
 
     const result = Parsers[format()].process(val);
     setState(result.status);
@@ -119,17 +119,18 @@ function createEditorContext() {
     const target = event.relatedTarget;
 
     if (!target || !(target instanceof HTMLElement) || !target.dataset.hint) {
-      setCaret(-1);
+      setCurrentToken(undefined);
     }
   }
 
-  function onHintSelect(index: number) {
-    const matcher = value().matchAll(/\S+/g);
-    const tokens = Array.from(matcher, match => ({
-      endIndex: match.index + match[0].length,
-      startIndex: match.index,
-      token: match[0],
-    }));
+  function onHintSelect(field: FieldName) {
+    const target = tokens()[field];
+
+    if (!target) {
+      return;
+    }
+
+    const index = value(); // ???
 
     if (tokens.length <= index || !input) {
       return;
@@ -160,7 +161,7 @@ function createEditorContext() {
   }
 
   return {
-    caret,
+    currentToken,
     descriptor,
     errors,
     format,
@@ -168,7 +169,7 @@ function createEditorContext() {
     normal,
     normalize,
     onBlur,
-    onCaretMovement: updateCaret,
+    onCaretMovement: updateCurrentToken,
     onHintSelect,
 
     onInput,

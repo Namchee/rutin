@@ -5,8 +5,12 @@ export interface Format {
 }
 
 export type ScheduleGenerator = Generator<Date, void, void> | undefined;
+interface Token {
+  value: string;
+  position: [number, number];
+}
 
-export type TokenMap = Partial<Record<FieldName, string>>;
+export type TokenMap = Partial<Record<FieldName, Token>>;
 export type FieldName =
   | 'second'
   | 'minute'

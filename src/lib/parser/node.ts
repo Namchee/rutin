@@ -47,7 +47,10 @@ export const NodeParser = createScheduleParser({
     '@yearly': '0 0 1 1 *',
   },
   tokenizer: (expr: string) => {
-    const tokens = expr.trim().split(/\s+/);
+    const tokens = Array.from(expr.trim().matchAll(/\S+/g), match => ({
+      position: [match.index, match.index + match[0].length] as [number, number],
+      value: match[0],
+    }));
 
     if (tokens.length <= 5) {
       return {
@@ -60,11 +63,12 @@ export const NodeParser = createScheduleParser({
     }
 
     return {
-      dayOfMonth: tokens[2],
-      dayOfWeek: tokens[4],
-      hour: tokens[1],
-      minute: tokens[0],
-      month: tokens[3],
+      dayOfMonth: tokens[3],
+      dayOfWeek: tokens[5],
+      hour: tokens[2],
+      minute: tokens[1],
+      month: tokens[4],
+      second: tokens[0],
     };
   },
   validators: {

@@ -37,22 +37,26 @@ export function createScheduleParser({
   return {
     applyAliases(tokens: TokenMap): TokenMap {
       const out: TokenMap = {};
-      for (const [name, value] of Object.entries(tokens)) {
-        if (typeof value !== 'string') {
+      for (const [name, v] of Object.entries(tokens)) {
+        if (typeof v.value !== 'string') {
           continue;
         }
 
         const def = fields[name as keyof typeof fields];
         if (!def?.aliases) {
-          out[name as FieldName] = value;
+          out[name as FieldName] = v;
           continue;
         }
 
         const aliases = def.aliases;
         const regex = new RegExp(`(${Object.keys(aliases).join('|')})`, 'gi');
-        out[name as FieldName] = value.replace(regex, m =>
+        const newValue = v.value.replace(regex, m =>
           String(aliases[m.toLowerCase() as keyof typeof aliases]),
         );
+        out[name as FieldName] = {
+          position: [v.position[0], v.position[0] + newValue.length],
+          value: newValue,
+        };
       }
       return out;
     },
@@ -394,7 +398,7 @@ export function createScheduleParser({
 
       const ranges: Partial<Record<FieldName, number[]>> = {};
       for (const name of fieldOrder) {
-        const value = tokens[name];
+        const value = tokens[name]?.value;
         if (value === undefined) {
           continue;
         }
@@ -411,11 +415,11 @@ export function createScheduleParser({
         ranges[name] = this.getNumericRange(value, def.min, def.max);
       }
 
-      const domCompiled = this.compileDayField(tokens.dayOfMonth ?? '', 'dom');
-      const dowCompiled = this.compileDayField(tokens.dayOfWeek ?? '', 'dow');
+      const domCompiled = this.compileDayField(tokens.dayOfMonth?.value ?? '', 'dom');
+      const dowCompiled = this.compileDayField(tokens.dayOfWeek?.value ?? '', 'dow');
 
-      const isDomWild = tokens.dayOfMonth === '*';
-      const isDowWild = tokens.dayOfWeek === '*';
+      const isDomWild = tokens.dayOfMonth?.value === '*';
+      const isDowWild = tokens.dayOfWeek?.value === '*';
 
       const hasSeconds = present('second');
 
@@ -605,10 +609,14 @@ export function createScheduleParser({
         const fieldName = name as FieldName;
 
         if (tokens[fieldName] && fields[fieldName]) {
-          const endResult = this.collapseExpressions(tokens[fieldName], fields[fieldName]);
+          const endResult = this.collapseExpressions(tokens[fieldName].value, fields[fieldName]);
+          const startPos = tokens[fieldName].position[0];
 
           collapsed.push(endResult);
-          normalizedTokens[fieldName] = endResult;
+          normalizedTokens[fieldName] = {
+            position: [startPos, startPos + endResult.length],
+            value: endResult,
+          };
         }
       }
 
@@ -688,10 +696,10 @@ export function createScheduleParser({
       const normalizedTokens = this.applyAliases(this.normalize(trimmedExpr).tokens);
       const error: FieldName[] = [];
 
-      for (const [token, value] of Object.entries(normalizedTokens)) {
+      for (const [token, v] of Object.entries(normalizedTokens)) {
         const fn = validators[token as FieldName];
 
-        if (fn && !fn(value)) {
+        if (fn && !fn(v.value)) {
           error.push(token as FieldName);
         }
       }
