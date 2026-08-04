@@ -91,7 +91,7 @@ export function ScheduleHint() {
                 'text-content-primary': !errors().includes(hint.field),
                 'text-danger-foreground': errors().includes(hint.field),
               })}>
-              {tokenValue ?? '-'}
+              {tokenValue?.value ?? '-'}
             </span>
 
             <span>{displayLabel}</span>

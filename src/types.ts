@@ -18,7 +18,10 @@ export type FieldName =
   | 'dayOfMonth'
   | 'month'
   | 'dayOfWeek'
-  | 'year';
+  | 'year'
+  // special Systemd
+  | 'time'
+  | 'date';
 export interface NormalizedSchedule {
   value: string;
   tokens: TokenMap;

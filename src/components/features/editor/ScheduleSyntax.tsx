@@ -3,7 +3,7 @@ import { For, Show } from 'solid-js';
 import { Code } from '@/components/ui/Code';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
 import { cn } from '@/lib/css';
-import type { ScheduleFormat } from '@/types';
+import type { FieldName, ScheduleFormat } from '@/types';
 import { useEditorContext } from './context';
 
 interface FieldRange {
@@ -20,45 +20,58 @@ const Operators = {
   unix: ['-', ',', '*', '/'],
 } as const;
 
-const Range: Record<ScheduleFormat, Record<string, FieldRange>> = {
+const FieldLabel: Record<FieldName, string> = {
+  date: 'Date',
+  dayOfMonth: 'Date',
+  dayOfWeek: 'Day of week',
+  hour: 'Hour',
+  minute: 'Minute',
+  month: 'Month',
+  second: 'Second',
+  time: 'Time',
+  year: 'Year',
+};
+
+const Range: Record<ScheduleFormat, Partial<Record<FieldName, FieldRange>>> = {
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   amazon: {
     minute: { optional: false, range: ['0-59'] },
     hour: { optional: false, range: ['0-23'] },
-    date: { optional: false, range: ['1-31'] },
+    dayOfMonth: { optional: false, range: ['1-31'] },
     month: { optional: false, range: ['1-12'] },
-    day: { optional: false, range: ['1-7', 'SUN-SAT'] },
+    dayOfWeek: { optional: false, range: ['1-7', 'SUN-SAT'] },
+    year: { optional: false, range: ['1970-2099'] },
   },
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   'cf-workers': {
     minute: { optional: false, range: ['0-59'] },
     hour: { optional: false, range: ['0-23'] },
-    date: { optional: false, range: ['1-31'] },
+    dayOfMonth: { optional: false, range: ['1-31'] },
     month: { optional: false, range: ['1-12'] },
-    day: { optional: false, range: ['1-7', 'SUN-SAT'] },
+    dayOfWeek: { optional: false, range: ['1-7', 'SUN-SAT'] },
   },
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   node: {
     second: { optional: true, range: ['0-59'] },
     minute: { optional: false, range: ['0-59'] },
     hour: { optional: false, range: ['0-23'] },
-    date: { optional: false, range: ['1-31'] },
+    dayOfMonth: { optional: false, range: ['1-31'] },
     month: { optional: false, range: ['1-12'] },
-    day: { optional: false, range: ['0-6', 'SUN-SAT'] },
+    dayOfWeek: { optional: false, range: ['0-6', 'SUN-SAT'] },
   },
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   quartz: {
     second: { optional: true, range: ['0-59'] },
     minute: { optional: false, range: ['0-59'] },
     hour: { optional: false, range: ['0-23'] },
-    date: { optional: false, range: ['1-31'] },
+    dayOfMonth: { optional: false, range: ['1-31'] },
     month: { optional: false, range: ['1-12'] },
-    day: { optional: false, range: ['0-6', 'SUN-SAT'] },
+    dayOfWeek: { optional: false, range: ['0-6', 'SUN-SAT'] },
     year: { optional: true, range: ['1970-2099'] },
   },
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   systemd: {
-    day: { optional: false, range: ['Mon-Sun'] },
+    dayOfWeek: { optional: false, range: ['Mon-Sun'] },
     date: { optional: false, range: ['1970-01-01 - 2099-12-31'] },
     time: { optional: false, range: ['00:00-23:59'] },
   },
@@ -66,9 +79,9 @@ const Range: Record<ScheduleFormat, Record<string, FieldRange>> = {
   unix: {
     minute: { optional: false, range: ['0-59'] },
     hour: { optional: false, range: ['0-23'] },
-    date: { optional: false, range: ['1-31'] },
+    dayOfMonth: { optional: false, range: ['1-31'] },
     month: { optional: false, range: ['1-12'] },
-    day: { optional: false, range: ['0-6', 'SUN-SAT'] },
+    dayOfWeek: { optional: false, range: ['0-6', 'SUN-SAT'] },
   },
 };
 
@@ -125,7 +138,7 @@ function getForms(format: ScheduleFormat) {
 }
 
 export function ScheduleSyntax() {
-  const { format, caret } = useEditorContext();
+  const { format, currentToken } = useEditorContext();
 
   const advancedForms = () => getForms(format());
 
@@ -154,16 +167,16 @@ export function ScheduleSyntax() {
       </div>
 
       <div>
-        {Object.entries(Range[format()]).map(([key, value], index) => (
+        {Object.entries(Range[format()]).map(([key, value]) => (
           <div
             class={cn(
               'flex items-center justify-between px-4 py-3 text-xs leading-snug transition-colors',
               {
-                'bg-background': caret() === index,
+                'bg-background': currentToken() === key,
               },
             )}>
             <div class="flex items-center gap-1 font-medium text-content-primary">
-              {key.charAt(0).toUpperCase() + key.slice(1)}
+              {FieldLabel[key as FieldName]}
 
               <Show when={value.optional}>
                 <Tooltip>

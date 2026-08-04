@@ -90,14 +90,27 @@ function createEditorContext() {
     }
 
     const textBeforeCaret = val.slice(0, selectionStart);
-    const tokensBefore = textBeforeCaret.match(/\S+/g) || [];
+    const tokensBefore = textBeforeCaret.match(/\S+/g) ?? [];
     const isAtTrailingSpace = /\s$/.test(textBeforeCaret);
-
-    const currentSectionIdx = isAtTrailingSpace
+    const typedBeforeCaret = isAtTrailingSpace
       ? tokensBefore.length
       : Math.max(0, tokensBefore.length - 1);
 
-    setCaret(currentSectionIdx);
+    // Walk fieldOrder, skipping fields the user hasn't typed a value for.
+    // The Nth typed token corresponds to the Nth non-optional field the user
+    // has supplied.
+    let fieldIdx = 0;
+    let currentField: FieldName | undefined;
+    for (const name of fieldOrder) {
+      if (optionalFields.has(name)) continue;   // skip optional when absent
+      if (fieldIdx === typedBeforeCaret) {
+        currentField = name;
+        break;
+      }
+      fieldIdx++;
+    }
+
+    setCurrentToken(currentField);
   }
 
   function onInput(val: string) {
@@ -124,20 +137,14 @@ function createEditorContext() {
   }
 
   function onHintSelect(field: FieldName) {
-    const target = tokens()[field];
+    const pos = tokens()[field]?.position;
 
-    if (!target) {
-      return;
-    }
-
-    const index = value(); // ???
-
-    if (tokens.length <= index || !input) {
+    if (pos === undefined || !input) {
       return;
     }
 
     input.focus();
-    input.setSelectionRange(tokens[index].startIndex, tokens[index].endIndex);
+    input.setSelectionRange(pos[0], pos[1]);
   }
 
   function normalize() {
