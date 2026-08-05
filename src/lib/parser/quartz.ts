@@ -52,7 +52,7 @@ export const QuartzParser = createScheduleParser({
     };
   },
   validators: {
-    dayOfMonth: createTokenValidator(/[^0-9*,\-/?]/i, 1, 31),
+    dayOfMonth: createTokenValidator(/[^0-9*,\-/?LW]/i, 1, 31),
     dayOfWeek: createTokenValidator(/[^0-9*,\-/L#?]/i, 0, 7),
     hour: createTokenValidator(/[^0-9*,\-/]/, 0, 23),
     minute: createTokenValidator(/[^0-9*,\-/]/, 0, 59),
