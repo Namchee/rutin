@@ -389,7 +389,7 @@ export function createScheduleParser({
       expr: string,
       start: Temporal.PlainDateTime,
     ): Generator<Temporal.PlainDateTime, unknown, unknown> {
-      const tokens = tokenizer(expr);
+      const tokens = this.applyAliases(tokenizer(expr));
       const present = (n: FieldName) => tokens[n] !== undefined;
 
       if (Object.keys(tokens).length === 0) {
