@@ -692,7 +692,8 @@ export function createScheduleParser({
         };
       }
 
-      const tokens = tokenizer(trimmedExpr);
+      // use non-trimmed version when tokenizing for UI!
+      const tokens = tokenizer(expr);
       const normalizedTokens = this.applyAliases(this.normalize(trimmedExpr).tokens);
       const error: FieldName[] = [];
 
