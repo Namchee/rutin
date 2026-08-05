@@ -316,7 +316,7 @@ export function createScheduleParser({
         }
 
         // wildcard, return all
-        if (t === '*') {
+        if (['*', '?'].includes(t)) {
           for (let i = min; i <= max; i++) {
             ranges.add(i);
           }
@@ -418,8 +418,8 @@ export function createScheduleParser({
       const domCompiled = this.compileDayField(tokens.dayOfMonth?.value ?? '', 'dom');
       const dowCompiled = this.compileDayField(tokens.dayOfWeek?.value ?? '', 'dow');
 
-      const isDomWild = tokens.dayOfMonth?.value === '*';
-      const isDowWild = tokens.dayOfWeek?.value === '*';
+      const isDomWild = ['*', '?'].includes(tokens.dayOfMonth?.value ?? '');
+      const isDowWild = ['*', '?'].includes(tokens.dayOfWeek?.value ?? '');
 
       const hasSeconds = present('second');
 
@@ -694,7 +694,7 @@ export function createScheduleParser({
 
       // use non-trimmed version when tokenizing for UI!
       const tokens = tokenizer(expr);
-      const normalizedTokens = this.applyAliases(this.normalize(trimmedExpr).tokens);
+      const normalizedTokens = this.applyAliases(tokenizer(trimmedExpr));
       const error: FieldName[] = [];
 
       for (const [token, v] of Object.entries(normalizedTokens)) {
