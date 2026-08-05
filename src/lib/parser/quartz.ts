@@ -27,11 +27,11 @@ const MonthToNumber = {
 };
 
 export const AmazonParser = createScheduleParser({
-  fieldOrder: ['minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek', 'year'],
+  fieldOrder: ['second', 'minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek', 'year'],
   fields: {
     dayOfMonth: { max: 31, min: 1 },
     // 7 is Sunday
-    dayOfWeek: { aliases: DayToNumber, max: 7, min: 1 },
+    dayOfWeek: { aliases: DayToNumber, max: 7, min: 0 },
     hour: { max: 23, min: 0 },
     minute: { max: 59, min: 0 },
     month: { aliases: MonthToNumber, max: 12, min: 1 },
@@ -54,7 +54,7 @@ export const AmazonParser = createScheduleParser({
   },
   validators: {
     dayOfMonth: createTokenValidator(/[^0-9*,\-/?]/i, 1, 31),
-    dayOfWeek: createTokenValidator(/[^0-9*,\-/L#?]/i, 1, 7),
+    dayOfWeek: createTokenValidator(/[^0-9*,\-/L#?]/i, 0, 7),
     hour: createTokenValidator(/[^0-9*,\-/]/, 0, 23),
     minute: createTokenValidator(/[^0-9*,\-/]/, 0, 59),
     month: createTokenValidator(/[^0-9*,\-/]/, 1, 12),
