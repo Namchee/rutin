@@ -53,7 +53,7 @@ export function createScheduleParser({
     applyAliases(tokens: TokenMap): TokenMap {
       const out: TokenMap = {};
       for (const [name, v] of Object.entries(tokens)) {
-        if (typeof v.value !== 'string') {
+        if (!v || typeof v.value !== 'string') {
           continue;
         }
 

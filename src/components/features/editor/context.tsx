@@ -92,10 +92,18 @@ function createEditorContext() {
       return;
     }
 
-    const currentTokens = Object.entries(tokens()).map(([name, { position }]) => ({
-      name,
-      position,
-    }));
+    console.log(tokens());
+
+    const currentTokens = Object.entries(tokens()).map(([name, token]) => {
+      if (!token) {
+        return undefined;
+      }
+
+      return {
+        name,
+        position: token.position,
+      }
+    }).filter(Boolean);
     currentTokens.sort((a, b) => a.position[0] - b.position[0]);
 
     const currentToken = currentTokens.find(
