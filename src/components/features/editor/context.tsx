@@ -84,33 +84,26 @@ function createEditorContext() {
       return;
     }
 
-    if (trimmed.length === 0 || (trimmed.startsWith('@') && Object.keys(Macros[format()]).length > 0)) {
+    if (
+      trimmed.length === 0 ||
+      (trimmed.startsWith('@') && Object.keys(Macros[format()]).length > 0)
+    ) {
       setCurrentToken(undefined);
       return;
     }
 
-    const textBeforeCaret = val.slice(0, selectionStart);
-    const tokensBefore = textBeforeCaret.match(/\S+/g) ?? [];
-    const isAtTrailingSpace = /\s$/.test(textBeforeCaret);
-    const typedBeforeCaret = isAtTrailingSpace
-      ? tokensBefore.length
-      : Math.max(0, tokensBefore.length - 1);
+    const currentTokens = Object.entries(tokens()).map(([name, { position }]) => ({
+      name,
+      position,
+    }));
+    currentTokens.sort((a, b) => a.position[0] - b.position[0]);
 
-    // Walk fieldOrder, skipping fields the user hasn't typed a value for.
-    // The Nth typed token corresponds to the Nth non-optional field the user
-    // has supplied.
-    let fieldIdx = 0;
-    let currentField: FieldName | undefined;
-    for (const name of fieldOrder) {
-      if (optionalFields.has(name)) continue;   // skip optional when absent
-      if (fieldIdx === typedBeforeCaret) {
-        currentField = name;
-        break;
-      }
-      fieldIdx++;
-    }
+    const currentToken = currentTokens.find(
+      ({ position }) => selectionStart <=
+        position[1],
+    );
 
-    setCurrentToken(currentField);
+    setCurrentToken(currentToken?.name as FieldName);
   }
 
   function onInput(val: string) {
