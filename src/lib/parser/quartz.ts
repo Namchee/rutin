@@ -1,32 +1,17 @@
-import { createScheduleParser } from './base';
+import { createScheduleParser, MonthToNumber } from './base';
 import { createTokenValidator } from './validator';
 
 const DayToNumber = {
   fri: 5,
   mon: 1,
-  sat: 6,
-  sun: 0,
+  sat: 7,
+  sun: 1,
   thu: 4,
   tue: 2,
   wed: 3,
 };
 
-const MonthToNumber = {
-  apr: 4,
-  aug: 8,
-  dec: 12,
-  feb: 2,
-  jan: 1,
-  jul: 7,
-  jun: 6,
-  mar: 3,
-  may: 5,
-  nov: 11,
-  oct: 10,
-  sep: 9,
-};
-
-export const AmazonParser = createScheduleParser({
+export const QuartzParser = createScheduleParser({
   fieldOrder: ['second', 'minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek', 'year'],
   fields: {
     dayOfMonth: { max: 31, min: 1 },
@@ -35,6 +20,7 @@ export const AmazonParser = createScheduleParser({
     hour: { max: 23, min: 0 },
     minute: { max: 59, min: 0 },
     month: { aliases: MonthToNumber, max: 12, min: 1 },
+    second: { max: 59, min: 0 },
     year: { max: 2199, min: 1970 },
   },
   tokenizer: (expr: string) => {
@@ -43,13 +29,26 @@ export const AmazonParser = createScheduleParser({
       value: match[0],
     }));
 
+    // second is optional
+    if (tokens.length === 6) {
+      return {
+        dayOfMonth: tokens[2],
+        dayOfWeek: tokens[4],
+        hour: tokens[1],
+        minute: tokens[0],
+        month: tokens[3],
+        year: tokens[5],
+      };
+    }
+
     return {
-      dayOfMonth: tokens[2],
-      dayOfWeek: tokens[4],
-      hour: tokens[1],
-      minute: tokens[0],
-      month: tokens[3],
-      year: tokens[5],
+      dayOfMonth: tokens[3],
+      dayOfWeek: tokens[5],
+      hour: tokens[2],
+      minute: tokens[1],
+      month: tokens[4],
+      second: tokens[0],
+      year: tokens[6],
     };
   },
   validators: {

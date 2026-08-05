@@ -1,4 +1,4 @@
-import { createScheduleParser } from './base';
+import { createScheduleParser, MonthToNumber } from './base';
 import { createTokenValidator } from './validator';
 
 const DayToNumber = {
@@ -9,21 +9,6 @@ const DayToNumber = {
   thu: 4,
   tue: 2,
   wed: 3,
-};
-
-const MonthToNumber = {
-  apr: 4,
-  aug: 8,
-  dec: 12,
-  feb: 2,
-  jan: 1,
-  jul: 7,
-  jun: 6,
-  mar: 3,
-  may: 5,
-  nov: 11,
-  oct: 10,
-  sep: 9,
 };
 
 export const UNIXParser = createScheduleParser({

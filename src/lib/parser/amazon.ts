@@ -1,29 +1,14 @@
-import { createScheduleParser } from './base';
+import { createScheduleParser, MonthToNumber } from './base';
 import { createTokenValidator } from './validator';
 
 const DayToNumber = {
-  fri: 5,
-  mon: 1,
-  sat: 6,
-  sun: 0,
-  thu: 4,
-  tue: 2,
-  wed: 3,
-};
-
-const MonthToNumber = {
-  apr: 4,
-  aug: 8,
-  dec: 12,
-  feb: 2,
-  jan: 1,
-  jul: 7,
-  jun: 6,
-  mar: 3,
-  may: 5,
-  nov: 11,
-  oct: 10,
-  sep: 9,
+  fri: 6,
+  mon: 2,
+  sat: 7,
+  sun: 1,
+  thu: 5,
+  tue: 3,
+  wed: 4,
 };
 
 export const AmazonParser = createScheduleParser({
