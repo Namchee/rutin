@@ -51,6 +51,11 @@ export const Macros: Record<ScheduleFormat, Record<string, Macro>> = {
   },
 };
 
+interface ExistingToken {
+  name: FieldName;
+  position: [number, number];
+}
+
 function createEditorContext() {
   let input: HTMLInputElement | undefined;
 
@@ -92,8 +97,6 @@ function createEditorContext() {
       return;
     }
 
-    console.log(tokens());
-
     const currentTokens = Object.entries(tokens()).map(([name, token]) => {
       if (!token) {
         return undefined;
@@ -103,7 +106,7 @@ function createEditorContext() {
         name,
         position: token.position,
       }
-    }).filter(Boolean);
+    }).filter(Boolean) as ExistingToken[];
     currentTokens.sort((a, b) => a.position[0] - b.position[0]);
 
     const currentToken = currentTokens.find(
