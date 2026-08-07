@@ -24,9 +24,8 @@
   "dependencies": {
     "@ark-ui/solid": "^5.37.1",
     "@solidjs/meta": "^0.29.4",
-    "@solidjs/router": "^0.16.1",
-    "@solidjs/start": "2.0.0-alpha.3",
-    "@solidjs/vite-plugin-nitro-2": "^0.1.0",
+    "@solidjs/router": "^1.0.0",
+    "@solidjs/start": "2.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cronstrue": "^3.13.0",
