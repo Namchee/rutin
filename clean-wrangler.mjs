@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 // Path to wrangler config
-const configPath = path.resolve(process.cwd(), 'wrangler.jsonc');
+const configPath = path.resolve(process.cwd(), 'dist', 'client', 'wrangler.json');
 
 if (!fs.existsSync(configPath)) {
   console.log(`Config file not found at ${configPath}, skipping.`);
