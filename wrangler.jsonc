@@ -1,7 +1,5 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "compatibility_date": "2026-07-31",
-  "compatibility_flags": ["nodejs_compat"],
-  "name": "rutin",
-  "pages_build_output_dir": "dist"
+  "name": "rutin"
 }
