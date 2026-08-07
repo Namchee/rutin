@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.6",
+    "@cloudflare/vite-plugin": "^1.51.0",
     "@iconify-json/lucide": "^1.2.102",
     "@js-temporal/polyfill": "^0.5.1",
     "@types/node": "^25.3.5",
@@ -43,6 +44,6 @@
     "unocss": "^66.7.4",
     "vite": "^7.3.6",
     "vitest": "^4.1.0",
-    "wrangler": "^4.118.0"
+    "wrangler": "^4.119.0"
   }
 }

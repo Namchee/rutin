@@ -1,8 +1,7 @@
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-
+import { cloudflare } from '@cloudflare/vite-plugin';
 import { solidStart } from '@solidjs/start/config';
-import { nitroV2Plugin as nitro } from '@solidjs/vite-plugin-nitro-2';
 import uno from 'unocss/vite';
 
 import { defineConfig } from 'vite';
@@ -14,12 +13,7 @@ export default defineConfig({
   build: {
     target: 'esnext',
   },
-  plugins: [solidStart(), uno(), nitro({
-    preset: 'cloudflare-pages',
-    rollupConfig: {
-      external: ["__STATIC_CONTENT_MANIFEST", 'node:async_hooks'],
-    },
-  })],
+  plugins: [solidStart(), uno(), cloudflare({ viteEnvironment: { name: 'ssr' } })],
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
