@@ -13,7 +13,7 @@ export default defineConfig({
   build: {
     target: 'esnext',
   },
-  plugins: [solidStart(), uno(), cloudflare({ viteEnvironment: { name: 'ssr' } })],
+  plugins: [cloudflare({ viteEnvironment: { name: 'ssr' } }), solidStart(), uno(),],
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
