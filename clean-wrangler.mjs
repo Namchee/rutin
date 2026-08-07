@@ -24,7 +24,8 @@ const BAD_TOP_LEVEL = new Set([
   'ratelimits',
   'vpc_services',
   'vpc_networks',
-  'python_modules'
+  'python_modules',
+  'assets',
 ]);
 
 const BAD_DEV_FIELDS = new Set(['enable_containers', 'generate_types']);
