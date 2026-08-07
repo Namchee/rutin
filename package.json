@@ -14,7 +14,7 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
-    "build": "vite build",
+    "build": "vite build && node ./clean-wrangler.mjs",
     "serve": "vite preview",
     "test": "vitest",
     "lint": "biome lint ./src",
