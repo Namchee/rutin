@@ -323,12 +323,15 @@ function guessField(part: string): FieldName {
   if (part.includes(':')) {
     return 'time';
   }
+
   if (part.includes('-') || part.includes('~')) {
     return 'date';
   }
+
   if (/^[a-z]/i.test(part)) {
     return 'dayOfWeek';
   }
+
   return 'date';
 }
 
@@ -367,12 +370,12 @@ function tokenize(expr: string): TokenMap {
     const part = raw[i];
     const kind = classify(part);
     if (kind === undefined) {
-      throw new CalendarError(guessField(part), `Unrecognised calendar component: ${part}`);
+      throw new Error(`Unrecognised calendar component: ${guessField(part)}`);
     }
 
     const orderIndex = FieldOrder.indexOf(kind);
     if (orderIndex < lastOrderIndex) {
-      throw new CalendarError(kind, `Out-of-order calendar component: ${part}`);
+      throw new Error(`Out-of-order calendar component: ${guessField(part)}`);
     }
 
     tokens[kind] = { position: posOf(i), value: part };
@@ -381,8 +384,6 @@ function tokenize(expr: string): TokenMap {
 
   return tokens;
 }
-
-// ─────────────────────────── parser ───────────────────────────
 
 function parseSpec(tokens: TokenMap): CalendarInstance {
   const weekday = tokens.dayOfWeek?.value;
@@ -426,8 +427,6 @@ export function* generator(expr: string, start: Temporal.PlainDateTime) {
     next = nextMatch(curr, spec);
   }
 }
-
-// ─────────────────────────── exports ───────────────────────────
 
 export const SystemdParser: ScheduleParser = {
   normalize(expr: string): NormalizedSchedule {
