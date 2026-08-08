@@ -46,8 +46,8 @@ const Hints: Record<ScheduleFormat, HintEntry[]> = {
   ],
   systemd: [
     { field: 'dayOfWeek', label: 'Day' },
-    { field: 'dayOfMonth', label: 'Year-Month-Day' },
-    { field: 'hour', label: 'Hour:Minute:Second' },
+    { field: 'date', label: 'Year-Month-Day' },
+    { field: 'time', label: 'Hour:Minute:Second' },
   ],
   unix: [
     { field: 'minute', label: 'Minute' },
@@ -63,7 +63,7 @@ export function ScheduleHint() {
 
   return (
     <div class="scrollbar-none flex w-full max-w-full gap-2 overflow-x-auto px-4">
-      {Hints[format()].map((hint) => {
+      {Hints[format()].map(hint => {
         const tokenValue = tokens()[hint.field];
         const isPresent = tokenValue !== undefined;
         const displayLabel = hint.optional ? `[${hint.label}]` : hint.label;
@@ -72,9 +72,7 @@ export function ScheduleHint() {
           <Button
             variant="ghost"
             size="sm"
-            disabled={
-              !isPresent || (state() === 'valid' && value().trim().startsWith('@'))
-            }
+            disabled={!isPresent || (state() === 'valid' && value().trim().startsWith('@'))}
             class={cn(
               'flex h-fit min-w-[21%] flex-shrink-0 flex-col items-center justify-center gap-0 py-1.5 font-mono font-normal lg:min-w-0 lg:flex-1',
               {

@@ -62,6 +62,16 @@ export const OneBasedDayToNumber = {
   wed: 4,
 };
 
+/**
+ * Get number of days in a certain month
+ *
+ * @param {number} year Current year
+ * @param {number} month Current month
+ * @returns {number} Number of day in that month
+ */
+export function daysInMonth(year: number, month: number): number {
+  return new Temporal.PlainDate(year, month, 1).add({ months: 1 }).subtract({ days: 1 }).day;
+}
 
 export function createScheduleParser({
   fields,
@@ -226,7 +236,6 @@ export function createScheduleParser({
      * `null` otherwise.
      */
     compileDOMToken(expr: string): DayMatcher | null {
-      const daysInMonth = this.daysInMonth.bind(this);
       const lastWeekdayOfMonth = this.lastWeekdayOfMonth.bind(this);
       const nearestWeekdayToDay = this.nearestWeekdayToDay.bind(this);
 
@@ -315,17 +324,6 @@ export function createScheduleParser({
      */
     dayOfWeek(year: number, month: number, day: number): number {
       return Temporal.PlainDate.from({ day, month, year }).dayOfWeek;
-    },
-
-    /**
-     * Get number of days in a certain month
-     *
-     * @param {number} year Current year
-     * @param {number} month Current month
-     * @returns {number} Number of day in that month
-     */
-    daysInMonth(year: number, month: number): number {
-      return new Temporal.PlainDate(year, month, 1).add({ months: 1 }).subtract({ days: 1 }).day;
     },
 
     /**
@@ -505,12 +503,13 @@ export function createScheduleParser({
      * @returns {number} Numeric representation of specified last day of week of the current month
      */
     lastDayOfWeekInMonth(year: number, month: number, dow: number): number {
-      const last = this.daysInMonth(year, month);
+      const last = daysInMonth(year, month);
       for (let d = last; d >= 1; d--) {
         if (this.dayOfWeek(year, month, d) === dow) {
           return d;
         }
       }
+
       return last;
     },
 
@@ -522,7 +521,7 @@ export function createScheduleParser({
      * @returns {number} Numeric representation of last weekday of the month
      */
     lastWeekdayOfMonth(year: number, month: number): number {
-      const last = this.daysInMonth(year, month);
+      const last = daysInMonth(year, month);
       const dow = this.dayOfWeek(year, month, last);
       if (dow === 6) {
         return last - 1;
@@ -530,6 +529,7 @@ export function createScheduleParser({
       if (dow === 7) {
         return last - 2;
       }
+
       return last;
     },
 
@@ -542,7 +542,7 @@ export function createScheduleParser({
      * @returns {number} Numeric representation of nearest weekday
      */
     nearestWeekdayToDay(year: number, month: number, target: number): number {
-      const day = Math.min(target, this.daysInMonth(year, month));
+      const day = Math.min(target, daysInMonth(year, month));
       const dow = this.dayOfWeek(year, month, day);
       if (dow === 6) {
         // Saturday -> Friday
@@ -550,7 +550,7 @@ export function createScheduleParser({
       }
       if (dow === 7) {
         // Sunday -> Monday
-        const last = this.daysInMonth(year, month);
+        const last = daysInMonth(year, month);
         return day === last ? day - 2 : day + 1;
       }
       return day;
@@ -674,7 +674,7 @@ export function createScheduleParser({
      */
     nthDayOfWeekInMonth(year: number, month: number, dow: number, n: number): number | null {
       let count = 0;
-      const last = this.daysInMonth(year, month);
+      const last = daysInMonth(year, month);
       for (let d = 1; d <= last; d++) {
         if (this.dayOfWeek(year, month, d) === dow) {
           count++;
