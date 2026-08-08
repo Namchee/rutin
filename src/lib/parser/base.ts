@@ -42,6 +42,27 @@ export const MonthToNumber = {
   sep: 9,
 };
 
+export const ZeroBasedDayToNumber = {
+  fri: 5,
+  mon: 1,
+  sat: 6,
+  sun: 0,
+  thu: 4,
+  tue: 2,
+  wed: 3,
+};
+
+export const OneBasedDayToNumber = {
+  fri: 6,
+  mon: 2,
+  sat: 7,
+  sun: 1,
+  thu: 5,
+  tue: 3,
+  wed: 4,
+};
+
+
 export function createScheduleParser({
   fields,
   fieldOrder,

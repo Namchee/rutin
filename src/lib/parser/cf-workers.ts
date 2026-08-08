@@ -1,21 +1,11 @@
-import { createScheduleParser, MonthToNumber } from './base';
+import { createScheduleParser, MonthToNumber, OneBasedDayToNumber } from './base';
 import { createTokenValidator } from './validator';
-
-const DayToNumber = {
-  fri: 6,
-  mon: 2,
-  sat: 7,
-  sun: 1,
-  thu: 5,
-  tue: 3,
-  wed: 4,
-};
 
 export const CloudflareWorkersParser = createScheduleParser({
   fieldOrder: ['minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek'],
   fields: {
     dayOfMonth: { max: 31, min: 1 },
-    dayOfWeek: { aliases: DayToNumber, max: 7, min: 1 },
+    dayOfWeek: { aliases: OneBasedDayToNumber, max: 7, min: 1 },
     hour: { max: 23, min: 0 },
     minute: { max: 59, min: 0 },
     month: { aliases: MonthToNumber, max: 12, min: 1 },

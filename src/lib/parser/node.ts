@@ -1,22 +1,12 @@
-import { createScheduleParser, MonthToNumber } from './base';
+import { createScheduleParser, MonthToNumber, ZeroBasedDayToNumber } from './base';
 import { createTokenValidator } from './validator';
-
-const DayToNumber = {
-  fri: 5,
-  mon: 1,
-  sat: 6,
-  sun: 0,
-  thu: 4,
-  tue: 2,
-  wed: 3,
-};
 
 export const NodeParser = createScheduleParser({
   fieldOrder: ['second', 'minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek'],
   fields: {
     dayOfMonth: { max: 31, min: 1 },
     // 7 is Sunday
-    dayOfWeek: { aliases: DayToNumber, max: 7, min: 0 },
+    dayOfWeek: { aliases: ZeroBasedDayToNumber, max: 7, min: 0 },
     hour: { max: 23, min: 0 },
     minute: { max: 59, min: 0 },
     month: { aliases: MonthToNumber, max: 12, min: 1 },
