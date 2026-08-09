@@ -1,6 +1,6 @@
 import { Temporal } from '@js-temporal/polyfill';
 
-import type { FieldName, NormalizedSchedule, TokenMap } from '@/types';
+import type { FieldName, NormalizedSchedule, TokenMap } from '@/types/schedule';
 import { daysInMonth, OneBasedDayToNumber } from './base';
 import type { ScheduleParser, ValidationResult } from './types';
 
@@ -337,6 +337,15 @@ function guessField(part: string): FieldName {
 
 const FieldOrder: FieldName[] = ['dayOfWeek', 'date', 'time'];
 
+/**
+ * Parse raw string expression into Systemd OnCalendar tokens.
+ *
+ * Will throw an Error if the expression is unparseable due to unknown
+ * or missing fields.
+ *
+ * @param {string} expr Expression to parse
+ * @returns {TokenMap} Key-value store of token with their positions.
+ */
 function tokenize(expr: string): TokenMap {
   const raw: string[] = Array.from(expr.matchAll(/\S+/g), match => match[0]);
   const tokens: TokenMap = {};
@@ -347,44 +356,59 @@ function tokenize(expr: string): TokenMap {
     DayToNumber[s.toLowerCase()] !== undefined || /^[a-z]+(?:\.\.[a-z]+)?(?:,[a-z]+)*$/i.test(s);
 
   const classify = (s: string): FieldName | undefined => {
-    if (isWeekday(s)) return 'dayOfWeek';
-    if (isTime(s)) return 'time';
-    if (isDate(s)) return 'date';
+    if (isWeekday(s)) {
+      return 'dayOfWeek';
+    }
+    if (isTime(s)) {
+      return 'time';
+    }
+    if (isDate(s)) {
+      return 'date';
+    }
+
     return undefined;
   };
 
-  const posOf = (i: number): [number, number] => {
+  const position = (i: number): [number, number] => {
     let start = 0;
     for (let j = 0; j < i; j++) {
       start += raw[j].length + 1;
     }
+
     return [start, start + raw[i].length];
   };
 
-  // Components must appear in canonical order (each at most once). Track the
-  // highest slot seen so far; anything at or below it is a duplicate or a
-  // component that jumped the queue.
   let lastOrderIndex = -1;
 
   for (let i = 0; i < raw.length; i++) {
     const part = raw[i];
     const kind = classify(part);
     if (kind === undefined) {
-      throw new Error(`Unrecognised calendar component: ${guessField(part)}`);
+      throw new CalendarError(`Unrecognised calendar component: ${part}`, guessField(part));
     }
 
     const orderIndex = FieldOrder.indexOf(kind);
     if (orderIndex < lastOrderIndex) {
-      throw new Error(`Out-of-order calendar component: ${guessField(part)}`);
+      throw new CalendarError(`Out-of-order calendar component: ${part}`, guessField(part));
     }
 
-    tokens[kind] = { position: posOf(i), value: part };
+    tokens[kind] = {
+      position: position(i),
+      value: part,
+    };
+
     lastOrderIndex = orderIndex + 1;
   }
 
   return tokens;
 }
 
+/**
+ * Parse token maps into SystemD OnCalendar instance.
+ *
+ * @param {TokenMap} tokens Tokenized expressions
+ * @returns {CalendarInstance} SystemD OnCalendar instance.
+ */
 function parseSpec(tokens: TokenMap): CalendarInstance {
   const weekday = tokens.dayOfWeek?.value;
   const date = tokens.date?.value ?? '*-*-*';
@@ -403,6 +427,12 @@ function parseSpec(tokens: TokenMap): CalendarInstance {
     weekday: weekday ? parseWeekday(weekday) : undefined,
     year: d.year,
   };
+}
+
+class CalendarError extends Error {
+  constructor(message: string, public readonly field: FieldName) {
+    super(message);
+  }
 }
 
 export function* generator(expr: string, start: Temporal.PlainDateTime) {
@@ -442,8 +472,6 @@ export const SystemdParser: ScheduleParser = {
       };
     }
 
-    // Component order is already canonical — tokenize rejects out-of-order
-    // input — so rebuilding the string only collapses internal whitespace.
     const parts: string[] = [];
     if (tokens.dayOfWeek) {
       parts.push(tokens.dayOfWeek.value);
@@ -495,6 +523,7 @@ export const SystemdParser: ScheduleParser = {
         errors.push('dayOfWeek');
       }
     }
+
     if (tokens.date) {
       try {
         parseDate(tokens.date.value);
@@ -502,6 +531,7 @@ export const SystemdParser: ScheduleParser = {
         errors.push('date');
       }
     }
+
     if (tokens.time) {
       try {
         parseTime(tokens.time.value);

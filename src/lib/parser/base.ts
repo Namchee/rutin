@@ -1,7 +1,7 @@
 import { Temporal } from '@js-temporal/polyfill';
 
 import { toString as describeSchedule } from 'cronstrue';
-import type { FieldName, NormalizedSchedule, TokenMap } from '@/types';
+import type { FieldName, NormalizedSchedule, TokenMap } from '@/types/schedule';
 import type { ScheduleParser } from './types';
 import { isValidRange, isValidStep } from './validator';
 

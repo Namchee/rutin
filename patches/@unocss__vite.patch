@@ -1,0 +1,39 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 07c564653e91cf225e0fbb7669dca31c646b5189..07e4890894ed0d6eb82744c513f899622c429a0d 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -595,7 +595,12 @@ function GlobalModeBuildPlugin(ctx) {
+ 				const { RESOLVED_ID_RE } = await ctx.getVMPRegexes();
+ 				const entryModules = Object.keys(chunk.modules).filter((id) => RESOLVED_ID_RE.test(id));
+ 				if (!entryModules.length) return null;
+-				const cssPost = cssPostPlugins.get(options.dir);
++				// Multi-environment builds (e.g. nitro) can render chunks into output
++				// dirs that `configResolved` never registered (it only saw the first
++				// env's outDir). Fall back to the current environment's css-post
++				// plugin so the layer placeholder is still replaced.
++				const cssPost = cssPostPlugins.get(options.dir)
++					?? this.environment.config.plugins.find((i) => i.name === "vite:css-post");
+ 				if (!cssPost) {
+ 					this.warn("[unocss] failed to find vite:css-post plugin. It might be an internal bug of UnoCSS");
+ 					return null;
+@@ -815,7 +820,10 @@ function PerModuleModePlugin(ctx) {
+ 		const id = `${VIRTUAL_PREFIX}${hash}.css`;
+ 		const mod = server.moduleGraph.getModuleById(id);
+ 		if (!mod) return;
+-		server.moduleGraph.invalidateModule(mod);
++		// isHmr=true: bump lastHMRTimestamp instead of lastInvalidationTimestamp so an
++		// in-flight transform of an importer isn't raced by this invalidation
++		// (otherwise its result is never written back to the module graph).
++		server.moduleGraph.invalidateModule(mod, undefined, undefined, true);
+ 		server.ws.send({
+ 			type: "update",
+ 			updates: [{
+@@ -880,7 +888,7 @@ function PerModuleModePlugin(ctx) {
+ 		},
+ 		load(id) {
+ 			if (!id.startsWith(VIRTUAL_PREFIX)) return null;
+-			const hash = id.slice(9, -4);
++			const hash = id.replace(/\?.*$/, "").slice(9, -4);
+ 			const [source, css] = moduleMap.get(hash) || [];
+ 			if (source) this.addWatchFile(source);
+ 			return `\n/* unocss ${source} */\n${css}`;
