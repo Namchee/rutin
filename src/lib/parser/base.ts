@@ -464,7 +464,6 @@ export function createScheduleParser({
         second: 0,
       });
 
-      // 5-field: minute-precision. 6-field with seconds: second-precision.
       let curr = hasSeconds ? base.add({ seconds: 1 }) : base.add({ minutes: 1, seconds: 0 });
 
       while (true) {
@@ -476,16 +475,22 @@ export function createScheduleParser({
           isDomWild,
           isDowWild,
         );
-        if (matched === null) return;
+
+        if (matched === null) {
+          return;
+        }
 
         if (hasSeconds && ranges.second) {
-          // For 6-field, yield each second in the second range at this matched minute.
           const seconds = [...ranges.second].sort((a, b) => a - b);
           for (const sec of seconds) {
             const candidate = matched.with({ second: sec });
-            if (Temporal.PlainDateTime.compare(candidate, base) <= 0) continue;
+            if (Temporal.PlainDateTime.compare(candidate, base) <= 0) {
+              continue;
+            }
+
             yield candidate;
           }
+
           curr = matched.add({ minutes: 1, seconds: 0 });
         } else {
           yield matched;

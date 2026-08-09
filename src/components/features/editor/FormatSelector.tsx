@@ -20,7 +20,7 @@ import {
 import { cn } from '@/lib/css';
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
 
-import type { Format, ScheduleFormat } from '@/types';
+import type { Format, ScheduleFormat } from '@/types/schedule';
 
 import { useEditorContext } from './context';
 

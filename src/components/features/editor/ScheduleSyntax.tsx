@@ -3,7 +3,7 @@ import { For, Show } from 'solid-js';
 import { Code } from '@/components/ui/Code';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
 import { cn } from '@/lib/css';
-import type { FieldName, ScheduleFormat } from '@/types';
+import type { FieldName, ScheduleFormat } from '@/types/schedule';
 import { useEditorContext } from './context';
 
 interface FieldRange {
@@ -16,7 +16,7 @@ const Operators = {
   'cf-workers': ['-', ',', '*', '/', 'L', 'W', '#'],
   node: ['-', ',', '*', '/', '?', 'L', 'W', '#'],
   quartz: ['-', ',', '*', '/', '?', 'L', 'W', '#'],
-  systemd: [',', '..', '*'],
+  systemd: [',', '..', '*', '/'],
   unix: ['-', ',', '*', '/'],
 } as const;
 

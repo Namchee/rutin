@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/css';
-import type { FieldName, ScheduleFormat } from '@/types';
+import type { FieldName, ScheduleFormat } from '@/types/schedule';
 
 import { useEditorContext } from './context';
 

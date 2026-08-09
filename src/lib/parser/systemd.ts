@@ -40,6 +40,17 @@ const DayToNumber: Record<string, number> = {
   wednesday: 4,
 };
 
+const Macros: Record<string, string> = {
+  daily: '*-*-* 00:00:00',
+  hourly: '*-*-* *:00:00',
+  minutely: '*-*-* *:*:00',
+  monthly: '*-*-01 00:00:00',
+  quarterly: '*-01,04,07,10-01 00:00:00',
+  semianually: '*-01,07-01 00:00:00',
+  weekly: 'Mon *-*-* 00:00:00',
+  yearly: '*-01-01 00:00:00',
+};
+
 /**
  * Expand a single component into a sorted array of values within [min, max].
  * Supports wildcards, comma lists, ".." ranges, and "/" repetition.
@@ -261,11 +272,17 @@ function dayOfWeek(year: number, month: number, day: number): number {
  * @returns {boolean} `true` if it matches. `false` otherwise.
  */
 function matches(datetime: Temporal.PlainDateTime, instance: CalendarInstance): boolean {
-  if (instance.weekday && !instance.weekday.includes(dayOfWeek(datetime.year, datetime.month, datetime.day))) {
+  if (
+    instance.weekday &&
+    !instance.weekday.includes(dayOfWeek(datetime.year, datetime.month, datetime.day))
+  ) {
     return false;
   }
 
-  const yearCondition = [instance.year.includes(datetime.year), instance.month.includes(datetime.month)];
+  const yearCondition = [
+    instance.year.includes(datetime.year),
+    instance.month.includes(datetime.month),
+  ];
 
   if (yearCondition.some(c => !c)) {
     return false;
@@ -302,10 +319,7 @@ function matches(datetime: Temporal.PlainDateTime, instance: CalendarInstance): 
  * @returns {Temporal.PlainDateTime} Next datetime according to the instance
  * relative to current datetime.
  */
-function nextMatch(
-  curr: Temporal.PlainDateTime,
-  spec: CalendarInstance,
-): Temporal.PlainDateTime {
+function nextMatch(curr: Temporal.PlainDateTime, spec: CalendarInstance): Temporal.PlainDateTime {
   while (true) {
     if (matches(curr, spec)) {
       return curr;
@@ -430,7 +444,10 @@ function parseSpec(tokens: TokenMap): CalendarInstance {
 }
 
 class CalendarError extends Error {
-  constructor(message: string, public readonly field: FieldName) {
+  constructor(
+    message: string,
+    public readonly field: FieldName,
+  ) {
     super(message);
   }
 }
@@ -493,6 +510,43 @@ export const SystemdParser: ScheduleParser = {
 
   process(expr: string): ValidationResult {
     const trimmedExpr = expr.trim();
+
+    let mightBeMacro = false;
+    for (const macro of Object.keys(Macros)) {
+      if (macro.startsWith(expr)) {
+        mightBeMacro = true;
+        break;
+      }
+    }
+
+    if (mightBeMacro) {
+      // it's complete
+      if (trimmedExpr in Macros) {
+        return {
+          descriptor: '',
+          generator: generator(Macros[trimmedExpr], Temporal.Now.plainDateTimeISO()),
+          normal: false,
+          status: 'valid',
+          tokens: tokenize(Macros[trimmedExpr]),
+        };
+      }
+
+      if (!mightBeMacro) {
+        return {
+          error: [],
+          normal: true, // do not attempt to normalize
+          status: 'invalid',
+          tokens: {},
+        };
+      }
+
+      return {
+        error: [],
+        normal: true, // do not attempt to normalize
+        status: 'incomplete',
+        tokens: {},
+      };
+    }
 
     let tokens: TokenMap;
     try {
