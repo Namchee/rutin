@@ -477,7 +477,11 @@ export function* generator(expr: string, start: Temporal.PlainDateTime) {
 
 export const SystemdParser: ScheduleParser = {
   normalize(expr: string): NormalizedSchedule {
-    const trimmed = expr.trim();
+    let trimmed = expr.trim();
+
+    if (trimmed in Macros) {
+      trimmed = Macros[trimmed];
+    }
 
     let tokens: TokenMap;
     try {
@@ -528,15 +532,6 @@ export const SystemdParser: ScheduleParser = {
           normal: false,
           status: 'valid',
           tokens: tokenize(Macros[trimmedExpr]),
-        };
-      }
-
-      if (!mightBeMacro) {
-        return {
-          error: [],
-          normal: true, // do not attempt to normalize
-          status: 'invalid',
-          tokens: {},
         };
       }
 
