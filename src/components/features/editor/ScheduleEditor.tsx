@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 
 import { cn } from '@/lib/css';
 
-import type { ScheduleFormat } from '@/types';
+import type { ScheduleFormat } from '@/types/schedule';
 
 import { useEditorContext } from './context';
 import { FormatSelector } from './FormatSelector';
