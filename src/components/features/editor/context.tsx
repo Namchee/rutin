@@ -1,7 +1,7 @@
 import type { Temporal } from '@js-temporal/polyfill';
 import { createContext, createSignal, type JSXElement, useContext } from 'solid-js';
 import { Parsers } from '@/lib/parsers';
-import type { FieldName, ScheduleFormat, TokenMap } from '@/types';
+import type { FieldName, ScheduleFormat, TokenMap } from '@/types/schedule';
 
 export type ScheduleState = 'valid' | 'invalid' | 'incomplete';
 export type ScheduleType = 'macro' | 'normal';

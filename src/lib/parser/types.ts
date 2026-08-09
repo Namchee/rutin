@@ -1,5 +1,5 @@
 import type { Temporal } from '@js-temporal/polyfill';
-import type { FieldName, NormalizedSchedule, TokenMap } from '@/types';
+import type { FieldName, NormalizedSchedule, TokenMap } from '@/types/schedule';
 
 interface BaseValidationResult {
   normal: boolean;
