@@ -52,7 +52,7 @@ function toZeroBasedDayOfWeek(token: string): string {
     .split(',')
     .map(part => {
       // `*/step` selects the same weekdays in both conventions
-      if (/^\*\//.test(part)) {
+      if (part.startsWith('*/')) {
         return part;
       }
 
