@@ -1,7 +1,7 @@
 import { Temporal } from '@js-temporal/polyfill';
 
 import { toString as describeSchedule } from 'cronstrue';
-import type { FieldName, NormalizedSchedule, TokenMap } from '@/types/schedule';
+import type { FieldName, NormalizedSchedule, ScheduleFormat, TokenMap } from '@/types/schedule';
 import type { ScheduleParser } from './types';
 import { isValidRange, isValidStep } from './validator';
 
@@ -17,6 +17,7 @@ interface ScheduleParserOptions {
   fieldOrder: FieldName[];
   validators: Partial<Record<FieldName, (token: string) => boolean>>;
   tokenizer: (expr: string) => TokenMap;
+  convert: (expr: string, from: ScheduleFormat) => string;
   macros?: Record<string, string>;
 }
 
@@ -79,6 +80,7 @@ export function createScheduleParser({
   validators,
   macros,
   tokenizer,
+  convert,
 }: ScheduleParserOptions) {
   return {
     applyAliases(tokens: TokenMap): TokenMap {
@@ -313,6 +315,7 @@ export function createScheduleParser({
 
       return null;
     },
+    convert,
 
     /**
      * Get the weekday of current date

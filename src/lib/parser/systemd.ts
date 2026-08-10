@@ -28,7 +28,7 @@ interface CalendarInstance {
   second: number[];
 }
 
-const DayToNumber: Record<string, number> = {
+export const DayToNumber: Record<string, number> = {
   ...OneBasedDayToNumber,
   friday: 6,
   monday: 2,
