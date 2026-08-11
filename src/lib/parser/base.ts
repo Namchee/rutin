@@ -12,12 +12,17 @@ interface Field {
   optional?: boolean;
 }
 
+interface ConvertedExpression {
+  value: string;
+  tokens: TokenMap;
+}
+
 interface ScheduleParserOptions {
   fields: Partial<Record<FieldName, Field>>;
   fieldOrder: FieldName[];
   validators: Partial<Record<FieldName, (token: string) => boolean>>;
   tokenizer: (expr: string) => TokenMap;
-  convert: (expr: string, from: ScheduleFormat) => string;
+  convert: (tokens: TokenMap, raw: string, from: ScheduleFormat) => ConvertedExpression;
   macros?: Record<string, string>;
 }
 
@@ -61,6 +66,16 @@ export const OneBasedDayToNumber = {
   thu: 5,
   tue: 3,
   wed: 4,
+};
+
+export const UnixLikeMacros: Record<string, string> = {
+  '@annually': '0 0 1 1 *',
+  '@daily': '0 0 * * *',
+  '@hourly': '0 * * * *',
+  '@midnight': '0 0 * * *',
+  '@monthly': '0 0 1 * *',
+  '@weekly': '0 0 * * 0',
+  '@yearly': '0 0 1 1 *',
 };
 
 /**
