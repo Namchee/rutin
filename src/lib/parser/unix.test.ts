@@ -1,7 +1,7 @@
-import type { ScheduleFormat } from '@/types/schedule';
 import { describe, expect, it } from 'vitest';
+import type { ScheduleFormat } from '@/types/schedule';
 
-import { Parsers } from '@/lib/parsers';
+import { Parsers } from '../parsers';
 import { UNIXParser } from './unix';
 
 function convert(expr: string, from: ScheduleFormat): string {

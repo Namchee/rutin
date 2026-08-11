@@ -1,7 +1,7 @@
 import type { ScheduleFormat, TokenMap } from '@/types/schedule';
 
 import { createScheduleParser, MonthToNumber, OneBasedDayToNumber, UnixLikeMacros } from './base';
-import { convertToCfWorkers, toOneBasedDayOfWeek } from './convert';
+import { toOneBasedDayOfWeek } from './convert';
 import { createTokenValidator } from './validator';
 
 function tokenizer(expr: string): TokenMap {
@@ -25,7 +25,7 @@ export const CloudflareWorkersParser = createScheduleParser({
       return {
         tokens,
         value: raw,
-      }
+      };
     }
 
     if ((from === 'unix' || from === 'node') && raw.trim() in UnixLikeMacros) {
