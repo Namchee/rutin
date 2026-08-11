@@ -1,4 +1,7 @@
-import { createScheduleParser, MonthToNumber } from './base';
+import type { ScheduleFormat, TokenMap } from '@/types/schedule';
+
+import { createScheduleParser, MonthToNumber, UnixLikeMacros } from './base';
+import { toOneBasedDayOfWeek } from './convert';
 import { createTokenValidator } from './validator';
 
 const DayToNumber = {
@@ -11,7 +14,60 @@ const DayToNumber = {
   wed: 4,
 };
 
+function tokenizer(expr: string) {
+  const tokens = Array.from(expr.trim().matchAll(/\S+/g), match => ({
+    position: [match.index, match.index + match[0].length] as [number, number],
+    value: match[0],
+  }));
+
+  return {
+    dayOfMonth: tokens[2],
+    dayOfWeek: tokens[4],
+    hour: tokens[1],
+    minute: tokens[0],
+    month: tokens[3],
+    year: tokens[5],
+  };
+}
+
 export const AmazonParser = createScheduleParser({
+  convert(tokens: TokenMap, raw: string, from: ScheduleFormat) {
+    if (from === 'node') {
+      return {
+        tokens,
+        value: raw,
+      };
+    }
+
+    if (['unix', 'node'].includes(from) && raw.trim() in UnixLikeMacros) {
+      const actual = `${UnixLikeMacros[raw.trim()]} *`;
+
+      return {
+        tokens: tokenizer(actual),
+        value: actual,
+      };
+    }
+
+    const year = tokens.year?.value ?? '*';
+
+    const dayOfMonth = tokens?.dayOfMonth?.value === '?' ? '*' : (tokens.dayOfMonth?.value ?? '*');
+
+    let dayOfWeek = '*';
+    if (tokens.dayOfWeek !== undefined) {
+      dayOfWeek = tokens.dayOfWeek.value === '?' ? '*' : tokens.dayOfWeek.value;
+
+      if (['unix', 'node'].includes(from)) {
+        dayOfWeek = toOneBasedDayOfWeek(dayOfWeek);
+      }
+    }
+
+    const serialized = `${tokens.minute?.value} ${tokens.hour?.value} ${dayOfMonth} ${tokens.month?.value} ${dayOfWeek} ${year}`;
+
+    return {
+      tokens: tokenizer(serialized),
+      value: serialized,
+    };
+  },
   fieldOrder: ['minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek', 'year'],
   fields: {
     dayOfMonth: { max: 31, min: 1 },
