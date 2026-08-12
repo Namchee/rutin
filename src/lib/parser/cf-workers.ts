@@ -57,6 +57,8 @@ export const CloudflareWorkersParser = createScheduleParser({
 
       if (['unix', 'node'].includes(from)) {
         normalizedDayOfWeek = toOneBasedDayOfWeek(normalizedDayOfWeek);
+
+        console.log('here');
       }
     }
 
