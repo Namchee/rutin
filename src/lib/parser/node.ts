@@ -40,11 +40,9 @@ export const NodeParser = createScheduleParser({
     }
 
     if (from === 'unix' && raw.trim() in UnixLikeMacros) {
-      const actual = `0 ${UnixLikeMacros[raw.trim()]}`;
-
       return {
-        tokens: tokenizer(actual),
-        value: actual,
+        tokens: tokenizer(UnixLikeMacros[raw.trim()]),
+        value: UnixLikeMacros[raw.trim()],
       };
     }
 

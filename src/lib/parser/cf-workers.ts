@@ -28,7 +28,7 @@ export const CloudflareWorkersParser = createScheduleParser({
       };
     }
 
-    if ((from === 'unix' || from === 'node') && raw.trim() in UnixLikeMacros) {
+    if (['unix', 'node'].includes(from) && raw.trim() in UnixLikeMacros) {
       const actual = UnixLikeMacros[raw.trim()];
       return this.convert(tokenizer(actual), actual, 'unix');
     }
@@ -39,7 +39,7 @@ export const CloudflareWorkersParser = createScheduleParser({
     if (tokens.dayOfWeek !== undefined) {
       dayOfWeek = tokens.dayOfWeek.value === '?' ? '*' : tokens.dayOfWeek.value;
 
-      if (from === 'unix' || from === 'node') {
+      if (['unix', 'node'].includes(from)) {
         dayOfWeek = toOneBasedDayOfWeek(dayOfWeek);
       }
     }
