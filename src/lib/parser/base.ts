@@ -24,6 +24,7 @@ interface ScheduleParserOptions {
   tokenizer: (expr: string) => TokenMap;
   convert: (tokens: TokenMap, raw: string, from: ScheduleFormat) => ConvertedExpression;
   macros?: Record<string, string>;
+  isDoWZeroBased: boolean;
 }
 
 type DayMatcher = (year: number, month: number, day: number) => boolean;
@@ -96,6 +97,7 @@ export function createScheduleParser({
   macros,
   tokenizer,
   convert,
+  isDoWZeroBased,
 }: ScheduleParserOptions) {
   return {
     applyAliases(tokens: TokenMap): TokenMap {
@@ -165,7 +167,7 @@ export function createScheduleParser({
 
       // Find shortest equivalent form
       const parts: string[] = [];
-      for (let i = 0; i < values.length; ) {
+      for (let i = 0; i < values.length;) {
         let j = i;
         while (j + 1 < values.length && values[j + 1] === values[j] + 1) {
           j++;
@@ -732,7 +734,7 @@ export function createScheduleParser({
         // it's complete
         if (trimmedExpr in macros) {
           return {
-            descriptor: describeSchedule(this.normalize(expr).value),
+            descriptor: describeSchedule(this.normalize(expr).value, { dayOfWeekStartIndexZero: isDoWZeroBased }),
             generator: this.iterate(macros[trimmedExpr], Temporal.Now.plainDateTimeISO()),
             normal: false,
             status: 'valid',
@@ -801,9 +803,6 @@ export function createScheduleParser({
 
       const rawTokens = trimmedExpr.split(/\s+/).filter(Boolean).length;
 
-      // Reject expressions with more fields than the format supports; the
-      // bound is the total field count, not the required one, so optional
-      // fields (e.g. node/quartz seconds) don't make valid input look oversized.
       if (rawTokens > fieldOrder.length) {
         return {
           error: [],
@@ -815,7 +814,7 @@ export function createScheduleParser({
 
       try {
         return {
-          descriptor: describeSchedule(this.normalize(expr).value),
+          descriptor: describeSchedule(this.normalize(expr).value, { dayOfWeekStartIndexZero: isDoWZeroBased }),
           generator: this.iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),
           normal: this.isNormal(trimmedExpr),
           status: 'valid',

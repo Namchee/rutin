@@ -1,19 +1,9 @@
 import type { ScheduleFormat, TokenMap } from '@/types/schedule';
 
-import { createScheduleParser, MonthToNumber, UnixLikeMacros } from './base';
+import { createScheduleParser, MonthToNumber, OneBasedDayToNumber, UnixLikeMacros } from './base';
 import { decomposeSystemdTokens } from './systemd';
 import { createTokenValidator } from './validator';
 import { toOneBasedDayOfWeek } from './weekday-lib';
-
-const DayToNumber = {
-  fri: 6,
-  mon: 2,
-  sat: 7,
-  sun: 1,
-  thu: 5,
-  tue: 3,
-  wed: 4,
-};
 
 function tokenizer(expr: string) {
   const tokens = Array.from(expr.trim().matchAll(/\S+/g), match => ({
@@ -88,12 +78,13 @@ export const AmazonParser = createScheduleParser({
   fields: {
     dayOfMonth: { max: 31, min: 1 },
     // 7 is Sunday
-    dayOfWeek: { aliases: DayToNumber, max: 7, min: 1 },
+    dayOfWeek: { aliases: OneBasedDayToNumber, max: 7, min: 1 },
     hour: { max: 23, min: 0 },
     minute: { max: 59, min: 0 },
     month: { aliases: MonthToNumber, max: 12, min: 1 },
     year: { max: 2199, min: 1970 },
   },
+  isDoWZeroBased: false,
   tokenizer: (expr: string) => {
     const tokens = Array.from(expr.trim().matchAll(/\S+/g), match => ({
       position: [match.index, match.index + match[0].length] as [number, number],

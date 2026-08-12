@@ -57,8 +57,6 @@ export const CloudflareWorkersParser = createScheduleParser({
 
       if (['unix', 'node'].includes(from)) {
         normalizedDayOfWeek = toOneBasedDayOfWeek(normalizedDayOfWeek);
-
-        console.log('here');
       }
     }
 
@@ -77,6 +75,7 @@ export const CloudflareWorkersParser = createScheduleParser({
     minute: { max: 59, min: 0 },
     month: { aliases: MonthToNumber, max: 12, min: 1 },
   },
+  isDoWZeroBased: false,
   tokenizer,
   validators: {
     dayOfMonth: createTokenValidator(/[^0-9*,\-/LW]/i, 1, 31),

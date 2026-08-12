@@ -77,6 +77,7 @@ export const UNIXParser = createScheduleParser({
     minute: { max: 59, min: 0 },
     month: { aliases: MonthToNumber, max: 12, min: 1 },
   },
+  isDoWZeroBased: true,
   macros: UnixLikeMacros,
   tokenizer,
   validators: {

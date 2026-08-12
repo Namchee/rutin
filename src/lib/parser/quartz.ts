@@ -102,6 +102,7 @@ export const QuartzParser = createScheduleParser({
     second: { max: 59, min: 0, optional: true },
     year: { max: 2199, min: 1970 },
   },
+  isDoWZeroBased: false,
   tokenizer: (expr: string) => {
     const tokens = Array.from(expr.trim().matchAll(/\S+/g), match => ({
       position: [match.index, match.index + match[0].length] as [number, number],
