@@ -91,7 +91,8 @@ function createEditorContext() {
 
     if (
       trimmed.length === 0 ||
-      (trimmed.startsWith('@') && Object.keys(Macros[format()]).length > 0)
+      (trimmed.startsWith('@') && Object.keys(Macros[format()]).length > 0) ||
+      (trimmed.endsWith('ly') && Object.keys(Macros[format()]).length > 0)
     ) {
       setCurrentToken(undefined);
       return;
@@ -158,10 +159,15 @@ function createEditorContext() {
     setTokens(tokens);
   }
 
-  function updateFormat(format: ScheduleFormat) {
-    setFormat(format);
+  function updateFormat(newFormat: ScheduleFormat) {
+    setFormat(newFormat);
 
-    const result = Parsers[format].process(value());
+    const converted = Parsers[newFormat].convert(tokens(), value(), format());
+
+    setValue(converted.value);
+
+    const result = Parsers[newFormat].process(converted.value);
+
     setState(result.status);
     setNormal(result.normal);
     setTokens(result.tokens);
