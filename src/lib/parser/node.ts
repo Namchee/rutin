@@ -32,17 +32,10 @@ function tokenizer(expr: string) {
 
 export const NodeParser = createScheduleParser({
   convert(tokens: TokenMap, raw: string, from: ScheduleFormat) {
-    if (from === 'node') {
+    if (from === 'node' || (from === 'unix' && raw.trim() in UnixLikeMacros)) {
       return {
         tokens,
         value: raw,
-      };
-    }
-
-    if (from === 'unix' && raw.trim() in UnixLikeMacros) {
-      return {
-        tokens: tokenizer(UnixLikeMacros[raw.trim()]),
-        value: UnixLikeMacros[raw.trim()],
       };
     }
 
@@ -59,7 +52,10 @@ export const NodeParser = createScheduleParser({
       }
     }
 
-    const serialized = `${seconds} ${tokens.minute?.value} ${tokens.hour?.value} ${dayOfMonth} ${tokens.month?.value} ${dayOfWeek}`;
+    let serialized = `${tokens.minute?.value} ${tokens.hour?.value} ${dayOfMonth} ${tokens.month?.value} ${dayOfWeek}`;
+    if (tokens.second?.value) {
+      serialized = `${tokens.second.value} ${serialized}`;
+    }
 
     return {
       tokens: tokenizer(serialized),

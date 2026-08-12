@@ -1,7 +1,75 @@
-import { createScheduleParser, MonthToNumber, OneBasedDayToNumber } from './base';
+import type { ScheduleFormat, TokenMap } from '@/types/schedule';
+
+import { createScheduleParser, MonthToNumber, OneBasedDayToNumber, UnixLikeMacros } from './base';
+import { toOneBasedDayOfWeek } from './convert';
 import { createTokenValidator } from './validator';
 
+function tokenizer(expr: string) {
+  const tokens = Array.from(expr.trim().matchAll(/\S+/g), match => ({
+    position: [match.index, match.index + match[0].length] as [number, number],
+    value: match[0],
+  }));
+
+  // second is optional
+  if (tokens.length === 6) {
+    return {
+      dayOfMonth: tokens[2],
+      dayOfWeek: tokens[4],
+      hour: tokens[1],
+      minute: tokens[0],
+      month: tokens[3],
+      year: tokens[5],
+    };
+  }
+
+  return {
+    dayOfMonth: tokens[3],
+    dayOfWeek: tokens[5],
+    hour: tokens[2],
+    minute: tokens[1],
+    month: tokens[4],
+    second: tokens[0],
+    year: tokens[6],
+  };
+}
+
 export const QuartzParser = createScheduleParser({
+  convert(tokens: TokenMap, raw: string, from: ScheduleFormat) {
+    if (from === 'cf-workers') {
+      return {
+        tokens,
+        value: raw,
+      };
+    }
+
+    const isUnixLike = ['unix', 'node'].includes(from);
+
+    if (isUnixLike && raw.trim() in UnixLikeMacros) {
+      const actual = UnixLikeMacros[raw.trim()];
+      return this.convert(tokenizer(actual), actual, 'unix');
+    }
+
+    const dayOfMonth = tokens.dayOfMonth?.value === '?' ? '*' : (tokens.dayOfMonth?.value ?? '*');
+
+    let dayOfWeek = '*';
+    if (tokens.dayOfWeek !== undefined) {
+      dayOfWeek = tokens.dayOfWeek.value === '?' ? '*' : tokens.dayOfWeek.value;
+
+      if (isUnixLike) {
+        dayOfWeek = toOneBasedDayOfWeek(dayOfWeek);
+      }
+    }
+
+    let serialized = `${tokens.minute?.value} ${tokens.hour?.value} ${dayOfMonth} ${tokens.month?.value} ${dayOfWeek} *`;
+    if (tokens.second?.value) {
+      serialized = `${tokens.second.value} ${serialized}`;
+    }
+
+    return {
+      tokens: tokenizer(serialized),
+      value: serialized,
+    };
+  },
   fieldOrder: ['second', 'minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek', 'year'],
   fields: {
     dayOfMonth: { max: 31, min: 1 },
