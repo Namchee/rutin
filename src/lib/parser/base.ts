@@ -608,6 +608,20 @@ export function createScheduleParser({
       }
 
       while (true) {
+        if (ranges.year && !ranges.year.includes(curr.year)) {
+          const nextYear = ranges.year.find(y => y > curr.year);
+
+          // Years do not repeat: once every allowed year is behind us, there
+          // is no next match.
+          if (nextYear === undefined) {
+            return null;
+          }
+
+          curr = curr.with({ day: 1, hour: 0, minute: 0, month: 1, second: 0, year: nextYear });
+
+          continue;
+        }
+
         if (!monthRange.includes(curr.month)) {
           const nextMonth = monthRange.find(m => m > curr.month) ?? monthRange[0];
           const year = nextMonth <= curr.month ? curr.year + 1 : curr.year;

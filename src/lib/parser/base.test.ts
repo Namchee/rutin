@@ -1,6 +1,7 @@
 import { Temporal } from '@js-temporal/polyfill';
 import { describe, expect, it } from 'vitest';
 
+import { QuartzParser } from './quartz';
 import { UNIXParser } from './unix';
 
 const START = Temporal.PlainDateTime.from('2026-07-01T00:00:00');
@@ -45,5 +46,32 @@ describe('iterator: POSIX DOW (Unix)', () => {
     expect(dates.length).toBe(7);
     const dows = new Set(dates.map(d => d.dayOfWeek));
     expect(dows.size).toBe(7);
+  });
+});
+
+describe('iterator: year support', () => {
+  function firesInYear(expr: string, count: number): Temporal.PlainDateTime[] {
+    const dates: Temporal.PlainDateTime[] = [];
+    for (const d of QuartzParser.iterate(expr, START)) {
+      dates.push(d);
+      if (dates.length === count) break;
+    }
+    return dates;
+  }
+
+  it('0 0 0 1 1 ? 2027 fires on 2027-01-01 only', () => {
+    const dates = firesInYear('0 0 0 1 1 ? 2027', 2);
+    expect(dates.length).toBe(1);
+    expect(dates[0].toString().slice(0, 10)).toBe('2027-01-01');
+  });
+
+  it('a year range skips to the first allowed year', () => {
+    const dates = firesInYear('0 0 0 1 1 ? 2026-2027', 2);
+    expect(dates.length).toBe(1);
+    expect(dates[0].toString().slice(0, 10)).toBe('2027-01-01');
+  });
+
+  it('a year in the past yields no matches', () => {
+    expect(firesInYear('0 0 0 1 1 ? 2020', 1)).toEqual([]);
   });
 });
