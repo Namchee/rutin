@@ -1,8 +1,9 @@
 import type { ScheduleFormat, TokenMap } from '@/types/schedule';
 
 import { createScheduleParser, MonthToNumber, UnixLikeMacros, ZeroBasedDayToNumber } from './base';
-import { toZeroBasedDayOfWeek } from './convert';
+import { decomposeSystemdTokens } from './systemd';
 import { createTokenValidator } from './validator';
+import { toZeroBasedDayOfWeek } from './weekday-lib';
 
 function tokenizer(expr: string) {
   const tokens = Array.from(expr.trim().matchAll(/\S+/g), match => ({
@@ -39,22 +40,37 @@ export const NodeParser = createScheduleParser({
       };
     }
 
-    const seconds = tokens.second?.value ?? '0';
+    let seconds = tokens.second?.value;
+    let minute = tokens.minute?.value;
+    let hour = tokens.hour?.value;
+    let dayOfMonth = tokens.dayOfMonth?.value;
+    let month = tokens.month?.value;
+    let dayOfWeek = tokens.dayOfWeek?.value;
 
-    const dayOfMonth = tokens?.dayOfMonth?.value === '?' ? '*' : (tokens.dayOfMonth?.value ?? '*');
+    if (tokens.date !== undefined || tokens.time !== undefined) {
+      const systemd = decomposeSystemdTokens(tokens);
+      seconds = systemd.second;
+      minute = systemd.minute;
+      hour = systemd.hour;
+      dayOfMonth = systemd.dayOfMonth;
+      month = systemd.month;
+      dayOfWeek = systemd.dayOfWeek;
+    }
 
-    let dayOfWeek = '*';
-    if (tokens.dayOfWeek !== undefined) {
-      dayOfWeek = tokens.dayOfWeek.value === '?' ? '*' : tokens.dayOfWeek.value;
+    const normalizedDayOfMonth = dayOfMonth === '?' ? '*' : (dayOfMonth ?? '*');
+
+    let normalizedDayOfWeek = '*';
+    if (dayOfWeek !== undefined) {
+      normalizedDayOfWeek = dayOfWeek === '?' ? '*' : dayOfWeek;
 
       if (from !== 'unix') {
-        dayOfWeek = toZeroBasedDayOfWeek(dayOfWeek);
+        normalizedDayOfWeek = toZeroBasedDayOfWeek(normalizedDayOfWeek);
       }
     }
 
-    let serialized = `${tokens.minute?.value} ${tokens.hour?.value} ${dayOfMonth} ${tokens.month?.value} ${dayOfWeek}`;
-    if (tokens.second?.value) {
-      serialized = `${tokens.second.value} ${serialized}`;
+    let serialized = `${minute} ${hour} ${normalizedDayOfMonth} ${month} ${normalizedDayOfWeek}`;
+    if (seconds) {
+      serialized = `${seconds} ${serialized}`;
     }
 
     return {

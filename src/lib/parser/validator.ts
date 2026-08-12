@@ -138,7 +138,6 @@ export function isValidStep(expr: string, min: number, max: number): boolean {
   return !Number.isNaN(step) && step > 0;
 }
 
-
 /**
  * Check whether an expression is a valid weekday expressions.
  *

@@ -25,7 +25,7 @@ interface InvalidSchedule extends BaseValidationResult {
 export type ValidationResult = ValidSchedule | IncompleteSchedule | InvalidSchedule;
 
 export interface ScheduleParser {
-  convert: (tokens: TokenMap, raw: string, from: ScheduleFormat) => string;
+  convert: (tokens: TokenMap, raw: string, from: ScheduleFormat) => NormalizedSchedule;
   // getCurrentToken: (expr: string) => FieldName;
   process: (expr: string) => ValidationResult;
   normalize: (expr: string) => NormalizedSchedule;

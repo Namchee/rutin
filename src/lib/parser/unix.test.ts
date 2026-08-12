@@ -49,5 +49,18 @@ describe('convert to unix', () => {
     expect(convert('30 9 * * 2-6', 'cf-workers')).toBe('30 9 * * 1-5');
   });
 
-  // Systemd conversion is deferred.
+  it('systemd: maps weekday/date/time onto the 5 unix fields', () => {
+    expect(convert('daily', 'systemd')).toBe('0 0 * * *');
+    expect(convert('hourly', 'systemd')).toBe('0 * * * *');
+    expect(convert('minutely', 'systemd')).toBe('* * * * *');
+    expect(convert('weekly', 'systemd')).toBe('0 0 * * 1');
+    expect(convert('Mon..Fri *-*-* 09:00:00', 'systemd')).toBe('0 9 * * 1-5');
+    expect(convert('*-*-15 12:30', 'systemd')).toBe('30 12 15 * *');
+    expect(convert('Sat,Sun *-*-* 00:00:00', 'systemd')).toBe('0 0 * * 6,0');
+    expect(convert('Mon *-*-*', 'systemd')).toBe('0 0 * * 1');
+    expect(convert('2024-01-01 00:00:00', 'systemd')).toBe('0 0 1 1 *');
+    expect(convert('*-01..06-* 0/30:15:00', 'systemd')).toBe('15 0/30 * 1-6 *');
+    expect(convert('*-*-~1 12:00:00', 'systemd')).toBe('0 12 L * *');
+    expect(convert('*-*-~4 12:00:00', 'systemd')).toBe('0 12 L-3 * *');
+  });
 });

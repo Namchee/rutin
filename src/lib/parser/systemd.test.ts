@@ -1,6 +1,11 @@
 import { Temporal } from '@js-temporal/polyfill';
 import { describe, expect, it } from 'vitest';
 
+
+import type { ScheduleFormat } from '@/types/schedule';
+
+import { Parsers } from '../parsers';
+
 import { generator, SystemdParser } from './systemd';
 
 const START = Temporal.PlainDateTime.from('2026-07-01T00:00:00');
@@ -142,5 +147,53 @@ describe('systemd: process generator', () => {
         Temporal.PlainDateTime.compare(first, Temporal.Now.plainDateTimeISO()),
       ).toBeGreaterThan(0);
     }
+  });
+});
+
+
+function convert(expr: string, from: ScheduleFormat): string {
+  const { tokens } = Parsers[from].normalize(expr);
+  return SystemdParser.convert(tokens, expr, from).value;
+}
+
+describe('convert to systemd', () => {
+  it('systemd -> systemd is identity', () => {
+    expect(convert('daily', 'systemd')).toBe('daily');
+    expect(convert('Mon..Fri *-*-* 09:00:00', 'systemd')).toBe('Mon..Fri *-*-* 09:00:00');
+  });
+
+  it('unix: maps fields onto weekday/date/time', () => {
+    expect(convert('0 12 * * *', 'unix')).toBe('12:00:00');
+    expect(convert('0 0 15 * *', 'unix')).toBe('*-*-15 00:00:00');
+    expect(convert('0 0 * * 1', 'unix')).toBe('Mon 00:00:00');
+    expect(convert('30 9 * * 1-5', 'unix')).toBe('Mon..Fri 09:30:00');
+    expect(convert('0 0 * * 0,6', 'unix')).toBe('Sun,Sat 00:00:00');
+    expect(convert('0 0 * * 0-6', 'unix')).toBe('00:00:00');
+    expect(convert('* * * * *', 'unix')).toBe('*:*:00');
+    expect(convert('0 * * * *', 'unix')).toBe('*:00:00');
+    expect(convert('0 0 13 * 5', 'unix')).toBe('Fri *-*-13 00:00:00');
+    expect(convert('@daily', 'unix')).toBe('00:00:00');
+  });
+
+  it('node: keeps seconds', () => {
+    expect(convert('0 30 9 * * 1-5', 'node')).toBe('Mon..Fri 09:30:00');
+    expect(convert('30 0 12 15 * *', 'node')).toBe('*-*-15 12:00:30');
+  });
+
+  it('quartz: maps one-based dow, L -> ~1, L-N -> ~N+1, keeps year', () => {
+    expect(convert('0 0 12 ? * 1 *', 'quartz')).toBe('Sun 12:00:00');
+    expect(convert('0 30 9 ? * MON-FRI *', 'quartz')).toBe('Mon..Fri 09:30:00');
+    expect(convert('0 0 12 L * ? *', 'quartz')).toBe('*-*-~1 12:00:00');
+    expect(convert('0 0 0 L-3 * ? *', 'quartz')).toBe('*-*-~4 00:00:00');
+    expect(convert('0 0 0 1 1 ? 2025', 'quartz')).toBe('2025-01-01 00:00:00');
+  });
+
+  it('amazon: maps one-based dow', () => {
+    expect(convert('0 12 ? * MON *', 'amazon')).toBe('Mon 12:00:00');
+  });
+
+  it('cf-workers: maps one-based dow', () => {
+    expect(convert('0 12 * * 1', 'cf-workers')).toBe('Sun 12:00:00');
+    expect(convert('30 9 * * 2-6', 'cf-workers')).toBe('Mon..Fri 09:30:00');
   });
 });

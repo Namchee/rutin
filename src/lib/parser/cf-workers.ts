@@ -1,8 +1,9 @@
 import type { ScheduleFormat, TokenMap } from '@/types/schedule';
 
 import { createScheduleParser, MonthToNumber, OneBasedDayToNumber, UnixLikeMacros } from './base';
-import { toOneBasedDayOfWeek } from './convert';
+import { decomposeSystemdTokens } from './systemd';
 import { createTokenValidator } from './validator';
+import { toOneBasedDayOfWeek } from './weekday-lib';
 
 function tokenizer(expr: string): TokenMap {
   const tokens = Array.from(expr.trim().matchAll(/\S+/g), match => ({
@@ -33,18 +34,33 @@ export const CloudflareWorkersParser = createScheduleParser({
       return this.convert(tokenizer(actual), actual, 'unix');
     }
 
-    const dayOfMonth = tokens.dayOfMonth?.value === '?' ? '*' : (tokens.dayOfMonth?.value ?? '*');
+    let minute = tokens.minute?.value;
+    let hour = tokens.hour?.value;
+    let dayOfMonth = tokens.dayOfMonth?.value;
+    let month = tokens.month?.value;
+    let dayOfWeek = tokens.dayOfWeek?.value;
 
-    let dayOfWeek = '*';
-    if (tokens.dayOfWeek !== undefined) {
-      dayOfWeek = tokens.dayOfWeek.value === '?' ? '*' : tokens.dayOfWeek.value;
+    if (tokens.date !== undefined || tokens.time !== undefined) {
+      const systemd = decomposeSystemdTokens(tokens);
+      minute = systemd.minute;
+      hour = systemd.hour;
+      dayOfMonth = systemd.dayOfMonth;
+      month = systemd.month;
+      dayOfWeek = systemd.dayOfWeek;
+    }
+
+    const normalizedDayOfMonth = dayOfMonth === '?' ? '*' : (dayOfMonth ?? '*');
+
+    let normalizedDayOfWeek = '*';
+    if (dayOfWeek !== undefined) {
+      normalizedDayOfWeek = dayOfWeek === '?' ? '*' : dayOfWeek;
 
       if (['unix', 'node'].includes(from)) {
-        dayOfWeek = toOneBasedDayOfWeek(dayOfWeek);
+        normalizedDayOfWeek = toOneBasedDayOfWeek(normalizedDayOfWeek);
       }
     }
 
-    const serialized = `${tokens.minute?.value} ${tokens.hour?.value} ${dayOfMonth} ${tokens.month?.value} ${dayOfWeek}`;
+    const serialized = `${minute} ${hour} ${normalizedDayOfMonth} ${month} ${normalizedDayOfWeek}`;
 
     return {
       tokens: tokenizer(serialized),

@@ -1,8 +1,9 @@
 import type { ScheduleFormat, TokenMap } from '@/types/schedule';
 
 import { createScheduleParser, MonthToNumber, OneBasedDayToNumber, UnixLikeMacros } from './base';
-import { toOneBasedDayOfWeek } from './convert';
+import { decomposeSystemdTokens } from './systemd';
 import { createTokenValidator } from './validator';
+import { toOneBasedDayOfWeek } from './weekday-lib';
 
 function tokenizer(expr: string) {
   const tokens = Array.from(expr.trim().matchAll(/\S+/g), match => ({
@@ -35,7 +36,7 @@ function tokenizer(expr: string) {
 
 export const QuartzParser = createScheduleParser({
   convert(tokens: TokenMap, raw: string, from: ScheduleFormat) {
-    if (from === 'cf-workers') {
+    if (from === 'quartz') {
       return {
         tokens,
         value: raw,
@@ -49,20 +50,39 @@ export const QuartzParser = createScheduleParser({
       return this.convert(tokenizer(actual), actual, 'unix');
     }
 
-    const dayOfMonth = tokens.dayOfMonth?.value === '?' ? '*' : (tokens.dayOfMonth?.value ?? '*');
+    let seconds = tokens.second?.value;
+    let minute = tokens.minute?.value;
+    let hour = tokens.hour?.value;
+    let dayOfMonth = tokens.dayOfMonth?.value;
+    let month = tokens.month?.value;
+    let dayOfWeek = tokens.dayOfWeek?.value;
 
-    let dayOfWeek = '*';
-    if (tokens.dayOfWeek !== undefined) {
-      dayOfWeek = tokens.dayOfWeek.value === '?' ? '*' : tokens.dayOfWeek.value;
+    if (tokens.date !== undefined || tokens.time !== undefined) {
+      const systemd = decomposeSystemdTokens(tokens);
+      seconds = systemd.second;
+      minute = systemd.minute;
+      hour = systemd.hour;
+      dayOfMonth = systemd.dayOfMonth;
+      month = systemd.month;
+      dayOfWeek = systemd.dayOfWeek;
+    }
+
+    const normalizedDayOfMonth = dayOfMonth === '?' ? '*' : (dayOfMonth ?? '*');
+
+    let normalizedDayOfWeek = '*';
+    if (dayOfWeek !== undefined) {
+      normalizedDayOfWeek = dayOfWeek === '?' ? '*' : dayOfWeek;
 
       if (isUnixLike) {
-        dayOfWeek = toOneBasedDayOfWeek(dayOfWeek);
+        normalizedDayOfWeek = toOneBasedDayOfWeek(normalizedDayOfWeek);
       }
     }
 
-    let serialized = `${tokens.minute?.value} ${tokens.hour?.value} ${dayOfMonth} ${tokens.month?.value} ${dayOfWeek} *`;
-    if (tokens.second?.value) {
-      serialized = `${tokens.second.value} ${serialized}`;
+    const year = tokens.year?.value ?? '*';
+
+    let serialized = `${minute} ${hour} ${normalizedDayOfMonth} ${month} ${normalizedDayOfWeek} ${year}`;
+    if (seconds) {
+      serialized = `${seconds} ${serialized}`;
     }
 
     return {

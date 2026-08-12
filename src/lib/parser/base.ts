@@ -165,7 +165,7 @@ export function createScheduleParser({
 
       // Find shortest equivalent form
       const parts: string[] = [];
-      for (let i = 0; i < values.length;) {
+      for (let i = 0; i < values.length; ) {
         let j = i;
         while (j + 1 < values.length && values[j + 1] === values[j] + 1) {
           j++;

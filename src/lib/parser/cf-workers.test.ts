@@ -39,5 +39,10 @@ describe('convert to cf-workers', () => {
     expect(convert('0 0 ? * 2,4 *', 'amazon')).toBe('0 0 * * 2,4');
   });
 
-  // Systemd conversion is deferred.
+  it('systemd: maps weekday/date/time onto the 5 fields, dow one-based', () => {
+    expect(convert('daily', 'systemd')).toBe('0 0 * * *');
+    expect(convert('Mon..Fri *-*-* 09:00:00', 'systemd')).toBe('0 9 * * 2-6');
+    expect(convert('Sat,Sun *-*-* 00:00:00', 'systemd')).toBe('0 0 * * 7,1');
+    expect(convert('*-*-15 12:30', 'systemd')).toBe('30 12 15 * *');
+  });
 });

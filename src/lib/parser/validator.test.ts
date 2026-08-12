@@ -3,8 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createTokenValidator } from './validator';
 
 describe('createTokenValidator', () => {
-  const SEC = (min: number, max: number) =>
-    createTokenValidator(/[^0-9*,\-/]/, min, max);
+  const SEC = (min: number, max: number) => createTokenValidator(/[^0-9*,\-/]/, min, max);
   const L_FIELD = createTokenValidator(/[^0-9*,\-/L]/, 0, 59);
   const W_FIELD = createTokenValidator(/[^0-9*,\-/W]/, 0, 59);
   const DOM = createTokenValidator(/[^0-9*,\-LW#?/]/i, 1, 31);

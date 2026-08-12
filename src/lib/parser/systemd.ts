@@ -1,7 +1,7 @@
 import { Temporal } from '@js-temporal/polyfill';
 
-import type { FieldName, NormalizedSchedule, TokenMap } from '@/types/schedule';
-import { daysInMonth, OneBasedDayToNumber } from './base';
+import type { FieldName, NormalizedSchedule, ScheduleFormat, TokenMap } from '@/types/schedule';
+import { daysInMonth, OneBasedDayToNumber, UnixLikeMacros } from './base';
 import type { ScheduleParser, ValidationResult } from './types';
 
 interface DateToken {
@@ -475,7 +475,350 @@ export function* generator(expr: string, start: Temporal.PlainDateTime) {
   }
 }
 
+/** Capitalized weekday names indexed by zero-based day (0=Sunday..6=Saturday). */
+const WeekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+/**
+ * Split a `YYYY-MM-DD` or `YYYY-MM~N` date expression into raw components.
+ */
+function splitSystemdDate(expr: string): { year: string; month: string; day: string } {
+  const [year, ...rest] = expr.split('-');
+
+  let monthPart: string;
+  let dayPart: string;
+
+  if (rest.length === 2) {
+    [monthPart, dayPart] = rest;
+  } else {
+    const tildeIdx = rest[0].indexOf('~');
+    monthPart = rest[0].slice(0, tildeIdx);
+    dayPart = rest[0].slice(tildeIdx);
+  }
+
+  return { day: dayPart, month: monthPart, year };
+}
+
+/**
+ * Convert a systemd component expression (`a..b` ranges, `N/step`, leading
+ * zeroes) into cron syntax (`a-b` ranges).
+ */
+function systemdComponentToCron(token: string): string {
+  if (token === '*') {
+    return '*';
+  }
+
+  return token
+    .split(',')
+    .map(part => {
+      const range = /^(\d+)\.\.(\d+)(?:\/(\d+))?$/.exec(part);
+      if (range) {
+        const step = range[3] ? `/${range[3]}` : '';
+        return `${Number(range[1])}-${Number(range[2])}${step}`;
+      }
+
+      const stepMatch = /^(\d+)\/(\d+)$/.exec(part);
+      if (stepMatch) {
+        return `${Number(stepMatch[1])}/${stepMatch[2]}`;
+      }
+
+      if (/^\d+$/.test(part)) {
+        return String(Number(part));
+      }
+
+      return part;
+    })
+    .join(',');
+}
+
+/**
+ * Convert a systemd day-of-month component to cron syntax, mapping the `~N`
+ * last-day marker to `L` / `L-(N-1)`.
+ */
+function systemdDayToCron(token: string): string {
+  const tilde = /^~(\d*)$/.exec(token);
+  if (tilde) {
+    const offset = tilde[1] === '' ? 1 : Number(tilde[1]);
+    return offset === 1 ? 'L' : `L-${offset - 1}`;
+  }
+
+  return systemdComponentToCron(token);
+}
+
+/**
+ * Convert a systemd weekday expression (`Mon`, `Mon..Fri`, `Sat,Sun`) into a
+ * numeric one-based day-of-week expression (Sun=1..Sat=7).
+ */
+function systemdWeekdayToOneBased(token: string): string {
+  if (token === '*') {
+    return '*';
+  }
+
+  return token
+    .split(',')
+    .map(part => {
+      const range = /^([a-z]+)\.\.([a-z]+)$/i.exec(part);
+      if (range) {
+        const lo = DayToNumber[range[1].toLowerCase()];
+        const hi = DayToNumber[range[2].toLowerCase()];
+        if (lo !== undefined && hi !== undefined) {
+          return `${lo}-${hi}`;
+        }
+
+        return part;
+      }
+
+      const num = DayToNumber[part.toLowerCase()];
+      if (num === undefined) {
+        return part;
+      }
+
+      return String(num);
+    })
+    .join(',');
+}
+
+/**
+ * Decompose a systemd token map (keyed `dayOfWeek`/`date`/`time`) into cron
+ * per-field values.
+ */
+export function decomposeSystemdTokens(tokens: TokenMap): Partial<Record<FieldName, string>> {
+  const fields: Partial<Record<FieldName, string>> = {};
+
+  if (tokens.dayOfWeek !== undefined) {
+    fields.dayOfWeek = systemdWeekdayToOneBased(tokens.dayOfWeek.value);
+  }
+
+  if (tokens.date !== undefined) {
+    const { year, month, day } = splitSystemdDate(tokens.date.value);
+    fields.year = systemdComponentToCron(year);
+    fields.month = systemdComponentToCron(month);
+    fields.dayOfMonth = systemdDayToCron(day);
+  } else {
+    fields.year = '*';
+    fields.month = '*';
+    fields.dayOfMonth = '*';
+  }
+
+  if (tokens.time !== undefined) {
+    const [hourPart, minutePart, secondPart] = tokens.time.value.split(':');
+    fields.hour = systemdComponentToCron(hourPart);
+    fields.minute = systemdComponentToCron(minutePart);
+    fields.second = secondPart !== undefined ? systemdComponentToCron(secondPart) : '0';
+  } else {
+    fields.hour = '0';
+    fields.minute = '0';
+    fields.second = '0';
+  }
+
+  return fields;
+}
+
+/**
+ * Tokenize a 5-field cron expression (minute hour day-of-month month
+ * day-of-week), computing positions over the given string.
+ */
+function tokenizeCron(expr: string): TokenMap {
+  const tokens = Array.from(expr.trim().matchAll(/\S+/g), match => ({
+    position: [match.index, match.index + match[0].length] as [number, number],
+    value: match[0],
+  }));
+
+  return {
+    dayOfMonth: tokens[2],
+    dayOfWeek: tokens[4],
+    hour: tokens[1],
+    minute: tokens[0],
+    month: tokens[3],
+  };
+}
+
+/**
+ * Expand a cron day-of-week token to sorted zero-based day indexes
+ * (0=Sunday..6=Saturday) using the source format's convention.
+ *
+ * @returns sorted indexes, or `null` when the token cannot be expanded
+ */
+function expandDowIndexes(token: string, from: ScheduleFormat): number[] | null {
+  const zeroBased = from === 'unix' || from === 'node';
+  let expr = token.replace(/(\d+)-(\d+)/g, '$1..$2');
+
+  if (!zeroBased) {
+    // Quartz allows 0 as an alternate spelling of Sunday.
+    expr = expr.replace(/(^|,)0(?=$|,)/g, '$11');
+  }
+
+  try {
+    const values = getNumericRange(expr, zeroBased ? 0 : 1, 7);
+    const toIndex = (v: number) => (zeroBased ? (v === 7 ? 0 : v) : v === 0 ? 0 : v - 1);
+    return Array.from(new Set(values.map(toIndex))).sort((a, b) => a - b);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Convert a cron day-of-week token to a systemd weekday expression (names,
+ * `..` ranges), or `undefined` when the weekday should be omitted.
+ */
+function toWeekday(token: string | undefined, from: ScheduleFormat): string | undefined {
+  if (token === undefined || token === '*' || token === '?') {
+    return undefined;
+  }
+
+  if (/[LW#]/.test(token)) {
+    return token; // no systemd equivalent — kept as-is so it is flagged invalid
+  }
+
+  const indexes = expandDowIndexes(token, from);
+  if (indexes === null) {
+    return token;
+  }
+
+  if (indexes.length === 7) {
+    return undefined; // every day — omit
+  }
+
+  const parts: string[] = [];
+  for (let i = 0; i < indexes.length;) {
+    let j = i;
+    while (j + 1 < indexes.length && indexes[j + 1] === indexes[j] + 1) {
+      j++;
+    }
+
+    if (j > i) {
+      parts.push(`${WeekdayNames[indexes[i]]}..${WeekdayNames[indexes[j]]}`);
+    } else {
+      parts.push(WeekdayNames[indexes[i]]);
+    }
+
+    i = j + 1;
+  }
+
+  return parts.join(',');
+}
+
+/**
+ * Convert a cron component expression (`a-b` ranges) into systemd syntax
+ * (`a..b`).
+ */
+function cronComponentToSystemd(token: string): string {
+  return token
+    .split(',')
+    .map(part => {
+      const range = /^(\d+)-(\d+)(?:\/(\d+))?$/.exec(part);
+      if (range) {
+        const step = range[3] ? `/${range[3]}` : '';
+        return `${range[1]}..${range[2]}${step}`;
+      }
+
+      // Zero-pad single digits to match systemd conventions (`09`, `05`).
+      if (/^\d$/.test(part)) {
+        return `0${part}`;
+      }
+
+      return part;
+    })
+    .join(',');
+}
+
+/**
+ * Convert a cron day-of-month token to systemd syntax, mapping `L` (last day
+ * of month) to `~1` and `L-N` to `~N+1`.
+ */
+function dayToSystemd(token: string): string {
+  if (token === '?') {
+    return '*';
+  }
+
+  if (token === 'L') {
+    return '~1';
+  }
+
+  const lx = /^L-(\d+)$/.exec(token);
+  if (lx) {
+    return `~${Number(lx[1]) + 1}`;
+  }
+
+  return cronComponentToSystemd(token);
+}
+
 export const SystemdParser: ScheduleParser = {
+  /**
+   * Convert a schedule expression from any supported format into Systemd
+   * OnCalendar syntax (`weekday? date time?`).
+   *
+   * Day-of-week maps to a weekday name (or `..` range of names), the
+   * day-of-month/month/year map to a date, and hour/minute/second map to a
+   * time. Cron `L` (last day of month) maps to `~1` and `L-N` to `~N+1`;
+   * specials Systemd cannot express are kept as-is so they are flagged
+   * invalid rather than silently changed.
+   *
+   * @param {TokenMap} tokens Tokens of the source expression
+   * @param {string} raw Raw source expression
+   * @param {ScheduleFormat} from Format of the source expression
+   * @returns {object} Converted expression with its tokens and value
+   */
+  convert(tokens: TokenMap, raw: string, from: ScheduleFormat) {
+    if (from === 'systemd') {
+      return {
+        tokens,
+        value: raw,
+      };
+    }
+
+    // Expand Unix/Node @-macros to cron syntax and convert as a Unix source.
+    let sourceTokens = tokens;
+    let sourceFrom = from;
+    if ((from === 'unix' || from === 'node') && raw.trim() in UnixLikeMacros) {
+      const actual = UnixLikeMacros[raw.trim()];
+      sourceTokens = tokenizeCron(actual);
+      sourceFrom = 'unix';
+    }
+
+    const minute = sourceTokens.minute?.value;
+    const hour = sourceTokens.hour?.value;
+    const second = sourceTokens.second?.value;
+    const dayOfMonth = sourceTokens.dayOfMonth?.value;
+    const month = sourceTokens.month?.value;
+    const year = sourceTokens.year?.value;
+    const dayOfWeek = sourceTokens.dayOfWeek?.value;
+
+    const weekday = toWeekday(dayOfWeek, sourceFrom);
+    const date = [
+      year === undefined ? '*' : cronComponentToSystemd(year),
+      month === undefined ? '*' : cronComponentToSystemd(month),
+      dayOfMonth === undefined ? '*' : dayToSystemd(dayOfMonth),
+    ].join('-');
+    const time = [
+      hour === undefined ? '*' : cronComponentToSystemd(hour),
+      minute === undefined ? '*' : cronComponentToSystemd(minute),
+      second === undefined ? '00' : cronComponentToSystemd(second),
+    ].join(':');
+
+    const parts: string[] = [];
+    if (weekday !== undefined) {
+      parts.push(weekday);
+    }
+    if (date !== '*-*-*') {
+      parts.push(date);
+    }
+    parts.push(time);
+
+    const value = parts.join(' ');
+
+    let outputTokens: TokenMap;
+    try {
+      outputTokens = tokenize(value);
+    } catch {
+      outputTokens = {};
+    }
+
+    return {
+      tokens: outputTokens,
+      value,
+    };
+  },
+
   normalize(expr: string): NormalizedSchedule {
     let trimmed = expr.trim();
 
