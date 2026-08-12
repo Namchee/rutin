@@ -61,7 +61,7 @@ const Range: Record<ScheduleFormat, Partial<Record<FieldName, FieldRange>>> = {
   },
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   quartz: {
-    second: { optional: true, range: ['0-59'] },
+    second: { optional: false, range: ['0-59'] },
     minute: { optional: false, range: ['0-59'] },
     hour: { optional: false, range: ['0-23'] },
     dayOfMonth: { optional: false, range: ['1-31'] },

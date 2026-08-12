@@ -162,11 +162,18 @@ function createEditorContext() {
   function updateFormat(newFormat: ScheduleFormat) {
     setFormat(newFormat);
 
-    const converted = Parsers[newFormat].convert(tokens(), value(), format());
+    let val = value();
+    if (state() === 'valid') {
+      console.log(newFormat);
+      val = Parsers[newFormat].convert(tokens(), value(), format()).value;
+      console.log(val);
+    }
 
-    setValue(converted.value);
+    setValue(val);
 
-    const result = Parsers[newFormat].process(converted.value);
+    const result = Parsers[newFormat].process(val);
+
+    console.log(result);
 
     setState(result.status);
     setNormal(result.normal);

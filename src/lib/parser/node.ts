@@ -86,7 +86,7 @@ export const NodeParser = createScheduleParser({
     hour: { max: 23, min: 0 },
     minute: { max: 59, min: 0 },
     month: { aliases: MonthToNumber, max: 12, min: 1 },
-    second: { max: 59, min: 0 },
+    second: { max: 59, min: 0, optional: true },
   },
   macros: UnixLikeMacros,
   tokenizer,

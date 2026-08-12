@@ -48,3 +48,17 @@ describe('convert to node', () => {
     expect(convert('2024-01-01 00:00:00', 'systemd')).toBe('0 0 0 1 1 *');
   });
 });
+
+describe('node: optional seconds in process', () => {
+  it('5-field expression is complete and valid', () => {
+    expect(NodeParser.process('0 0 1 1,4,7,10 *').status).toBe('valid');
+  });
+
+  it('6-field expression stays valid', () => {
+    expect(NodeParser.process('0 0 0 1 1,4,7,10 *').status).toBe('valid');
+  });
+
+  it('too many fields is invalid, not incomplete', () => {
+    expect(NodeParser.process('0 0 0 0 1 1,4,7,10 *').status).toBe('invalid');
+  });
+});

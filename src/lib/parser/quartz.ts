@@ -80,10 +80,11 @@ export const QuartzParser = createScheduleParser({
 
     const year = tokens.year?.value ?? '*';
 
-    let serialized = `${minute} ${hour} ${normalizedDayOfMonth} ${month} ${normalizedDayOfWeek} ${year}`;
-    if (seconds) {
-      serialized = `${seconds} ${serialized}`;
-    }
+    // Real Quartz is always seconds-first, so emit the seconds field even
+    // when the source has none — a 6-field output would read as seconds-first
+    // and shift every field by one (e.g. the day-of-month becomes the hour).
+    const serialized = `${seconds ?? '0'} ${minute} ${hour} ${normalizedDayOfMonth} ${month} ${normalizedDayOfWeek} ${year}`;
+    console.log(serialized);
 
     return {
       tokens: tokenizer(serialized),
@@ -98,7 +99,7 @@ export const QuartzParser = createScheduleParser({
     hour: { max: 23, min: 0 },
     minute: { max: 59, min: 0 },
     month: { aliases: MonthToNumber, max: 12, min: 1 },
-    second: { max: 59, min: 0 },
+    second: { max: 59, min: 0, optional: true },
     year: { max: 2199, min: 1970 },
   },
   tokenizer: (expr: string) => {

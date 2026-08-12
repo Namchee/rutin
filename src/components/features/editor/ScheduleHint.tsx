@@ -36,7 +36,7 @@ const Hints: Record<ScheduleFormat, HintEntry[]> = {
     { field: 'dayOfWeek', label: 'Day' },
   ],
   quartz: [
-    { field: 'second', label: 'Second', optional: true },
+    { field: 'second', label: 'Second' },
     { field: 'minute', label: 'Minute' },
     { field: 'hour', label: 'Hour' },
     { field: 'dayOfMonth', label: 'Date' },

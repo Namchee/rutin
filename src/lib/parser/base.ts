@@ -801,7 +801,10 @@ export function createScheduleParser({
 
       const rawTokens = trimmedExpr.split(/\s+/).filter(Boolean).length;
 
-      if (rawTokens > requiredFields) {
+      // Reject expressions with more fields than the format supports; the
+      // bound is the total field count, not the required one, so optional
+      // fields (e.g. node/quartz seconds) don't make valid input look oversized.
+      if (rawTokens > fieldOrder.length) {
         return {
           error: [],
           normal: this.isNormal(trimmedExpr),
