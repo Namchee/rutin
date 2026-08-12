@@ -148,6 +148,10 @@ export function createScheduleParser({
         t = t.replace(regex, m => String(aliases[m.toLowerCase() as keyof typeof aliases]));
       }
 
+      if (t === '?') {
+        return '?';
+      }
+
       // token -> value set
       const hasStep = t.includes('/');
       let values: number[];

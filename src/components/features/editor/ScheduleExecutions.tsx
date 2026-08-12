@@ -215,7 +215,7 @@ export function ScheduleExecutions() {
       </div>
 
       <div class="border-separator border-t bg-background p-2 dark:bg-surface">
-        <p class="text-center text-content-tertiary text-xs">Scroll for more executions</p>
+        <p class="text-center text-content-tertiary text-xs">Showing {executions().length} executions out of 100. Scroll for more</p>
       </div>
     </div>
   );
