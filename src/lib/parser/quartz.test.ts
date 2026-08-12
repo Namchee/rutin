@@ -26,6 +26,14 @@ describe('convert to quartz', () => {
     expect(convert('Mon..Fri *-*-* 09:00:00', 'systemd')).toBe('0 0 9 * * 2-6 *');
     expect(convert('*-*-15 12:30', 'systemd')).toBe('0 30 12 15 * * *');
   });
+
+  it('amazon: keeps ? in day-of-month when dow is specific (last friday)', () => {
+    expect(convert('0 12 ? * 6L *', 'amazon')).toBe('0 0 12 ? * 6L *');
+  });
+
+  it('amazon: keeps ? in day-of-week when dom is specific (last day of month)', () => {
+    expect(convert('0 12 L * ? *', 'amazon')).toBe('0 0 12 L * ? *');
+  });
 });
 
 describe('quartz: optional seconds in process', () => {

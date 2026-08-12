@@ -67,11 +67,11 @@ export const QuartzParser = createScheduleParser({
       dayOfWeek = systemd.dayOfWeek;
     }
 
-    const normalizedDayOfMonth = dayOfMonth === '?' ? '*' : (dayOfMonth ?? '*');
+    const normalizedDayOfMonth = dayOfMonth ?? '*';
 
     let normalizedDayOfWeek = '*';
     if (dayOfWeek !== undefined) {
-      normalizedDayOfWeek = dayOfWeek === '?' ? '*' : dayOfWeek;
+      normalizedDayOfWeek = dayOfWeek;
 
       if (isUnixLike) {
         normalizedDayOfWeek = toOneBasedDayOfWeek(normalizedDayOfWeek);
@@ -80,11 +80,7 @@ export const QuartzParser = createScheduleParser({
 
     const year = tokens.year?.value ?? '*';
 
-    // Real Quartz is always seconds-first, so emit the seconds field even
-    // when the source has none — a 6-field output would read as seconds-first
-    // and shift every field by one (e.g. the day-of-month becomes the hour).
     const serialized = `${seconds ?? '0'} ${minute} ${hour} ${normalizedDayOfMonth} ${month} ${normalizedDayOfWeek} ${year}`;
-    console.log(serialized);
 
     return {
       tokens: tokenizer(serialized),

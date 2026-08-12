@@ -56,11 +56,14 @@ export const AmazonParser = createScheduleParser({
       year = systemd.year;
     }
 
-    const normalizedDayOfMonth = dayOfMonth === '?' ? '*' : (dayOfMonth ?? '*');
+    // Amazon supports `?` in both day fields, and it is *required* in one of
+    // them when the other carries a specific value (e.g. `? * 6L`). Collapsing
+    // it to `*` would produce an invalid expression like `0 18 * * 6L *`.
+    const normalizedDayOfMonth = dayOfMonth ?? '*';
 
     let normalizedDayOfWeek = '*';
     if (dayOfWeek !== undefined) {
-      normalizedDayOfWeek = dayOfWeek === '?' ? '*' : dayOfWeek;
+      normalizedDayOfWeek = dayOfWeek;
 
       if (['unix', 'node'].includes(from)) {
         normalizedDayOfWeek = toOneBasedDayOfWeek(normalizedDayOfWeek);
