@@ -108,7 +108,7 @@ function getNumericRange(expr: string, min: number, max: number): number[] {
       continue;
     }
 
-    // "N/step"
+    // N/step
     const valueStepMatch = /^(\d+)\/(\d+)$/.exec(part);
     if (valueStepMatch) {
       const start = Number(valueStepMatch[1]);
@@ -150,8 +150,7 @@ function getNumericRange(expr: string, min: number, max: number): number[] {
  * @returns {DateToken} Parsed date expression, with each subtoken separated as keys
  */
 function parseDate(expr: string): DateToken {
-  // systemd allows `Y-M~N` (the `~` replaces the day separator)
-  // So split on `-`, then split the tail on `~` if present.
+  // Split on `-`, then split the tail on `~` if present.
   const [yearPart, ...rest] = expr.split('-');
 
   if (!yearPart || rest.length === 0 || rest.length > 2) {
@@ -264,68 +263,82 @@ function dayOfWeek(year: number, month: number, day: number): number {
 }
 
 /**
- * Helper function to check whether a datetime satisfies the parsed calendar instance.
- *
- * @param {Temporal.PlainDateTime} datetime Temporal datetime to be tested
- * @param {CalendarInstance} instance Calendar instance.
- *
- * @returns {boolean} `true` if it matches. `false` otherwise.
- */
-function matches(datetime: Temporal.PlainDateTime, instance: CalendarInstance): boolean {
-  if (
-    instance.weekday &&
-    !instance.weekday.includes(dayOfWeek(datetime.year, datetime.month, datetime.day))
-  ) {
-    return false;
-  }
-
-  const yearCondition = [
-    instance.year.includes(datetime.year),
-    instance.month.includes(datetime.month),
-  ];
-
-  if (yearCondition.some(c => !c)) {
-    return false;
-  }
-
-  if (instance.lastDayOffset !== undefined) {
-    const last = daysInMonth(datetime.year, datetime.month);
-    if (datetime.day !== last - instance.lastDayOffset + 1) {
-      return false;
-    }
-  } else if (!instance.day.includes(datetime.day)) {
-    return false;
-  }
-
-  const timeCondition = [
-    instance.hour.includes(datetime.hour),
-    instance.minute.includes(datetime.minute),
-    instance.second.includes(datetime.second),
-  ];
-
-  if (timeCondition.some(c => !c)) {
-    return false;
-  }
-
-  return true;
-}
-
-/**
  * Find the next datetime at or after `curr` that matches the spec.
  *
- * @param {Temporal.PlainDateTime} datetime Temporal datetime to be tested
- * @param {CalendarInstance} instance Calendar instance.
+ * @param {Temporal.PlainDateTime} curr Temporal datetime to start from
+ * @param {CalendarInstance} spec Calendar instance.
  *
  * @returns {Temporal.PlainDateTime} Next datetime according to the instance
  * relative to current datetime.
  */
 function nextMatch(curr: Temporal.PlainDateTime, spec: CalendarInstance): Temporal.PlainDateTime {
   while (true) {
-    if (matches(curr, spec)) {
-      return curr;
+    if (!spec.year.includes(curr.year)) {
+      const nextYear = spec.year.find(y => y > curr.year) ?? spec.year[0];
+
+      curr = curr.with({ day: 1, hour: 0, minute: 0, month: 1, second: 0, year: nextYear });
+
+      continue;
     }
 
-    curr = curr.add({ seconds: 1 });
+    if (!spec.month.includes(curr.month)) {
+      const nextMonth = spec.month.find(m => m > curr.month) ?? spec.month[0];
+      const year = nextMonth <= curr.month ? curr.year + 1 : curr.year;
+
+      curr = curr.with({ day: 1, hour: 0, minute: 0, month: nextMonth, second: 0, year });
+
+      continue;
+    }
+
+    // Weekday and day-of-month (or `~N` offset) must both match.
+    const weekdayOk =
+      spec.weekday === undefined ||
+      spec.weekday.includes(dayOfWeek(curr.year, curr.month, curr.day));
+    const dayOk =
+      spec.lastDayOffset !== undefined
+        ? curr.day === daysInMonth(curr.year, curr.month) - spec.lastDayOffset + 1
+        : spec.day.includes(curr.day);
+
+    if (!weekdayOk || !dayOk) {
+      curr = curr.add({ days: 1 }).with({ hour: 0, minute: 0, second: 0 });
+
+      continue;
+    }
+
+    if (!spec.hour.includes(curr.hour)) {
+      const nextHour = spec.hour.find(h => h > curr.hour) ?? spec.hour[0];
+
+      curr = (nextHour <= curr.hour ? curr.add({ days: 1 }) : curr).with({
+        hour: nextHour,
+        minute: 0,
+        second: 0,
+      });
+
+      continue;
+    }
+
+    if (!spec.minute.includes(curr.minute)) {
+      const nextMinute = spec.minute.find(m => m > curr.minute) ?? spec.minute[0];
+
+      curr = (nextMinute <= curr.minute ? curr.add({ hours: 1 }) : curr).with({
+        minute: nextMinute,
+        second: 0,
+      });
+
+      continue;
+    }
+
+    if (!spec.second.includes(curr.second)) {
+      const nextSecond = spec.second.find(s => s > curr.second) ?? spec.second[0];
+
+      curr = (nextSecond <= curr.second ? curr.add({ minutes: 1 }) : curr).with({
+        second: nextSecond,
+      });
+
+      continue;
+    }
+
+    return curr;
   }
 }
 
@@ -475,7 +488,6 @@ export function* generator(expr: string, start: Temporal.PlainDateTime) {
   }
 }
 
-/** Capitalized weekday names indexed by zero-based day (0=Sunday..6=Saturday). */
 const WeekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 /**
@@ -634,7 +646,7 @@ function tokenizeCron(expr: string): TokenMap {
 
 /**
  * Expand a cron day-of-week token to sorted zero-based day indexes
- * (0=Sunday..6=Saturday) using the source format's convention.
+ * using the source format's convention.
  *
  * @returns sorted indexes, or `null` when the token cannot be expanded
  */
@@ -657,8 +669,7 @@ function expandDowIndexes(token: string, from: ScheduleFormat): number[] | null 
 }
 
 /**
- * Convert a cron day-of-week token to a systemd weekday expression (names,
- * `..` ranges), or `undefined` when the weekday should be omitted.
+ * Convert a cron day-of-week token to a systemd weekday expression.
  */
 function toWeekday(token: string | undefined, from: ScheduleFormat): string | undefined {
   if (token === undefined || token === '*' || token === '?') {
@@ -666,7 +677,7 @@ function toWeekday(token: string | undefined, from: ScheduleFormat): string | un
   }
 
   if (/[LW#]/.test(token)) {
-    return token; // no systemd equivalent — kept as-is so it is flagged invalid
+    return token;
   }
 
   const indexes = expandDowIndexes(token, from);
@@ -675,7 +686,7 @@ function toWeekday(token: string | undefined, from: ScheduleFormat): string | un
   }
 
   if (indexes.length === 7) {
-    return undefined; // every day — omit
+    return undefined;
   }
 
   const parts: string[] = [];
@@ -743,21 +754,6 @@ function dayToSystemd(token: string): string {
 }
 
 export const SystemdParser: ScheduleParser = {
-  /**
-   * Convert a schedule expression from any supported format into Systemd
-   * OnCalendar syntax (`weekday? date time?`).
-   *
-   * Day-of-week maps to a weekday name (or `..` range of names), the
-   * day-of-month/month/year map to a date, and hour/minute/second map to a
-   * time. Cron `L` (last day of month) maps to `~1` and `L-N` to `~N+1`;
-   * specials Systemd cannot express are kept as-is so they are flagged
-   * invalid rather than silently changed.
-   *
-   * @param {TokenMap} tokens Tokens of the source expression
-   * @param {string} raw Raw source expression
-   * @param {ScheduleFormat} from Format of the source expression
-   * @returns {object} Converted expression with its tokens and value
-   */
   convert(tokens: TokenMap, raw: string, from: ScheduleFormat) {
     if (from === 'systemd') {
       return {
