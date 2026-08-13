@@ -110,10 +110,15 @@ function createEditorContext() {
     }).filter(Boolean) as ExistingToken[];
     currentTokens.sort((a, b) => a.position[0] - b.position[0]);
 
-    const currentToken = currentTokens.find(
+    let currentToken = currentTokens.find(
       ({ position }) => selectionStart <=
         position[1],
     );
+
+    // if it ends with whitespace, just select the last one
+    if (val.match(/\s+$/)) {
+      currentToken = currentTokens.at(-1);
+    }
 
     setCurrentToken(currentToken?.name as FieldName);
   }
@@ -121,12 +126,12 @@ function createEditorContext() {
   function onInput(val: string) {
     setValue(val);
 
-    updateCurrentToken();
-
     const result = Parsers[format()].process(val);
     setState(result.status);
     setNormal(result.normal);
     setTokens(result.tokens);
+
+    updateCurrentToken();
 
     setDescriptor(result.status === 'valid' ? result.descriptor : ScheduleLabel[result.status]);
     setErrors(result.status !== 'valid' ? result.error : []);
@@ -169,8 +174,6 @@ function createEditorContext() {
     setValue(val);
 
     const result = Parsers[newFormat].process(val);
-
-    console.log(result);
 
     setState(result.status);
     setNormal(result.normal);
