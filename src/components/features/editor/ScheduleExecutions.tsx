@@ -183,7 +183,7 @@ export function ScheduleExecutions() {
   const { ref } = useIntersectionObserver(
     () => {
       const gen = generator();
-      if (gen) {
+      if (gen && executions().length < 100) {
         setExecutions(prev => [...prev, ...take(gen, 10)]);
       }
     },
@@ -193,10 +193,8 @@ export function ScheduleExecutions() {
   createEffect(() => {
     const gen = generator();
     if (gen) {
-      // seed the executions
       setExecutions(take(gen, 20));
     } else {
-      // reset if not valid
       setExecutions([]);
     }
   });
@@ -227,6 +225,10 @@ export function ScheduleExecutions() {
           </For>
 
           <div ref={ref} />
+
+          <div class='flex flex-col items-center justify-center pb-2 font-medium font-mono text-content-tertiary text-xs'>
+            <p>That&apos;s a wrap!</p>
+          </div>
         </Show>
       </div>
 
