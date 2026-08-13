@@ -57,7 +57,7 @@ export const QuartzParser = createScheduleParser({
     let dayOfWeek = tokens.dayOfWeek?.value;
     let year = tokens.year?.value;
 
-    if (tokens.date !== undefined || tokens.time !== undefined) {
+    if (from === 'systemd') {
       const systemd = decomposeSystemdTokens(tokens);
       seconds = systemd.second;
       minute = systemd.minute;
@@ -71,7 +71,7 @@ export const QuartzParser = createScheduleParser({
     const normalizedDayOfMonth = dayOfMonth ?? '*';
 
     let normalizedDayOfWeek = '*';
-    if (dayOfWeek !== undefined) {
+    if (dayOfWeek) {
       normalizedDayOfWeek = dayOfWeek;
 
       if (isUnixLike) {
@@ -79,7 +79,7 @@ export const QuartzParser = createScheduleParser({
       }
     }
 
-    const yearPart = year === undefined ? '' : ` ${year}`;
+    const yearPart = year ? '' : ` ${year}`;
 
     const serialized = `${seconds ?? '0'} ${minute} ${hour} ${normalizedDayOfMonth} ${month} ${normalizedDayOfWeek}${yearPart}`;
 

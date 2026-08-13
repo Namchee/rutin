@@ -40,7 +40,7 @@ export const CloudflareWorkersParser = createScheduleParser({
     let month = tokens.month?.value;
     let dayOfWeek = tokens.dayOfWeek?.value;
 
-    if (tokens.date !== undefined || tokens.time !== undefined) {
+    if (from === 'systemd') {
       const systemd = decomposeSystemdTokens(tokens);
       minute = systemd.minute;
       hour = systemd.hour;
@@ -52,7 +52,7 @@ export const CloudflareWorkersParser = createScheduleParser({
     const normalizedDayOfMonth = dayOfMonth === '?' ? '*' : (dayOfMonth ?? '*');
 
     let normalizedDayOfWeek = '*';
-    if (dayOfWeek !== undefined) {
+    if (dayOfWeek) {
       normalizedDayOfWeek = dayOfWeek === '?' ? '*' : dayOfWeek;
 
       if (['unix', 'node'].includes(from)) {

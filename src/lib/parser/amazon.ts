@@ -46,7 +46,8 @@ export const AmazonParser = createScheduleParser({
     let dayOfWeek = tokens.dayOfWeek?.value;
     let year = tokens.year?.value;
 
-    if (tokens.date !== undefined || tokens.time !== undefined) {
+    // it's systemd time
+    if (from === 'systemd') {
       const systemd = decomposeSystemdTokens(tokens);
       minute = systemd.minute;
       hour = systemd.hour;
@@ -56,13 +57,10 @@ export const AmazonParser = createScheduleParser({
       year = systemd.year;
     }
 
-    // Amazon supports `?` in both day fields, and it is *required* in one of
-    // them when the other carries a specific value (e.g. `? * 6L`). Collapsing
-    // it to `*` would produce an invalid expression like `0 18 * * 6L *`.
     const normalizedDayOfMonth = dayOfMonth ?? '*';
 
     let normalizedDayOfWeek = '*';
-    if (dayOfWeek !== undefined) {
+    if (dayOfWeek) {
       normalizedDayOfWeek = dayOfWeek;
 
       if (['unix', 'node'].includes(from)) {
@@ -88,21 +86,7 @@ export const AmazonParser = createScheduleParser({
     year: { max: 2199, min: 1970 },
   },
   isDoWZeroBased: false,
-  tokenizer: (expr: string) => {
-    const tokens = Array.from(expr.trim().matchAll(/\S+/g), match => ({
-      position: [match.index, match.index + match[0].length] as [number, number],
-      value: match[0],
-    }));
-
-    return {
-      dayOfMonth: tokens[2],
-      dayOfWeek: tokens[4],
-      hour: tokens[1],
-      minute: tokens[0],
-      month: tokens[3],
-      year: tokens[5],
-    };
-  },
+  tokenizer,
   validators: {
     dayOfMonth: createTokenValidator(/[^0-9*,\-/?LW]/i, 1, 31),
     dayOfWeek: createTokenValidator(/[^0-9*,\-/L#?]/i, 1, 7),

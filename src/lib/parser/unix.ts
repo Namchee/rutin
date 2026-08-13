@@ -54,7 +54,7 @@ export const UNIXParser = createScheduleParser({
     const normalizedDayOfMonth = dayOfMonth === '?' ? '*' : (dayOfMonth ?? '*');
 
     let normalizedDayOfWeek = '*';
-    if (dayOfWeek !== undefined) {
+    if (dayOfWeek) {
       normalizedDayOfWeek = dayOfWeek === '?' ? '*' : dayOfWeek;
 
       if (from !== 'node') {

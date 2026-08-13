@@ -47,7 +47,7 @@ export const NodeParser = createScheduleParser({
     let month = tokens.month?.value;
     let dayOfWeek = tokens.dayOfWeek?.value;
 
-    if (tokens.date !== undefined || tokens.time !== undefined) {
+    if (from === 'systemd') {
       const systemd = decomposeSystemdTokens(tokens);
       seconds = systemd.second;
       minute = systemd.minute;
@@ -60,7 +60,7 @@ export const NodeParser = createScheduleParser({
     const normalizedDayOfMonth = dayOfMonth === '?' ? '*' : (dayOfMonth ?? '*');
 
     let normalizedDayOfWeek = '*';
-    if (dayOfWeek !== undefined) {
+    if (dayOfWeek) {
       normalizedDayOfWeek = dayOfWeek === '?' ? '*' : dayOfWeek;
 
       if (from !== 'unix') {
