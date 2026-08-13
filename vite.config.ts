@@ -38,7 +38,7 @@ function unocssVirtualModulePrefix(): Plugin {
 export default defineConfig({
   define: {
     __COMMIT_SHA__: JSON.stringify(
-      process.env.CF_PAGES_COMMIT_SHA || 'local-dev',
+      process.env.CF_PAGES_COMMIT_SHA?.slice(0, 7) || 'local-dev',
     ),
   },
   plugins: [
