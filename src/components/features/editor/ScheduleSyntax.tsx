@@ -36,7 +36,7 @@ const Range: Record<ScheduleFormat, Partial<Record<FieldName, FieldRange>>> = {
   // biome-ignore assist/source/useSortedKeys: Keep fields in logical cron order rather than alphabetical
   amazon: {
     minute: { optional: false, range: ['0-59'] },
-    hour: { optional: false, range: ['0-23'] },
+    hour: { optional: false, range: ['0-23', 'L', 'W'] },
     dayOfMonth: { optional: false, range: ['1-31'] },
     month: { optional: false, range: ['1-12'] },
     dayOfWeek: { optional: false, range: ['1-7', 'SUN-SAT'] },

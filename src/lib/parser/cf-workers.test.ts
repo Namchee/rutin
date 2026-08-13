@@ -55,41 +55,40 @@ describe('convert to cf-workers', () => {
 });
 
 describe('cf-workers: process status', () => {
-  function statusOf(expr: string) {
-    const result = CloudflareWorkersParser.process(expr);
-    return { error: result.error, normal: result.normal, status: result.status };
+  function process(expr: string) {
+    return CloudflareWorkersParser.process(expr);
   }
 
   it('accepts one-based dow 1 (Sunday) through 7 (Saturday)', () => {
-    expect(statusOf('0 12 * * 1')).toMatchObject({ status: 'valid' });
-    expect(statusOf('0 12 * * 7')).toMatchObject({ status: 'valid' });
+    expect(process('0 12 * * 1')).toMatchObject({ status: 'valid' });
+    expect(process('0 12 * * 7')).toMatchObject({ status: 'valid' });
   });
 
   it('rejects dow 0 and out-of-range values', () => {
-    expect(statusOf('0 0 * * 0')).toMatchObject({ status: 'invalid', error: ['dayOfWeek'] });
-    expect(statusOf('0 0 * * 8')).toMatchObject({ status: 'invalid', error: ['dayOfWeek'] });
+    expect(process('0 0 * * 0')).toMatchObject({ error: ['dayOfWeek'], status: 'invalid' });
+    expect(process('0 0 * * 8')).toMatchObject({ error: ['dayOfWeek'], status: 'invalid' });
   });
 
   it('rejects out-of-range minute/hour/month', () => {
-    expect(statusOf('60 12 * * *')).toMatchObject({ status: 'invalid', error: ['minute'] });
-    expect(statusOf('0 24 * * *')).toMatchObject({ status: 'invalid', error: ['hour'] });
-    expect(statusOf('0 12 * 13 *')).toMatchObject({ status: 'invalid', error: ['month'] });
+    expect(process('60 12 * * *')).toMatchObject({ error: ['minute'], status: 'invalid' });
+    expect(process('0 24 * * *')).toMatchObject({ error: ['hour'], status: 'invalid' });
+    expect(process('0 12 * 13 *')).toMatchObject({ error: ['month'], status: 'invalid' });
   });
 
   it('collapses a full-week dow range to a wildcard (not normal)', () => {
-    expect(statusOf('0 0 * * 1-7')).toMatchObject({ status: 'valid', normal: false });
+    expect(process('0 0 * * 1-7')).toMatchObject({ normal: false, status: 'valid' });
   });
 
   it('treats missing fields as incomplete', () => {
-    expect(statusOf('0 12 * *')).toMatchObject({ status: 'incomplete' });
+    expect(process('0 12 * *')).toMatchObject({ status: 'incomplete' });
   });
 
   it('rejects too many fields as invalid', () => {
-    expect(statusOf('0 12 * * * extra')).toMatchObject({ status: 'invalid', error: [] });
+    expect(process('0 12 * * * extra')).toMatchObject({ error: [], status: 'invalid' });
   });
 
   it('does not support @-macros', () => {
-    expect(statusOf('@daily')).toMatchObject({ status: 'invalid', error: ['minute'] });
+    expect(process('@daily')).toMatchObject({ error: ['minute'], status: 'invalid' });
   });
 });
 

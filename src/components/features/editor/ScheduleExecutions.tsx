@@ -37,6 +37,20 @@ function ExecutionEmpty() {
   );
 }
 
+function ExecutionExhausted() {
+  return (
+    <div class="grid h-full w-full place-items-center p-4">
+      <div class="grid place-items-center gap-4 text-center text-content-tertiary text-sm">
+        <div class="i-lucide-calendar-off size-8" />
+
+        <p class="max-w-md">
+          This schedule is valid but will never fire again. Its year range is entirely in the past.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 const Timezones: Record<string, { label: string; description: string }> = {
   [Temporal.Now.timeZoneId()]: {
     description: `GMT ${Temporal.Now.zonedDateTimeISO().offset}`,
@@ -159,7 +173,7 @@ export function TimezoneSelector({ timezone, setTimezone }: Readonly<TimezoneSel
 }
 
 export function ScheduleExecutions() {
-  const { generator } = useEditorContext();
+  const { generator, state } = useEditorContext();
 
   const [executions, setExecutions] = createSignal<Temporal.PlainDateTime[]>([]);
   const [timezone, setTimezone] = createSignal<string>('utc');
@@ -189,14 +203,16 @@ export function ScheduleExecutions() {
 
   return (
     <div class="flex flex-col overflow-hidden rounded-lg border border-separator">
-      <div class='flex h-16 items-center justify-between border-separator border-b p-4'>
+      <div class="flex h-16 items-center justify-between border-separator border-b p-4">
         <p class="font-medium text-content-secondary text-sm">Next executions</p>
 
         <TimezoneSelector timezone={timezone} setTimezone={setTimezone} />
       </div>
 
       <div ref={scroller} class="h-64 max-h-64 min-h-64 flex-1 overflow-auto">
-        <Show when={executions().length > 0} fallback={ExecutionEmpty()}>
+        <Show
+          when={executions().length > 0}
+          fallback={state() === 'valid' ? <ExecutionExhausted /> : ExecutionEmpty()}>
           <For each={executions()}>
             {e => (
               <div class="flex items-center justify-between p-4">
@@ -215,7 +231,9 @@ export function ScheduleExecutions() {
       </div>
 
       <div class="border-separator border-t bg-background p-2 dark:bg-surface">
-        <p class="text-center text-content-tertiary text-xs">Showing {executions().length} executions out of 100. Scroll for more</p>
+        <p class="text-center text-content-tertiary text-xs">
+          Showing {executions().length} executions out of 100. Scroll for more
+        </p>
       </div>
     </div>
   );
