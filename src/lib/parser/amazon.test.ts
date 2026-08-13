@@ -41,40 +41,39 @@ describe('convert to amazon', () => {
 });
 
 describe('amazon: process status', () => {
-  function statusOf(expr: string) {
-    const result = AmazonParser.process(expr);
-    return { error: result.error, normal: result.normal, status: result.status };
+  function process(expr: string) {
+    return AmazonParser.process(expr);
   }
 
   it('accepts valid 6-field expressions', () => {
-    expect(statusOf('0 12 ? * MON *')).toMatchObject({ status: 'valid' });
-    expect(statusOf('0 12 * * 2 *')).toMatchObject({ status: 'valid' });
-    expect(statusOf('0 0 1 1,4,7,10 ? *')).toMatchObject({ status: 'valid' });
+    expect(process('0 12 ? * MON *')).toMatchObject({ status: 'valid' });
+    expect(process('0 12 * * 2 *')).toMatchObject({ status: 'valid' });
+    expect(process('0 0 1 1,4,7,10 ? *')).toMatchObject({ status: 'valid' });
   });
 
   it('enforces the year bounds 1970-2199', () => {
-    expect(statusOf('0 12 ? * 1 1970')).toMatchObject({ status: 'valid' });
-    expect(statusOf('0 12 ? * 1 2199')).toMatchObject({ status: 'valid' });
-    expect(statusOf('0 12 ? * 1 1969')).toMatchObject({ status: 'invalid', error: ['year'] });
-    expect(statusOf('0 12 ? * 1 2200')).toMatchObject({ status: 'invalid', error: ['year'] });
+    expect(process('0 12 ? * 1 1970')).toMatchObject({ status: 'valid' });
+    expect(process('0 12 ? * 1 2199')).toMatchObject({ status: 'valid' });
+    expect(process('0 12 ? * 1 1969')).toMatchObject({ error: ['year'], status: 'invalid' });
+    expect(process('0 12 ? * 1 2200')).toMatchObject({ error: ['year'], status: 'invalid' });
   });
 
   it('rejects ? in the year field', () => {
-    expect(statusOf('0 12 ? * 1 ?')).toMatchObject({ status: 'invalid', error: ['year'] });
+    expect(process('0 12 ? * 1 ?')).toMatchObject({ error: ['year'], status: 'invalid' });
   });
 
   it('rejects out-of-range fields', () => {
-    expect(statusOf('60 12 ? * 1 *')).toMatchObject({ status: 'invalid', error: ['minute'] });
-    expect(statusOf('0 24 ? * 1 *')).toMatchObject({ status: 'invalid', error: ['hour'] });
-    expect(statusOf('0 12 ? * 8 *')).toMatchObject({ status: 'invalid', error: ['dayOfWeek'] });
+    expect(process('60 12 ? * 1 *')).toMatchObject({ error: ['minute'], status: 'invalid' });
+    expect(process('0 24 ? * 1 *')).toMatchObject({ error: ['hour'], status: 'invalid' });
+    expect(process('0 12 ? * 8 *')).toMatchObject({ error: ['dayOfWeek'], status: 'invalid' });
   });
 
   it('rejects 7-field (quartz-shaped) input', () => {
-    expect(statusOf('0 0 12 ? * 1 *')).toMatchObject({ status: 'invalid' });
+    expect(process('0 0 12 ? * 1 *')).toMatchObject({ status: 'invalid' });
   });
 
   it('treats 5-field expressions as incomplete', () => {
-    expect(statusOf('0 12 * * *')).toMatchObject({ status: 'incomplete' });
+    expect(process('0 12 * * *')).toMatchObject({ status: 'incomplete' });
   });
 });
 

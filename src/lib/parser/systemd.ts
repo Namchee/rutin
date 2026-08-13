@@ -1,7 +1,9 @@
 import { Temporal } from '@js-temporal/polyfill';
-
+import { toString as describeSchedule } from 'cronstrue';
 import type { FieldName, NormalizedSchedule, ScheduleFormat, TokenMap } from '@/types/schedule';
 import { daysInMonth, OneBasedDayToNumber, UnixLikeMacros } from './base';
+import { QuartzParser } from './quartz';
+
 import type { ScheduleParser, ValidationResult } from './types';
 
 interface DateToken {
@@ -698,7 +700,7 @@ function toWeekday(token: string | undefined, from: ScheduleFormat): string | un
   }
 
   const parts: string[] = [];
-  for (let i = 0; i < indexes.length; ) {
+  for (let i = 0; i < indexes.length;) {
     let j = i;
     while (j + 1 < indexes.length && indexes[j + 1] === indexes[j] + 1) {
       j++;
@@ -874,7 +876,10 @@ export const SystemdParser: ScheduleParser = {
       // it's complete
       if (trimmedExpr in Macros) {
         return {
-          descriptor: '',
+          descriptor: describeSchedule(
+            QuartzParser.convert(tokenize(Macros[trimmedExpr]), Macros[trimmedExpr], 'systemd')
+              .value,
+          ),
           generator: generator(Macros[trimmedExpr], Temporal.Now.plainDateTimeISO()),
           normal: false,
           status: 'valid',
@@ -947,7 +952,10 @@ export const SystemdParser: ScheduleParser = {
 
     try {
       return {
-        descriptor: SystemdParser.normalize(trimmedExpr).value,
+        descriptor: describeSchedule(
+          QuartzParser.convert(tokenize(SystemdParser.normalize(trimmedExpr).value), SystemdParser.normalize(trimmedExpr).value, 'systemd')
+            .value,
+        ),
         generator: generator(trimmedExpr, Temporal.Now.plainDateTimeISO()),
         normal: SystemdParser.normalize(trimmedExpr).value === trimmedExpr,
         status: 'valid',

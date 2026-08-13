@@ -79,7 +79,7 @@ export const QuartzParser = createScheduleParser({
       }
     }
 
-    const yearPart = year ? '' : ` ${year}`;
+    const yearPart = year ? ` ${year}` : '';
 
     const serialized = `${seconds ?? '0'} ${minute} ${hour} ${normalizedDayOfMonth} ${month} ${normalizedDayOfWeek}${yearPart}`;
 
