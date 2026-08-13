@@ -173,7 +173,7 @@ export function TimezoneSelector({ timezone, setTimezone }: Readonly<TimezoneSel
 }
 
 export function ScheduleExecutions() {
-  const { generator, state } = useEditorContext();
+  const { generator, state, value } = useEditorContext();
 
   const [executions, setExecutions] = createSignal<Temporal.PlainDateTime[]>([]);
   const [timezone, setTimezone] = createSignal<string>('utc');
@@ -196,6 +196,12 @@ export function ScheduleExecutions() {
       setExecutions(take(gen, 20));
     } else {
       setExecutions([]);
+    }
+  });
+
+  createEffect(() => {
+    if (value() && scroller && state() === 'valid') {
+      scroller.scrollTo({ top: 0 });
     }
   });
 
