@@ -11,8 +11,6 @@ function tokenizer(expr: string) {
     value: match[0],
   }));
 
-  // The year field is optional, so 6 fields means the seconds are present and
-  // the year is omitted (sec min hour dom month dow).
   if (tokens.length === 6) {
     return {
       dayOfMonth: tokens[3],
@@ -81,9 +79,6 @@ export const QuartzParser = createScheduleParser({
       }
     }
 
-    // Year is optional in Quartz: only emit the field when the source
-    // expression actually constrained it (amazon/systemd always carry one,
-    // unix/node/cf-workers never do).
     const yearPart = year === undefined ? '' : ` ${year}`;
 
     const serialized = `${seconds ?? '0'} ${minute} ${hour} ${normalizedDayOfMonth} ${month} ${normalizedDayOfWeek}${yearPart}`;
@@ -105,35 +100,7 @@ export const QuartzParser = createScheduleParser({
     year: { max: 2199, min: 1970, optional: true },
   },
   isDoWZeroBased: false,
-  tokenizer: (expr: string) => {
-    const tokens = Array.from(expr.trim().matchAll(/\S+/g), match => ({
-      position: [match.index, match.index + match[0].length] as [number, number],
-      value: match[0],
-    }));
-
-    // The year field is optional, so 6 fields means the seconds are present and
-    // the year is omitted (sec min hour dom month dow).
-    if (tokens.length === 6) {
-      return {
-        dayOfMonth: tokens[3],
-        dayOfWeek: tokens[5],
-        hour: tokens[2],
-        minute: tokens[1],
-        month: tokens[4],
-        second: tokens[0],
-      };
-    }
-
-    return {
-      dayOfMonth: tokens[3],
-      dayOfWeek: tokens[5],
-      hour: tokens[2],
-      minute: tokens[1],
-      month: tokens[4],
-      second: tokens[0],
-      year: tokens[6],
-    };
-  },
+  tokenizer,
   validators: {
     dayOfMonth: createTokenValidator(/[^0-9*,\-/?LW]/i, 1, 31),
     dayOfWeek: createTokenValidator(/[^0-9*,\-/L#?]/i, 0, 7),
