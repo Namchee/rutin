@@ -9,15 +9,6 @@ declare global {
     THEME: Theme;
   }
 
-  interface ImportMetaEnv {
-    readonly VITE_USER_ID: string;
-    readonly VITE_PUBLIC_ENDPOINT: string;
-    readonly CF_PAGES_COMMIT_SHA: string;
-  }
-
-  interface ImportMeta {
-    readonly env: ImportMetaEnv;
-  }
-
+  const __COMMIT_SHA__: string;
   const Temporal: typeof TemporalType;
 }
