@@ -1,3 +1,4 @@
+import { Temporal } from '@js-temporal/polyfill';
 import { describe, expect, it } from 'vitest';
 import type { ScheduleFormat } from '@/types/schedule';
 
@@ -50,6 +51,10 @@ describe('convert to node', () => {
 });
 
 describe('node: optional seconds in process', () => {
+  function process(expr: string) {
+    return NodeParser.process(expr);
+  }
+
   it('5-field expression is complete and valid', () => {
     expect(NodeParser.process('0 0 1 1,4,7,10 *').status).toBe('valid');
   });
@@ -60,5 +65,81 @@ describe('node: optional seconds in process', () => {
 
   it('too many fields is invalid, not incomplete', () => {
     expect(NodeParser.process('0 0 0 0 1 1,4,7,10 *').status).toBe('invalid');
+  });
+
+  it('accepts 6-field expressions with explicit seconds', () => {
+    expect(process('0 30 9 * * 1-5')).toMatchObject({ status: 'valid' });
+    expect(process('30 0 12 15 * *')).toMatchObject({ status: 'valid' });
+    expect(process('* * * * * *')).toMatchObject({ status: 'valid' });
+  });
+
+  it('rejects a 7th field (year) as invalid', () => {
+    expect(process('0 0 0 1 1 * *')).toMatchObject({ error: [], status: 'invalid' });
+    expect(process('0 0 0 1 1 * 2025')).toMatchObject({ error: [], status: 'invalid' });
+  });
+
+  it('rejects out-of-range seconds', () => {
+    expect(process('60 0 12 * * *')).toMatchObject({ error: ['second'], status: 'invalid' });
+  });
+
+  it('rejects out-of-range fields', () => {
+    expect(process('0 0 25 * * *')).toMatchObject({ error: ['hour'], status: 'invalid' });
+    expect(process('0 0 12 * * 8')).toMatchObject({ error: ['dayOfWeek'], status: 'invalid' });
+  });
+
+  it('treats missing fields as incomplete', () => {
+    expect(process('0 12 * *')).toMatchObject({ status: 'incomplete' });
+  });
+});
+
+describe('node: normalize', () => {
+  it('normalizes aliases and lists', () => {
+    expect(NodeParser.normalize('0 0 1 JAN,MAR *').value).toBe('0 0 1 1,3 *');
+    expect(NodeParser.normalize('0 0 1,2,3 * *').value).toBe('0 0 1-3 * *');
+  });
+
+  it('leaves canonical expressions untouched', () => {
+    expect(NodeParser.normalize('0 30 9 * * 1-5').value).toBe('0 30 9 * * 1-5');
+    expect(NodeParser.normalize('30 0 12 15 * *').value).toBe('30 0 12 15 * *');
+  });
+
+  it('keeps the seconds field when collapsing dom', () => {
+    expect(NodeParser.normalize('0 0 1,2,3 * *').value).toBe('0 0 1-3 * *');
+  });
+});
+
+describe('node: iterate with seconds', () => {
+  const START = Temporal.PlainDateTime.from('2026-07-01T00:00:00');
+
+  function firstN(expr: string, n: number): Temporal.PlainDateTime[] {
+    const dates: Temporal.PlainDateTime[] = [];
+    for (const d of NodeParser.iterate(expr, START)) {
+      dates.push(d);
+      if (dates.length === n) break;
+    }
+    return dates;
+  }
+
+  it('yields each day at the configured second', () => {
+    const dates = firstN('30 0 12 * * *', 3);
+    expect(dates.map(d => d.toString())).toEqual([
+      '2026-07-01T12:00:30',
+      '2026-07-02T12:00:30',
+      '2026-07-03T12:00:30',
+    ]);
+  });
+
+  it('respects weekday constraints with seconds', () => {
+    const dates = firstN('10 30 9 * * 1-5', 3);
+    expect(dates.map(d => d.toString())).toEqual([
+      '2026-07-01T09:30:10',
+      '2026-07-02T09:30:10',
+      '2026-07-03T09:30:10',
+    ]);
+  });
+
+  it('second 0 is explicit and iterates normally', () => {
+    const dates = firstN('0 30 9 * * 1-5', 2);
+    expect(dates.map(d => d.toString())).toEqual(['2026-07-01T09:30:00', '2026-07-02T09:30:00']);
   });
 });

@@ -271,10 +271,18 @@ function dayOfWeek(year: number, month: number, day: number): number {
  * @returns {Temporal.PlainDateTime} Next datetime according to the instance
  * relative to current datetime.
  */
-function nextMatch(curr: Temporal.PlainDateTime, spec: CalendarInstance): Temporal.PlainDateTime {
+function nextMatch(
+  curr: Temporal.PlainDateTime,
+  spec: CalendarInstance,
+): Temporal.PlainDateTime | null {
   while (true) {
     if (!spec.year.includes(curr.year)) {
-      const nextYear = spec.year.find(y => y > curr.year) ?? spec.year[0];
+      const nextYear = spec.year.find(y => y > curr.year);
+
+      // No allowed year lies ahead...
+      if (nextYear === undefined) {
+        return null;
+      }
 
       curr = curr.with({ day: 1, hour: 0, minute: 0, month: 1, second: 0, year: nextYear });
 

@@ -17,27 +17,37 @@ export function toOneBasedDayOfWeek(token: string): string {
   return token
     .split(',')
     .map(part => {
-      // `*/step` selects the same weekdays in both conventions
       if (part.startsWith('*/')) {
         return part;
       }
 
-      // a, a-b, a-b/s, a/s — shift numeric bounds up by one, keep the step
       const match = /^(\d+)(?:-(\d+))?(?:\/(\d+))?$/.exec(part);
       if (!match) {
         return part;
       }
 
-      // 7 is an alternate spelling of Sunday in Unix; one-based Sunday is 1.
       const shift = (n: string) => {
         const value = Number(n);
         return value === 7 ? '1' : String(value + 1);
       };
-      const lo = shift(match[1]);
-      const hi = match[2] ? `-${shift(match[2])}` : '';
+      const loShifted = shift(match[1]);
+      const hiShifted = match[2] ? shift(match[2]) : undefined;
       const step = match[3] ? `/${match[3]}` : '';
 
-      return `${lo}${hi}${step}`;
+      if (hiShifted !== undefined && Number(loShifted) > Number(hiShifted)) {
+        const values: string[] = [];
+        const loNum = Number(match[1]);
+        const hiNum = Number(match[2]);
+        const stepNum = match[3] ? Number(match[3]) : 1;
+
+        for (let v = loNum; v <= hiNum; v += stepNum) {
+          values.push(shift(String(v)));
+        }
+
+        return values.join(',');
+      }
+
+      return `${loShifted}${hiShifted !== undefined ? `-${hiShifted}` : ''}${step}`;
     })
     .join(',');
 }

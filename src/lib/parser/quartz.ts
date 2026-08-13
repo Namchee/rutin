@@ -56,6 +56,7 @@ export const QuartzParser = createScheduleParser({
     let dayOfMonth = tokens.dayOfMonth?.value;
     let month = tokens.month?.value;
     let dayOfWeek = tokens.dayOfWeek?.value;
+    let year = tokens.year?.value;
 
     if (tokens.date !== undefined || tokens.time !== undefined) {
       const systemd = decomposeSystemdTokens(tokens);
@@ -65,6 +66,7 @@ export const QuartzParser = createScheduleParser({
       dayOfMonth = systemd.dayOfMonth;
       month = systemd.month;
       dayOfWeek = systemd.dayOfWeek;
+      year = systemd.year;
     }
 
     const normalizedDayOfMonth = dayOfMonth ?? '*';
@@ -78,9 +80,9 @@ export const QuartzParser = createScheduleParser({
       }
     }
 
-    const year = tokens.year?.value ?? '*';
+    const normalizedYear = year ?? '*';
 
-    const serialized = `${seconds ?? '0'} ${minute} ${hour} ${normalizedDayOfMonth} ${month} ${normalizedDayOfWeek} ${year}`;
+    const serialized = `${seconds ?? '0'} ${minute} ${hour} ${normalizedDayOfMonth} ${month} ${normalizedDayOfWeek} ${normalizedYear}`;
 
     return {
       tokens: tokenizer(serialized),

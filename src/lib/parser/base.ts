@@ -207,7 +207,7 @@ export function createScheduleParser({
           field === 'dom' ? 31 : 7,
         );
         // 0 and 7 are both Sunday
-        const set = new Set(field === 'dow' ? values.map(d => (d === 0 ? 7 : d)) : values);
+        const set = new Set(field === 'dow' ? values.map(d => this.toTemporalDow(d)) : values);
         const isNumeric = (y: number, m: number, d: number) => {
           if (field === 'dom') {
             return set.has(d);
@@ -223,6 +223,7 @@ export function createScheduleParser({
       const compileDOW = this.compileDOWToken.bind(this);
       const getNumericRange = this.getNumericRange;
       const dayOfWeekFn = this.dayOfWeek;
+      const toTemporalDow = this.toTemporalDow.bind(this);
       const compileOne = field === 'dom' ? compileDOM : compileDOW;
       const parts = token.split(',');
       const matchers: DayMatcher[] = [];
@@ -236,7 +237,7 @@ export function createScheduleParser({
 
         const values = getNumericRange(part, field === 'dom' ? 1 : 0, field === 'dom' ? 31 : 7);
         // 0 and 7 are both Sunday
-        const set = new Set(field === 'dow' ? values.map(d => (d === 0 ? 7 : d)) : values);
+        const set = new Set(field === 'dow' ? values.map(d => toTemporalDow(d)) : values);
         const isNumeric = (y: number, m: number, d: number) => {
           if (field === 'dom') {
             return set.has(d);
@@ -307,7 +308,7 @@ export function createScheduleParser({
       }
       const l = /^(\d+)L$/.exec(token);
       if (l) {
-        const dow = Number(l[1]);
+        const dow = this.toTemporalDow(Number(l[1]));
         return (y, m, d) => d === lastDayOfWeekInMonth(y, m, dow);
       }
       const w = /^(\d+)W$/.exec(token);
@@ -317,7 +318,7 @@ export function createScheduleParser({
       }
       const hash = /^(\d+)#(\d+)$/.exec(token);
       if (hash) {
-        const dow = Number(hash[1]);
+        const dow = this.toTemporalDow(Number(hash[1]));
         const n = Number(hash[2]);
         return (y, m, d) => d === nthDayOfWeekInMonth(y, m, dow, n);
       }
@@ -738,7 +739,9 @@ export function createScheduleParser({
         // it's complete
         if (trimmedExpr in macros) {
           return {
-            descriptor: describeSchedule(this.normalize(expr).value, { dayOfWeekStartIndexZero: isDoWZeroBased }),
+            descriptor: describeSchedule(this.normalize(expr).value, {
+              dayOfWeekStartIndexZero: isDoWZeroBased,
+            }),
             generator: this.iterate(macros[trimmedExpr], Temporal.Now.plainDateTimeISO()),
             normal: false,
             status: 'valid',
@@ -818,7 +821,9 @@ export function createScheduleParser({
 
       try {
         return {
-          descriptor: describeSchedule(this.normalize(expr).value, { dayOfWeekStartIndexZero: isDoWZeroBased }),
+          descriptor: describeSchedule(this.normalize(expr).value, {
+            dayOfWeekStartIndexZero: isDoWZeroBased,
+          }),
           generator: this.iterate(trimmedExpr, Temporal.Now.plainDateTimeISO()),
           normal: this.isNormal(trimmedExpr),
           status: 'valid',
@@ -833,6 +838,19 @@ export function createScheduleParser({
           tokens,
         };
       }
+    },
+
+    /**
+     * Map a day-of-week value from the parser's own convention onto
+     * `Temporal`'s convention
+     *
+     * @param {number} value Day-of-week value in the parser's convention
+     * @returns {number} Equivalent value in Temporal's convention
+     */
+    toTemporalDow(value: number): number {
+      const zeroBased = isDoWZeroBased ? value : value === 1 || value === 0 ? 0 : value - 1;
+
+      return zeroBased === 0 ? 7 : zeroBased;
     },
   };
 }

@@ -64,3 +64,102 @@ describe('convert to unix', () => {
     expect(convert('*-*-~4 12:00:00', 'systemd')).toBe('0 12 L-3 * *');
   });
 });
+
+describe('unix: process status', () => {
+  function statusOf(expr: string) {
+    const result = UNIXParser.process(expr);
+    return { error: result.error, normal: result.normal, status: result.status };
+  }
+
+  it('accepts well-formed 5-field expressions', () => {
+    for (const expr of [
+      '0 12 * * *',
+      '0 0 1 1,4,7,10 *',
+      '30 9 * * 1-5',
+      '0 0 * * 0',
+      '0 0 * * 7',
+      '0 0 * * 1-7',
+      '*/15 * * * *',
+      '0 12 1-31/2 * *',
+    ]) {
+      expect(statusOf(expr)).toMatchObject({ status: 'valid' });
+    }
+  });
+
+  it('produces a descriptor and a generator for valid expressions', () => {
+    const result = UNIXParser.process('0 12 * * *');
+    expect(result.status).toBe('valid');
+    if (result.status === 'valid') {
+      expect(result.descriptor.length).toBeGreaterThan(0);
+      expect(typeof result.generator.next).toBe('function');
+    }
+  });
+
+  it('marks non-canonical but valid expressions as not normal', () => {
+    expect(statusOf('0 0 * * SUN')).toMatchObject({ status: 'valid', normal: false });
+    expect(statusOf('0 0 1,2,3 * *')).toMatchObject({ status: 'valid', normal: false });
+  });
+
+  it('expands macros and marks them as not normal', () => {
+    for (const macro of [
+      '@daily',
+      '@hourly',
+      '@midnight',
+      '@weekly',
+      '@monthly',
+      '@annually',
+      '@yearly',
+    ]) {
+      expect(statusOf(macro)).toMatchObject({ status: 'valid', normal: false });
+    }
+  });
+
+  it('treats macro prefixes as incomplete', () => {
+    expect(statusOf('@d')).toMatchObject({ status: 'incomplete' });
+    expect(statusOf('@da')).toMatchObject({ status: 'incomplete' });
+    expect(statusOf('@y')).toMatchObject({ status: 'incomplete' });
+    expect(statusOf('@')).toMatchObject({ status: 'incomplete' });
+  });
+
+  it('rejects unknown macros as invalid', () => {
+    expect(statusOf('@foo')).toMatchObject({ status: 'invalid' });
+  });
+
+  it('treats missing fields as incomplete', () => {
+    for (const expr of ['0 12 * *', '0 12', '0', '']) {
+      expect(statusOf(expr)).toMatchObject({ status: 'incomplete' });
+    }
+  });
+
+  it('rejects out-of-range values with the offending field', () => {
+    expect(statusOf('60 12 * * *')).toMatchObject({ status: 'invalid', error: ['minute'] });
+    expect(statusOf('0 24 * * *')).toMatchObject({ status: 'invalid', error: ['hour'] });
+    expect(statusOf('0 12 * 13 *')).toMatchObject({ status: 'invalid', error: ['month'] });
+    expect(statusOf('0 12 * * 8')).toMatchObject({ status: 'invalid', error: ['dayOfWeek'] });
+    expect(statusOf('0 0 32 * *')).toMatchObject({ status: 'invalid', error: ['dayOfMonth'] });
+    expect(statusOf('0 0 0 * *')).toMatchObject({ status: 'invalid', error: ['dayOfMonth'] });
+  });
+
+  it('rejects garbage tokens with the offending field', () => {
+    expect(statusOf('x 12 * * *')).toMatchObject({ status: 'invalid', error: ['minute'] });
+    expect(statusOf('0 12 * * foo')).toMatchObject({ status: 'invalid', error: ['dayOfWeek'] });
+    expect(statusOf('0-60 12 * * *')).toMatchObject({ status: 'invalid', error: ['minute'] });
+  });
+
+  it('reports every invalid field at once', () => {
+    const result = statusOf('60 24 32 13 8');
+    expect(result.status).toBe('invalid');
+    expect([...(result.error ?? [])].sort()).toEqual([
+      'dayOfMonth',
+      'dayOfWeek',
+      'hour',
+      'minute',
+      'month',
+    ]);
+  });
+
+  it('rejects too many fields as invalid, not incomplete', () => {
+    expect(statusOf('0 12 * * * extra')).toMatchObject({ status: 'invalid', error: [] });
+    expect(statusOf('0 12 * * * * *')).toMatchObject({ status: 'invalid', error: [] });
+  });
+});

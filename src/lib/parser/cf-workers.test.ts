@@ -1,3 +1,4 @@
+import { Temporal } from '@js-temporal/polyfill';
 import { describe, expect, it } from 'vitest';
 import type { ScheduleFormat } from '@/types/schedule';
 
@@ -44,5 +45,83 @@ describe('convert to cf-workers', () => {
     expect(convert('Mon..Fri *-*-* 09:00:00', 'systemd')).toBe('0 9 * * 2-6');
     expect(convert('Sat,Sun *-*-* 00:00:00', 'systemd')).toBe('0 0 * * 7,1');
     expect(convert('*-*-15 12:30', 'systemd')).toBe('30 12 15 * *');
+  });
+
+  it('unix: expands Fri-Sun dow ranges correctly (regression: 5-7 -> 6-1)', () => {
+    expect(convert('0 0 * * 5-7', 'unix')).toBe('0 0 * * 6,7,1');
+    expect(convert('0 0 * * 5,6,7', 'unix')).toBe('0 0 * * 6,7,1');
+    expect(convert('0 0 * * 6-7', 'unix')).toBe('0 0 * * 7,1');
+  });
+});
+
+describe('cf-workers: process status', () => {
+  function statusOf(expr: string) {
+    const result = CloudflareWorkersParser.process(expr);
+    return { error: result.error, normal: result.normal, status: result.status };
+  }
+
+  it('accepts one-based dow 1 (Sunday) through 7 (Saturday)', () => {
+    expect(statusOf('0 12 * * 1')).toMatchObject({ status: 'valid' });
+    expect(statusOf('0 12 * * 7')).toMatchObject({ status: 'valid' });
+  });
+
+  it('rejects dow 0 and out-of-range values', () => {
+    expect(statusOf('0 0 * * 0')).toMatchObject({ status: 'invalid', error: ['dayOfWeek'] });
+    expect(statusOf('0 0 * * 8')).toMatchObject({ status: 'invalid', error: ['dayOfWeek'] });
+  });
+
+  it('rejects out-of-range minute/hour/month', () => {
+    expect(statusOf('60 12 * * *')).toMatchObject({ status: 'invalid', error: ['minute'] });
+    expect(statusOf('0 24 * * *')).toMatchObject({ status: 'invalid', error: ['hour'] });
+    expect(statusOf('0 12 * 13 *')).toMatchObject({ status: 'invalid', error: ['month'] });
+  });
+
+  it('collapses a full-week dow range to a wildcard (not normal)', () => {
+    expect(statusOf('0 0 * * 1-7')).toMatchObject({ status: 'valid', normal: false });
+  });
+
+  it('treats missing fields as incomplete', () => {
+    expect(statusOf('0 12 * *')).toMatchObject({ status: 'incomplete' });
+  });
+
+  it('rejects too many fields as invalid', () => {
+    expect(statusOf('0 12 * * * extra')).toMatchObject({ status: 'invalid', error: [] });
+  });
+
+  it('does not support @-macros', () => {
+    expect(statusOf('@daily')).toMatchObject({ status: 'invalid', error: ['minute'] });
+  });
+});
+
+describe('cf-workers: normalize', () => {
+  it('normalizes names, aliases, and lists', () => {
+    expect(CloudflareWorkersParser.normalize('0 0 * * SUN').value).toBe('0 0 * * 1');
+    expect(CloudflareWorkersParser.normalize('0 0 1 JAN,MAR *').value).toBe('0 0 1 1,3 *');
+    expect(CloudflareWorkersParser.normalize('0 0 1,2,3 * *').value).toBe('0 0 1-3 * *');
+  });
+});
+
+describe('cf-workers: iterate', () => {
+  const START = Temporal.PlainDateTime.from('2026-07-01T00:00:00');
+
+  function firstN(expr: string, n: number): Temporal.PlainDateTime[] {
+    const dates: Temporal.PlainDateTime[] = [];
+    for (const d of CloudflareWorkersParser.iterate(expr, START)) {
+      dates.push(d);
+      if (dates.length === n) break;
+    }
+    return dates;
+  }
+
+  it('dow 1 means Sunday', () => {
+    const dates = firstN('0 12 * * 1', 2);
+    expect(dates.every(d => d.dayOfWeek === 7)).toBe(true);
+    expect(dates[0].toString().slice(0, 10)).toBe('2026-07-05');
+  });
+
+  it('dow 7 means Saturday', () => {
+    const dates = firstN('0 12 * * 7', 2);
+    expect(dates.every(d => d.dayOfWeek === 6)).toBe(true);
+    expect(dates[0].toString().slice(0, 10)).toBe('2026-07-04');
   });
 });
