@@ -45,7 +45,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
               class="group flex items-center text-content-secondary">
               <div class="i-me-github -mt-[1.5px] mr-1 size-[11px] transition-colors group-hover:text-content-primary" />{' '}
               <span class="transition-colors group-hover:text-content-primary">Namchee/rutin</span>
-              <span class="font-mono text-content-tertiary">#${import.meta.env.CF_PAGES_COMMIT_SHA}</span>
+              <span class="font-mono text-content-tertiary">#{import.meta.env.CF_PAGES_COMMIT_SHA}</span>
             </A>
           </div>
         </footer>
