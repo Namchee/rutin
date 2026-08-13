@@ -15,11 +15,11 @@ describe('convert to quartz', () => {
     expect(convert('0 0 12 ? * 1 *', 'quartz')).toBe('0 0 12 ? * 1 *');
   });
 
-  it('unix: adds seconds and year, shifts dow to one-based', () => {
-    expect(convert('0 12 * * *', 'unix')).toBe('0 0 12 * * * *');
-    expect(convert('0 0 * * 1-5', 'unix')).toBe('0 0 0 * * 2-6 *');
+  it('unix: adds seconds, shifts dow to one-based, omits the optional year', () => {
+    expect(convert('0 12 * * *', 'unix')).toBe('0 0 12 * * *');
+    expect(convert('0 0 * * 1-5', 'unix')).toBe('0 0 0 * * 2-6');
 
-    expect(convert('0 0 1 1,4,7,10 *', 'unix')).toBe('0 0 0 1 1,4,7,10 * *');
+    expect(convert('0 0 1 1,4,7,10 *', 'unix')).toBe('0 0 0 1 1,4,7,10 *');
   });
 
   it('systemd: maps weekday/date/time, dow one-based', () => {
@@ -42,13 +42,14 @@ describe('convert to quartz', () => {
   });
 });
 
-describe('quartz: optional seconds in process', () => {
+describe('quartz: process', () => {
   function process(expr: string) {
     return QuartzParser.process(expr);
   }
 
-  it('6-field expression (no seconds) is complete and valid', () => {
-    expect(QuartzParser.process('0 12 ? * 1 2024').status).toBe('valid');
+  it('6-field expression (seconds, no year) is complete and valid', () => {
+    expect(QuartzParser.process('0 0 12 ? * 1').status).toBe('valid');
+    expect(QuartzParser.process('0 0 12 ? * 6L').status).toBe('valid');
   });
 
   it('7-field expression stays valid', () => {
@@ -66,6 +67,26 @@ describe('quartz: optional seconds in process', () => {
   it('treats 5-field expressions as incomplete', () => {
     expect(process('0 12 * * *')).toMatchObject({ status: 'incomplete' });
     expect(process('0 0 * * 1')).toMatchObject({ status: 'incomplete' });
+  });
+
+  it('rejects 6 tokens whose third field is not a valid hour (regression: was read as min hour dom month dow year)', () => {
+    // Under the old convention `0 17 L * ? 2000` was accepted as
+    // minute=0 hour=17 dom=L month=* dow=? year=2000. Quartz's year is the
+    // optional field, so 6 tokens are sec..dow and hour=L is invalid.
+    const result = process('0 17 L * ? 2000');
+    expect(result.status).toBe('invalid');
+    if (result.status === 'invalid') {
+      expect([...result.error].sort()).toEqual(['dayOfWeek', 'hour', 'month']);
+    }
+  });
+
+  it('tokenizes 6 fields as sec..dow with no year', () => {
+    const result = process('0 0 12 ? * 1');
+    expect(result.status).toBe('valid');
+    if (result.status === 'valid') {
+      expect(result.tokens.second?.value).toBe('0');
+      expect(result.tokens.year).toBeUndefined();
+    }
   });
 
   it('enforces the year bounds 1970-2199', () => {
@@ -94,7 +115,7 @@ describe('quartz: normalize', () => {
   });
 
   it('leaves canonical 6- and 7-field expressions untouched', () => {
-    expect(QuartzParser.normalize('0 12 ? * 1 2024').value).toBe('0 12 ? * 1 2024');
+    expect(QuartzParser.normalize('0 0 12 ? * 1').value).toBe('0 0 12 ? * 1');
     expect(QuartzParser.normalize('0 0 12 ? * 6L *').value).toBe('0 0 12 ? * 6L *');
     expect(QuartzParser.normalize('0 0 12 L * ? *').value).toBe('0 0 12 L * ? *');
   });

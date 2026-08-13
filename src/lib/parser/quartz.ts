@@ -11,15 +11,16 @@ function tokenizer(expr: string) {
     value: match[0],
   }));
 
-  // second is optional
+  // The year field is optional, so 6 fields means the seconds are present and
+  // the year is omitted (sec min hour dom month dow).
   if (tokens.length === 6) {
     return {
-      dayOfMonth: tokens[2],
-      dayOfWeek: tokens[4],
-      hour: tokens[1],
-      minute: tokens[0],
-      month: tokens[3],
-      year: tokens[5],
+      dayOfMonth: tokens[3],
+      dayOfWeek: tokens[5],
+      hour: tokens[2],
+      minute: tokens[1],
+      month: tokens[4],
+      second: tokens[0],
     };
   }
 
@@ -80,9 +81,12 @@ export const QuartzParser = createScheduleParser({
       }
     }
 
-    const normalizedYear = year ?? '*';
+    // Year is optional in Quartz: only emit the field when the source
+    // expression actually constrained it (amazon/systemd always carry one,
+    // unix/node/cf-workers never do).
+    const yearPart = year === undefined ? '' : ` ${year}`;
 
-    const serialized = `${seconds ?? '0'} ${minute} ${hour} ${normalizedDayOfMonth} ${month} ${normalizedDayOfWeek} ${normalizedYear}`;
+    const serialized = `${seconds ?? '0'} ${minute} ${hour} ${normalizedDayOfMonth} ${month} ${normalizedDayOfWeek}${yearPart}`;
 
     return {
       tokens: tokenizer(serialized),
@@ -97,8 +101,8 @@ export const QuartzParser = createScheduleParser({
     hour: { max: 23, min: 0 },
     minute: { max: 59, min: 0 },
     month: { aliases: MonthToNumber, max: 12, min: 1 },
-    second: { max: 59, min: 0, optional: true },
-    year: { max: 2199, min: 1970 },
+    second: { max: 59, min: 0 },
+    year: { max: 2199, min: 1970, optional: true },
   },
   isDoWZeroBased: false,
   tokenizer: (expr: string) => {
@@ -107,15 +111,16 @@ export const QuartzParser = createScheduleParser({
       value: match[0],
     }));
 
-    // second is optional
+    // The year field is optional, so 6 fields means the seconds are present and
+    // the year is omitted (sec min hour dom month dow).
     if (tokens.length === 6) {
       return {
-        dayOfMonth: tokens[2],
-        dayOfWeek: tokens[4],
-        hour: tokens[1],
-        minute: tokens[0],
-        month: tokens[3],
-        year: tokens[5],
+        dayOfMonth: tokens[3],
+        dayOfWeek: tokens[5],
+        hour: tokens[2],
+        minute: tokens[1],
+        month: tokens[4],
+        second: tokens[0],
       };
     }
 

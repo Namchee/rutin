@@ -698,7 +698,7 @@ function toWeekday(token: string | undefined, from: ScheduleFormat): string | un
   }
 
   const parts: string[] = [];
-  for (let i = 0; i < indexes.length;) {
+  for (let i = 0; i < indexes.length; ) {
     let j = i;
     while (j + 1 < indexes.length && indexes[j + 1] === indexes[j] + 1) {
       j++;

@@ -25,9 +25,9 @@ describe('cross-format conversion', () => {
     ['30 9 * * 1-5', 'unix', 'node', '30 9 * * 1-5'],
     ['0 12 * * 0', 'node', 'unix', '0 12 * * 0'],
     // unix <-> quartz
-    ['0 12 * * *', 'unix', 'quartz', '0 0 12 * * * *'],
-    ['30 9 * * 1-5', 'unix', 'quartz', '0 30 9 * * 2-6 *'],
-    ['0 0 1 1,4,7,10 *', 'unix', 'quartz', '0 0 0 1 1,4,7,10 * *'],
+    ['0 12 * * *', 'unix', 'quartz', '0 0 12 * * *'],
+    ['30 9 * * 1-5', 'unix', 'quartz', '0 30 9 * * 2-6'],
+    ['0 0 1 1,4,7,10 *', 'unix', 'quartz', '0 0 0 1 1,4,7,10 *'],
     ['0 0 12 * * * *', 'quartz', 'unix', '0 12 * * *'],
     ['0 15 10 ? * 1-5 2024', 'quartz', 'unix', '15 10 * * 0-4'],
     // unix <-> cf-workers
@@ -43,9 +43,9 @@ describe('cross-format conversion', () => {
     ['*-*-15 00:00:00', 'systemd', 'unix', '0 0 15 * *'],
     ['Mon..Fri 09:30:00', 'systemd', 'unix', '30 9 * * 1-5'],
     // node <-> quartz
-    ['30 0 12 15 * *', 'node', 'quartz', '30 0 12 15 * * *'],
-    ['0 30 9 * * 1-5', 'node', 'quartz', '0 30 9 * * 2-6 *'],
-    ['0 0 12 * * 0', 'node', 'quartz', '0 0 12 * * 1 *'],
+    ['30 0 12 15 * *', 'node', 'quartz', '30 0 12 15 * *'],
+    ['0 30 9 * * 1-5', 'node', 'quartz', '0 30 9 * * 2-6'],
+    ['0 0 12 * * 0', 'node', 'quartz', '0 0 12 * * 1'],
     ['0 0 12 ? * 1 *', 'quartz', 'node', '0 0 12 * * 0'],
     ['30 0 12 15 * * *', 'quartz', 'node', '30 0 12 15 * *'],
     // amazon <-> quartz
@@ -97,8 +97,9 @@ describe('cross-format round trips', () => {
     ['0 12 * * 2 *', 'amazon', 'cf-workers'],
     ['0 0 * * 2,4 *', 'amazon', 'cf-workers'],
     ['0 0 12 ? * 1 *', 'quartz', 'amazon'],
-    // ? in dom cannot round-trip through node, so use a plain dom
-    ['0 0 12 * * 1 *', 'quartz', 'node'],
+    // ? in dom cannot round-trip through node, so use a plain dom; the year
+    // is optional in quartz, so a 6-field expression round-trips exactly
+    ['0 0 12 * * 1', 'quartz', 'node'],
     ['*-*-15 12:30:00', 'systemd', 'quartz'],
     // the default *-*-* date is elided by the systemd convert
     ['Mon..Fri 09:30:00', 'systemd', 'unix'],

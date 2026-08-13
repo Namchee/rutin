@@ -32,8 +32,8 @@ describe('convert to unix', () => {
     expect(convert('0 0 0 ? * SUN *', 'quartz')).toBe('0 0 * * 0');
     expect(convert('0 15 10 ? * 1-5 2024', 'quartz')).toBe('15 10 * * 0-4');
     expect(convert('0 0 12 L * ? *', 'quartz')).toBe('0 12 L * *');
-    // 6-field quartz: minute hour dom month dow year (no seconds)
-    expect(convert('0 12 ? * 1 2024', 'quartz')).toBe('0 12 * * 0');
+    // 6-field quartz: sec min hour dom month dow (no year)
+    expect(convert('0 0 12 ? * 1', 'quartz')).toBe('0 12 * * 0');
   });
 
   it('amazon: drops year, shifts dow to zero-based, ? -> *', () => {
