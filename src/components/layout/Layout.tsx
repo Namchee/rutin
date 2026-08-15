@@ -33,7 +33,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
 
         <footer class="flex flex-col items-center justify-center gap-2 rounded-b-lg border-separator border-x p-2 text-content-tertiary text-xs md:flex-row">
           <div class="flex">
-            <span class="block text-content-secondary">Rutin</span>&nbsp;&mdash; Your one stop CRON
+            <span class="block text-content-secondary">Rutin</span>&nbsp;&mdash; Your one stop scheduling
             playground
           </div>
 
