@@ -89,7 +89,7 @@ export function ScheduleEditor() {
           />
         </div>
 
-        <div class="pb-4">
+        <div class="pb-4" style={{ "padding-bottom": '16px' }}>
           <ScheduleHint />
         </div>
       </div>
