@@ -13,7 +13,7 @@ export default createHandler(() => (
           <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
           {/* Meta tags */}
-          <meta name="description" content="Build, parse, and visually evaluate CRON expressions instantly. Validate syntax, preview executions, and verify accuracy across multiple dialects." />
+          <meta name="description" content="Build, parse, and visually evaluate CRON expressions. Validate syntax across multiple dialects and preview executions." />
           <link rel="canonical" href="https://rutin.namchee.dev/" />
           <meta name="robots" content="index, max-image-preview:large" />
           <meta name="theme-color" content="#FFFFFF" />
@@ -22,7 +22,7 @@ export default createHandler(() => (
           <meta property="og:type" content="website" />
           <meta property="og:url" content="https://rutin.namchee.dev/" />
           <meta property="og:title" content="Rutin – Your one stop CRON playground" />
-          <meta property="og:description" content="Build, parse, and visually evaluate CRON expressions instantly. Validate syntax, preview executions, and verify accuracy across multiple dialects." />
+          <meta property="og:description" content="Build, parse, and visually evaluate CRON expressions. Validate syntax across multiple dialects and preview executions." />
           <meta property="og:site_name" content="Rutin" />
 
           <meta property="og:image" content="https://rutin.namchee.dev/og-image.png" />
@@ -32,7 +32,7 @@ export default createHandler(() => (
 
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:title" content="Rutin – Your one stop CRON playground" />
-          <meta name="twitter:description" content="Build, parse, and visually evaluate CRON expressions instantly. Validate syntax, preview executions, and verify accuracy across multiple dialects." />
+          <meta name="twitter:description" content="Build, parse, and visually evaluate CRON expressions. Validate syntax across multiple dialects and preview executions." />
           <meta name="twitter:image" content="https://rutin.namchee.dev/og-image.png" />
 
           {assets}
