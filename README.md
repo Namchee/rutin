@@ -1,36 +1,31 @@
-## Usage
+<h1 align="center">
+    Rutin
+</h1>
 
-Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnpm up -Lri`.
+<p align="center">
+    Your one-stop CRON scheduling playground
+</p>
 
-This is the reason you see a `pnpm-lock.yaml`. That being said, any package manager will work. This file can be safely be removed once you clone a template.
+<p align="center">
+    <img src="./docs/screenshots/image-1.png" style="width: 32%" title="Splash Page" alt="Splash Page" />
+    <img src="./docs/screenshots/image-2.png" style="width: 32%" title="Valid Syntax" alt="Valid Syntax" />
+    <img src="./docs/screenshots/image-3.png" style="width: 32%" title="Invalid Syntax" alt="Invalid Syntax" />
+</p>
 
-```bash
-$ npm install # or pnpm install or yarn install
-```
+<p align="center">
+    <img src="./docs/screenshots/image-4.png" style="width: 32%" title="Light Mode" alt="Light Mode" />
+    <img src="./docs/screenshots/image-5.png" style="width: 32%" title="Dark Mode" alt="Light Mode" />
+</p>
 
-### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
+## Features
 
-## Available Scripts
+1. **No Nonsense Validation ⚡** Instant feedback on syntax and errors with zero delay.
+2. **All Major Dialects Supported 🔥** From standard POSIX to extended syntax (node-cron) and cloud specs (AWS CloudWatch), Rutin handles them all.
+3. **Clear Syntax Breakdown 🔍** Explanations for every token, field, and macro so you know how it works.
+4. **Execution Run Preview 📅** Preview up to 100 upcoming run dates so you do not trigger a job at 3 AM by mistake.
+5. **Auto-Normalization ✨** Format messy expressions into standardized CRON syntax.
+6. **Dialect Migration 🔄** Convert expressions between scheduling systems in a single click.
 
-In the project directory, you can run:
+## License
 
-### `npm run dev` or `npm start`
-
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br>
-
-### `npm run build`
-
-Builds the app for production to the `dist` folder.<br>
-It correctly bundles Solid in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-## Deployment
-
-You can deploy the `dist` folder to any static host provider (netlify, surge, now, etc.)
-
-## This project was created with the [Solid CLI](https://github.com/solidjs-community/solid-cli)
+This project is licensed under the [MIT License](./LICENSE)
