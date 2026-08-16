@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill';
 import { describe, expect, it } from 'vitest';
 
 import { daysInMonth } from './base';
@@ -108,7 +107,7 @@ describe('collapseExpressions', () => {
 
   it('replaces name aliases before collapsing', () => {
     expect(
-      UNIXParser.collapseExpressions('MON-FRI', { aliases: { mon: 1, fri: 5 }, max: 7, min: 0 }),
+      UNIXParser.collapseExpressions('MON-FRI', { aliases: { fri: 5, mon: 1 }, max: 7, min: 0 }),
     ).toBe('1-5');
   });
 

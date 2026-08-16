@@ -35,6 +35,9 @@ importers:
       tailwind-merge:
         specifier: ^3.5.0
         version: 3.5.0
+      temporal-polyfill:
+        specifier: ^1.0.4
+        version: 1.0.4
     devDependencies:
       '@biomejs/biome':
         specifier: 2.4.6
@@ -45,9 +48,6 @@ importers:
       '@iconify-json/lucide':
         specifier: ^1.2.102
         version: 1.2.102
-      '@js-temporal/polyfill':
-        specifier: ^0.5.1
-        version: 0.5.1
       '@types/node':
         specifier: ^25.3.5
         version: 25.3.5
@@ -636,10 +636,6 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
-
-  '@js-temporal/polyfill@0.5.1':
-    resolution: {integrity: sha512-hloP58zRVCRSpgDxmqCWJNlizAlUgJFqG2ypq79DCvyv9tHjRYMDOcPFjzfl/A1/YxDvRCZz8wvZvmapQnKwFQ==}
-    engines: {node: '>=12'}
 
   '@napi-rs/wasm-runtime@1.1.6':
     resolution: {integrity: sha512-ZLv/JdUfkvOy9eCnnBaGfiO+XimbjebAeO+MRQqD/B+FR1tnRN0tpKSJHRbE8sFfS6aqsXZ67TQjfwfsxULVbg==}
@@ -1782,9 +1778,6 @@ packages:
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
-  jsbi@4.3.2:
-    resolution: {integrity: sha512-9fqMSQbhJykSeii05nxKl4m6Eqn2P6rOlYiS+C5Dr/HPIU/7yZxu5qzbs40tgaFORiw2Amd0mirjxatXYMkIew==}
-
   jsesc@3.1.0:
     resolution: {integrity: sha512-/sM3dO2FOzXjKQhJuo0Q173wf2KOo8t4I8vHy6lF9poUp7bKT0/NHE8fPX23PwfhnykfqnC2xRxOnVw5XuGIaA==}
     engines: {node: '>=6'}
@@ -2199,6 +2192,15 @@ packages:
 
   tailwind-merge@3.5.0:
     resolution: {integrity: sha512-I8K9wewnVDkL1NTGoqWmVEIlUcB9gFriAEkXkfCjX5ib8ezGxtR3xD7iZIxrfArjEsH7F1CHD4RFUtxefdqV/A==}
+
+  temporal-polyfill@1.0.4:
+    resolution: {integrity: sha512-MLEU0qOD2uXlz24oINNtdLZQl8RgmMxSnRtKEGZGGetTJjlRwQJjk+VsJ4EREaUoiaTb8NJOcUiKtoAiWn9EBg==}
+
+  temporal-spec@1.0.1:
+    resolution: {integrity: sha512-wxVoanmDeavXie1vu2JaQ3WIc3JZnWAOYFBsJyATaVsXsycKYUflGsyBmrRSnoCpZJpwPyr38VpgSUlQ8CbFxg==}
+
+  temporal-utils@1.0.2:
+    resolution: {integrity: sha512-1B8Dl4KzrOvsNUlpoWGno2VLQlxroLjDgc5NBjVC9ax9ymdo+ezfyvhyjEMx+IVfhINr6CIG2gcnlP95iRrybQ==}
 
   terracotta@1.1.1:
     resolution: {integrity: sha512-Sa6wnvkGMFmPq8N/wQb2aKkIW2eXH0LJvUOEk6QZLBEjqy+LsbzAOpDuqEfOmfA/hexssE6eQve2i1IIOeOh4g==}
@@ -3085,10 +3087,6 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
-
-  '@js-temporal/polyfill@0.5.1':
-    dependencies:
-      jsbi: 4.3.2
 
   '@napi-rs/wasm-runtime@1.1.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
     dependencies:
@@ -4467,8 +4465,6 @@ snapshots:
 
   js-tokens@4.0.0: {}
 
-  jsbi@4.3.2: {}
-
   jsesc@3.1.0: {}
 
   json5@2.2.3: {}
@@ -4961,6 +4957,15 @@ snapshots:
   supports-color@10.2.2: {}
 
   tailwind-merge@3.5.0: {}
+
+  temporal-polyfill@1.0.4:
+    dependencies:
+      temporal-spec: 1.0.1
+      temporal-utils: 1.0.2
+
+  temporal-spec@1.0.1: {}
+
+  temporal-utils@1.0.2: {}
 
   terracotta@1.1.1(solid-js@1.9.14):
     dependencies:

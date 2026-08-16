@@ -1,4 +1,3 @@
-import type { Temporal } from '@js-temporal/polyfill';
 import type { FieldName, NormalizedSchedule, ScheduleFormat, TokenMap } from '@/types/schedule';
 
 interface BaseValidationResult {
@@ -26,7 +25,6 @@ export type ValidationResult = ValidSchedule | IncompleteSchedule | InvalidSched
 
 export interface ScheduleParser {
   convert: (tokens: TokenMap, raw: string, from: ScheduleFormat) => NormalizedSchedule;
-  // getCurrentToken: (expr: string) => FieldName;
   process: (expr: string) => ValidationResult;
   normalize: (expr: string) => NormalizedSchedule;
 }

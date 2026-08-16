@@ -1,6 +1,6 @@
 /// <reference types="@solidjs/start/env" />
 
-import type { Temporal as TemporalType } from '@js-temporal/polyfill';
+export { };
 
 type Theme = 'light' | 'dark' | 'system';
 
@@ -10,5 +10,12 @@ declare global {
   }
 
   const __COMMIT_SHA__: string;
-  const Temporal: typeof TemporalType;
+
+  const Temporal: typeof import('temporal-polyfill').Temporal;
+  namespace Temporal {
+    type PlainDateTime = import('temporal-polyfill').Temporal.PlainDateTime;
+    type Instant = import('temporal-polyfill').Temporal.Instant;
+    type ZonedDateTime = import('temporal-polyfill').Temporal.ZonedDateTime;
+    type Duration = import('temporal-polyfill').Temporal.Duration;
+  }
 }

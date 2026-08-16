@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill';
 import { toString as describeSchedule } from 'cronstrue';
 import type { FieldName, NormalizedSchedule, ScheduleFormat, TokenMap } from '@/types/schedule';
 import { daysInMonth, OneBasedDayToNumber, UnixLikeMacros } from './base';
