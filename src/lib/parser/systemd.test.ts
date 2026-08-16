@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill';
 import { describe, expect, it } from 'vitest';
 
 import type { ScheduleFormat } from '@/types/schedule';
@@ -209,7 +208,7 @@ describe('systemd: decomposeSystemdTokens', () => {
   });
 
   it('maps .. ranges to - ranges', () => {
-    expect(decompose('*-01..06-* 0/30:15:00')).toMatchObject({ month: '1-6', hour: '0/30' });
+    expect(decompose('*-01..06-* 0/30:15:00')).toMatchObject({ hour: '0/30', month: '1-6' });
   });
 
   it('keeps explicit years and defaults missing components', () => {
