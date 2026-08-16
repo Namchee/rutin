@@ -1,5 +1,6 @@
 import type { Temporal } from '@js-temporal/polyfill';
 import { createContext, createSignal, type JSXElement, useContext } from 'solid-js';
+import { useQueryState } from '@/lib/hooks/use-query-state';
 import { Parsers } from '@/lib/parsers';
 import type { FieldName, ScheduleFormat, TokenMap } from '@/types/schedule';
 
@@ -63,7 +64,7 @@ function createEditorContext() {
     input = el;
   }
 
-  const [format, setFormat] = createSignal<ScheduleFormat>('unix');
+  const [format, setFormat] = useQueryState<ScheduleFormat>('dialect', { default: 'unix' });
 
   const [state, setState] = createSignal<ScheduleState>('incomplete');
   const [tokens, setTokens] = createSignal<TokenMap>({});
@@ -74,7 +75,7 @@ function createEditorContext() {
     createSignal<Generator<Temporal.PlainDateTime, unknown, unknown>>();
 
   const [currentToken, setCurrentToken] = createSignal<FieldName | undefined>(undefined);
-  const [value, setValue] = createSignal<string>('');
+  const [value, setValue] = useQueryState('q', { default: '' });
 
   function updateCurrentToken() {
     if (!input) {
@@ -98,22 +99,21 @@ function createEditorContext() {
       return;
     }
 
-    const currentTokens = Object.entries(tokens()).map(([name, token]) => {
-      if (!token) {
-        return undefined;
-      }
+    const currentTokens = Object.entries(tokens())
+      .map(([name, token]) => {
+        if (!token) {
+          return undefined;
+        }
 
-      return {
-        name,
-        position: token.position,
-      }
-    }).filter(Boolean) as ExistingToken[];
+        return {
+          name,
+          position: token.position,
+        };
+      })
+      .filter(Boolean) as ExistingToken[];
     currentTokens.sort((a, b) => a.position[0] - b.position[0]);
 
-    let currentToken = currentTokens.find(
-      ({ position }) => selectionStart <=
-        position[1],
-    );
+    let currentToken = currentTokens.find(({ position }) => selectionStart <= position[1]);
 
     // if it ends with whitespace, just select the last one
     if (val.match(/\s+$/)) {
