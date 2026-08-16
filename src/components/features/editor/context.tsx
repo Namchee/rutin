@@ -1,7 +1,7 @@
-import type { Temporal } from '@js-temporal/polyfill';
-import { createContext, createSignal, type JSXElement, useContext } from 'solid-js';
+import { createContext, createMemo, createSignal, type JSXElement, useContext } from 'solid-js';
+import { useQueryState } from '@/lib/hooks/use-query-state';
 import { Parsers } from '@/lib/parsers';
-import type { FieldName, ScheduleFormat, TokenMap } from '@/types/schedule';
+import type { FieldName, ScheduleFormat } from '@/types/schedule';
 
 export type ScheduleState = 'valid' | 'invalid' | 'incomplete';
 export type ScheduleType = 'macro' | 'normal';
@@ -63,18 +63,43 @@ function createEditorContext() {
     input = el;
   }
 
-  const [format, setFormat] = createSignal<ScheduleFormat>('unix');
-
-  const [state, setState] = createSignal<ScheduleState>('incomplete');
-  const [tokens, setTokens] = createSignal<TokenMap>({});
-  const [descriptor, setDescriptor] = createSignal<string>(ScheduleLabel.incomplete);
-  const [normal, setNormal] = createSignal<boolean>(true);
-  const [errors, setErrors] = createSignal<FieldName[]>([]);
-  const [generator, setGenerator] =
-    createSignal<Generator<Temporal.PlainDateTime, unknown, unknown>>();
-
+  const [format, setFormat] = useQueryState<ScheduleFormat>('dialect', { default: 'unix' });
   const [currentToken, setCurrentToken] = createSignal<FieldName | undefined>(undefined);
-  const [value, setValue] = createSignal<string>('');
+  const [value, setValue] = useQueryState('q', { default: '' });
+
+  const parsed = createMemo(() => Parsers[format()].process(value()));
+
+  const state = () => parsed().status;
+  const normal = () => parsed().normal;
+  const tokens = () => parsed().tokens;
+  const errors = () => {
+    const p = parsed();
+    if (p.status === 'invalid') {
+      return p.error;
+    }
+
+    return [];
+  }
+
+  const descriptor = () => {
+    const p = parsed();
+    if (p.status === 'valid') {
+      return p.descriptor;
+    }
+
+    return '';
+  }
+
+  const generator = () => {
+    const p = parsed();
+    if (p.status === 'valid') {
+      return p.generator;
+    }
+
+    return undefined;
+  }
+
+
 
   function updateCurrentToken() {
     if (!input) {
@@ -98,22 +123,21 @@ function createEditorContext() {
       return;
     }
 
-    const currentTokens = Object.entries(tokens()).map(([name, token]) => {
-      if (!token) {
-        return undefined;
-      }
+    const currentTokens = Object.entries(tokens())
+      .map(([name, token]) => {
+        if (!token) {
+          return undefined;
+        }
 
-      return {
-        name,
-        position: token.position,
-      }
-    }).filter(Boolean) as ExistingToken[];
+        return {
+          name,
+          position: token.position,
+        };
+      })
+      .filter(Boolean) as ExistingToken[];
     currentTokens.sort((a, b) => a.position[0] - b.position[0]);
 
-    let currentToken = currentTokens.find(
-      ({ position }) => selectionStart <=
-        position[1],
-    );
+    let currentToken = currentTokens.find(({ position }) => selectionStart <= position[1]);
 
     // if it ends with whitespace, just select the last one
     if (val.match(/\s+$/)) {
@@ -125,17 +149,7 @@ function createEditorContext() {
 
   function onInput(val: string) {
     setValue(val);
-
-    const result = Parsers[format()].process(val);
-    setState(result.status);
-    setNormal(result.normal);
-    setTokens(result.tokens);
-
     updateCurrentToken();
-
-    setDescriptor(result.status === 'valid' ? result.descriptor : ScheduleLabel[result.status]);
-    setErrors(result.status !== 'valid' ? result.error : []);
-    setGenerator(result.status === 'valid' ? result.generator : undefined);
   }
 
   function onBlur(event: FocusEvent) {
@@ -158,30 +172,18 @@ function createEditorContext() {
   }
 
   function normalize() {
-    const { value: normalizedValue, tokens } = Parsers[format()].normalize(value());
+    const { value: normalizedValue } = Parsers[format()].normalize(value());
 
     setValue(normalizedValue);
-    setTokens(tokens);
   }
 
   function updateFormat(newFormat: ScheduleFormat) {
-    let val = value();
-    if (state() === 'valid') {
-      val = Parsers[newFormat].convert(tokens(), value(), format()).value;
-    }
+    const val = state() === 'valid'
+      ? Parsers[newFormat].convert(tokens(), value(), format()).value
+      : value();
 
     setFormat(newFormat);
     setValue(val);
-
-    const result = Parsers[newFormat].process(val);
-
-    setState(result.status);
-    setNormal(result.normal);
-    setTokens(result.tokens);
-
-    setDescriptor(result.status === 'valid' ? result.descriptor : ScheduleLabel[result.status]);
-    setErrors(result.status !== 'valid' ? result.error : []);
-    setGenerator(result.status === 'valid' ? result.generator : undefined);
   }
 
   return {
