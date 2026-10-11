@@ -1,6 +1,6 @@
 import { createListCollection } from '@ark-ui/solid';
-import { Temporal } from '@js-temporal/polyfill';
 import { type Accessor, createEffect, createSignal, For, type Setter, Show } from 'solid-js';
+import { Temporal } from 'temporal-polyfill/full';
 
 import {
   Drawer,
@@ -232,7 +232,7 @@ export function ScheduleExecutions() {
 
           <div ref={ref} />
 
-          <div class='flex flex-col items-center justify-center pb-2 font-medium font-mono text-content-tertiary text-xs'>
+          <div class="flex flex-col items-center justify-center pb-2 font-medium font-mono text-content-tertiary text-xs">
             <p>That&apos;s a wrap!</p>
           </div>
         </Show>

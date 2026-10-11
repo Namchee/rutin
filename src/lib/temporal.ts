@@ -1,4 +1,4 @@
-import type { Temporal } from '@js-temporal/polyfill';
+import type { Temporal } from 'temporal-polyfill/full';
 
 export function formatDate(
   date: Temporal.PlainDateTime,
