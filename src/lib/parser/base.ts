@@ -1,4 +1,5 @@
 import { toString as describeSchedule } from 'cronstrue';
+import { Temporal } from 'temporal-polyfill/full';
 import type { FieldName, NormalizedSchedule, ScheduleFormat, TokenMap } from '@/types/schedule';
 import type { ScheduleParser } from './types';
 import { isValidRange, isValidStep } from './validator';
@@ -683,7 +684,7 @@ export function createScheduleParser({
         return {
           tokens: tokenizer(macros[expr.trim()]),
           value: macros[expr.trim()],
-        }
+        };
       }
 
       const tokens = tokenizer(expr.trim());

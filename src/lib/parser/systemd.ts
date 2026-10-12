@@ -1,4 +1,5 @@
 import { toString as describeSchedule } from 'cronstrue';
+import { Temporal } from 'temporal-polyfill/full';
 import type { FieldName, NormalizedSchedule, ScheduleFormat, TokenMap } from '@/types/schedule';
 import { daysInMonth, OneBasedDayToNumber, UnixLikeMacros } from './base';
 import { QuartzParser } from './quartz';
@@ -952,8 +953,11 @@ export const SystemdParser: ScheduleParser = {
     try {
       return {
         descriptor: describeSchedule(
-          QuartzParser.convert(tokenize(SystemdParser.normalize(trimmedExpr).value), SystemdParser.normalize(trimmedExpr).value, 'systemd')
-            .value,
+          QuartzParser.convert(
+            tokenize(SystemdParser.normalize(trimmedExpr).value),
+            SystemdParser.normalize(trimmedExpr).value,
+            'systemd',
+          ).value,
         ),
         generator: generator(trimmedExpr, Temporal.Now.plainDateTimeISO()),
         normal: SystemdParser.normalize(trimmedExpr).value === trimmedExpr,

@@ -1,3 +1,4 @@
+import { Temporal } from 'temporal-polyfill/full';
 import { describe, expect, it } from 'vitest';
 import type { ScheduleFormat } from '@/types/schedule';
 

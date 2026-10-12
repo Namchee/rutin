@@ -1,3 +1,5 @@
+import type { Temporal } from 'temporal-polyfill/full';
+
 export function formatDate(
   date: Temporal.PlainDateTime,
   options?: Intl.DateTimeFormatOptions,
