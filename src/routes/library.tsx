@@ -25,7 +25,7 @@ export default function Library() {
           </p>
         </div>
 
-        <div class="flex justify-between gap-4 max-md:flex-col md:items-center">
+        <div class="flex justify-between gap-2 max-lg:flex-col lg:items-center">
           <div class="relative">
             <div class="i-lucide-search pointer-events-none absolute top-2.75 left-3 size-4 text-content-secondary" />
             <input
@@ -34,7 +34,7 @@ export default function Library() {
             />
           </div>
 
-          <ToggleGroup class='max-md:justify-start'>
+          <ToggleGroup class='max-lg:justify-start'>
             <For each={Object.entries(ExpressionLabel)}>
               {([key, value]) => (
                 <ToggleGroupItem

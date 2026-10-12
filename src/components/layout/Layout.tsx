@@ -24,7 +24,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
         onClick={() => setExpanded(true)}
       />
 
-      <div class="mx-2 mb-2 flex flex-1 flex-col rounded-md rounded-b-lg border-separator border-b bg-surface lg:ml-0">
+      <div class="mr-2 mb-2 flex flex-1 flex-col rounded-md rounded-b-lg border-separator border-b bg-surface lg:ml-0">
         <Topbar expanded={expanded} setExpanded={setExpanded} />
 
         <main class="flex-1 border-separator border-x">
