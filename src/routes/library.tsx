@@ -17,7 +17,7 @@ export default function Library() {
     <>
       <Title>Library | Rutin</Title>
 
-      <div class="flex flex-col gap-8">
+      <div class="@container flex flex-col gap-8">
         <div class="flex w-full flex-col gap-0">
           <h1 class="font-semibold text-2xl leading-relaxed">Library</h1>
           <p class="text-content-tertiary">
@@ -25,7 +25,7 @@ export default function Library() {
           </p>
         </div>
 
-        <div class="flex justify-between gap-2 max-lg:flex-col lg:items-center">
+        <div class='flex @3xl:flex-row @sm:flex-col @3xl:items-center justify-between gap-2'>
           <div class="relative">
             <div class="i-lucide-search pointer-events-none absolute top-2.75 left-3 size-4 text-content-secondary" />
             <input
@@ -34,12 +34,12 @@ export default function Library() {
             />
           </div>
 
-          <ToggleGroup class='max-lg:justify-start'>
+          <ToggleGroup class="@sm:justify-start">
             <For each={Object.entries(ExpressionLabel)}>
               {([key, value]) => (
                 <ToggleGroupItem
                   value={key}
-                  class='h-fit rounded-full border border-separator px-3 py-1.5 text-sm data-[state=on]:bg-background-hover'>
+                  class="h-fit rounded-full border border-separator px-3 py-1.5 text-sm data-[state=on]:bg-background-hover">
                   {value}
                 </ToggleGroupItem>
               )}
