@@ -24,17 +24,17 @@ export function Layout({ children }: Readonly<LayoutProps>) {
         onClick={() => setExpanded(true)}
       />
 
-      <div class="mr-2 mb-2 flex flex-1 flex-col rounded-md rounded-b-lg border-separator border-b bg-surface lg:ml-0">
+      <div class='mr-2 mb-2 flex flex-1 flex-col rounded-md rounded-b-lg border-separator border-b bg-surface max-md:ml-2 lg:ml-0'>
         <Topbar expanded={expanded} setExpanded={setExpanded} />
 
         <main class="flex-1 border-separator border-x">
-          <div class='mx-auto h-full max-w-6xl px-4 py-8'>{children}</div>
+          <div class="mx-auto h-full max-w-6xl px-4 py-8">{children}</div>
         </main>
 
         <footer class="flex flex-col items-center justify-center gap-2 rounded-b-lg border-separator border-x p-2 text-content-tertiary text-xs md:flex-row">
           <div class="flex">
-            <span class="block text-content-secondary">Rutin</span>&nbsp;&mdash; Your one stop scheduling
-            playground
+            <span class="block text-content-secondary">Rutin</span>&nbsp;&mdash; Your one stop
+            scheduling playground
           </div>
 
           <span class="hidden md:block">&bull;</span>
