@@ -1,1 +1,8 @@
-{}
+[
+  {
+    "description": "Every minute, continuously",
+    "label": "Every Minute",
+    "syntax": "* * * * *",
+    "tags": ["Interval"]
+  }
+]
