@@ -126,7 +126,7 @@ function TimezoneDrawer({ timezone, setTimezone }: Readonly<TimezoneSelectorProp
   );
 }
 
-export function TimezoneSelector({ timezone, setTimezone }: Readonly<TimezoneSelectorProps>) {
+function TimezoneSelector({ timezone, setTimezone }: Readonly<TimezoneSelectorProps>) {
   const isNonMobile = useMediaQuery('(min-width: 768px)');
 
   const collection = createListCollection({
@@ -207,7 +207,7 @@ export function ScheduleExecutions() {
 
   return (
     <div class="flex flex-col overflow-hidden rounded-lg border border-separator">
-      <div class="flex h-16 items-center justify-between border-separator border-b p-4">
+      <div class="flex h-fit items-center justify-between border-separator border-b px-4 py-2">
         <p class="font-medium text-content-secondary text-sm">Next executions</p>
 
         <TimezoneSelector timezone={timezone} setTimezone={setTimezone} />

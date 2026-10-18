@@ -54,7 +54,7 @@ export function ScheduleEditor() {
 
   return (
     <div class="flex flex-col rounded-lg border border-separator">
-      <div class="flex h-16 items-center justify-between border-separator border-b p-4">
+      <div class="flex h-fit items-center justify-between border-separator border-b px-4 py-2">
         <FormatSelector />
 
         <Show when={state() !== 'incomplete'}>
