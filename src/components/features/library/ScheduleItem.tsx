@@ -1,0 +1,3 @@
+interface
+
+export function ScheduleItem() { }

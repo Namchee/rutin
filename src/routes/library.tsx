@@ -31,22 +31,23 @@ export default function Library() {
 
         <div class="flex items-start justify-between gap-2">
           <div class="flex flex-1 shrink @3xl:flex-row flex-col items-start @3xl:items-center gap-2">
-            <div class='relative w-full max-w-80'>
-              <div class="i-lucide-search pointer-events-none absolute top-2.75 left-3 size-4 text-content-secondary" />
+            <div class="relative w-full max-w-80">
+              <div class="i-lucide-search pointer-events-none absolute top-2.25 left-3 size-4 text-content-secondary" />
               <input
                 placeholder="Describe a schedule..."
-                class="w-full max-w-80 rounded-md border border-separator py-2.5 pr-4 pl-9 text-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-content-tertiary/25"
+                class="w-full max-w-80 rounded-md border border-separator py-2 pr-4 pl-9 text-sm transition-shadow focus:border-content-primary focus:outline-none focus:ring-2 focus:ring-content-tertiary/25"
               />
             </div>
 
             <ToggleGroup
               value={[category()]}
-              onValueChange={val => setCategory(val.value[0] as ExpressionCategory)}>
+              onValueChange={val => setCategory(val.value[0] as ExpressionCategory)}
+              class="flex-wrap justify-start">
               <For each={Object.entries(ExpressionLabel)}>
                 {([key, value]) => (
                   <ToggleGroupItem
                     value={key}
-                    class="h-fit rounded-full border border-separator px-2 py-0.5 text-xs data-[state=on]:bg-background-hover">
+                    class='h-fit rounded-full border border-separator px-3 py-1 text-xs data-[state=on]:bg-background-hover'>
                     {value}
                   </ToggleGroupItem>
                 )}
