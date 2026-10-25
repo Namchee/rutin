@@ -1,3 +1,1 @@
-interface
-
 export function ScheduleItem() { }

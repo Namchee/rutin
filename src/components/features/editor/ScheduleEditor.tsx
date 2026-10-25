@@ -22,7 +22,7 @@ const Placeholders: Record<ScheduleFormat, string> = {
 };
 
 export function ScheduleEditor() {
-  const { onInput, state, format, onBlur, onCaretMovement, normal, value, ref, normalize } =
+  const { onInput, state, format, onBlur, onCaretMovement, normal, value, ref, normalize, setFormat } =
     useEditorContext();
 
   const [copied, setCopied] = createSignal<boolean>(false);
