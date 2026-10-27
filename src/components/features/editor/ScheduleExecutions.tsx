@@ -145,15 +145,15 @@ function TimezoneSelector({ timezone, setTimezone }: Readonly<TimezoneSelectorPr
         value={[timezone()]}
         onValueChange={v => setTimezone(v.value[0])}
         class="flex items-center gap-2">
-        <SelectTrigger class="w-32">
-          <div class="flex max-w-full items-center gap-1.5 overflow-hidden">
-            <div class="i-lucide-globe size-4" />
+        <SelectTrigger class='flex w-32 max-w-full items-center gap-1.5 overflow-hidden'>
+          <div class="i-lucide-globe size-4" />
 
-            <SelectValue
-              class="h-fit truncate font-medium leading-none"
-              placeholder="Select dialect..."
-            />
-          </div>
+          <SelectValue
+            class="h-fit truncate font-medium leading-none"
+            placeholder="Select dialect..."
+          />
+
+          <div class="i-lucide-chevron-down size-[14px] shrink-0 text-content-tertiary" />
         </SelectTrigger>
 
         <SelectContent class="max-w-md">

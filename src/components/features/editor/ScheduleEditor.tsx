@@ -6,9 +6,8 @@ import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/css';
 
 import type { ScheduleFormat } from '@/types/schedule';
-
+import { FormatSelector } from '../../FormatSelector';
 import { useEditorContext } from './context';
-import { FormatSelector } from './FormatSelector';
 import { ScheduleDescriptor } from './ScheduleDescriptor';
 import { ScheduleHint } from './ScheduleHint';
 
@@ -22,8 +21,18 @@ const Placeholders: Record<ScheduleFormat, string> = {
 };
 
 export function ScheduleEditor() {
-  const { onInput, state, format, onBlur, onCaretMovement, normal, value, ref, normalize, setFormat } =
-    useEditorContext();
+  const {
+    onInput,
+    state,
+    format,
+    onBlur,
+    onCaretMovement,
+    normal,
+    value,
+    ref,
+    normalize,
+    setFormat,
+  } = useEditorContext();
 
   const [copied, setCopied] = createSignal<boolean>(false);
   const [timeoutRef, setTimeoutRef] = createSignal<ReturnType<typeof setTimeout> | undefined>();
@@ -55,7 +64,7 @@ export function ScheduleEditor() {
   return (
     <div class="flex flex-col rounded-lg border border-separator">
       <div class="flex h-fit items-center justify-between border-separator border-b px-4 py-2">
-        <FormatSelector />
+        <FormatSelector format={format} setFormat={setFormat} />
 
         <Show when={state() !== 'incomplete'}>
           <Badge variant={state() === 'valid' ? 'default' : 'outline'}>
@@ -89,7 +98,7 @@ export function ScheduleEditor() {
           />
         </div>
 
-        <div class="pb-4" style={{ "padding-bottom": '16px' }}>
+        <div class="pb-4" style={{ 'padding-bottom': '16px' }}>
           <ScheduleHint />
         </div>
       </div>

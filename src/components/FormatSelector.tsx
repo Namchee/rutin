@@ -1,5 +1,5 @@
 import { createListCollection } from '@ark-ui/solid';
-import { createSignal, For, Show } from 'solid-js';
+import { type Accessor, createSignal, For, type JSXElement, type Setter, Show } from 'solid-js';
 
 import {
   Drawer,
@@ -12,49 +12,22 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/Select';
-
+import { FormatLabel } from '@/const/schedule';
 import { cn } from '@/lib/css';
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
+import type { ScheduleFormat } from '@/types/schedule';
 
-import type { Format, ScheduleFormat } from '@/types/schedule';
+interface FormatSelectorProps {
+  format: Accessor<ScheduleFormat>;
+  setFormat: (format: ScheduleFormat) => void;
 
-import { useEditorContext } from './context';
+  children: JSXElement;
+}
 
-// biome-ignore assist/source/useSortedKeys: Need to preserve order
-const Formats: Record<ScheduleFormat, Format> = {
-  unix: {
-    description: '5 fields ⋅ Classic CRON',
-    label: 'UNIX',
-  },
-  quartz: {
-    description: '6 - 7 fields ⋅ Java-based',
-    label: 'Quartz',
-  },
-  node: {
-    description: '5 - 6 fields ⋅ Optional seconds field',
-    label: 'Node.js',
-  },
-  amazon: {
-    description: '5 - 6 fields ⋅ Optional year field',
-    label: 'Amazon',
-  },
-  'cf-workers': {
-    description: '5 fields ⋅ Day start with 1 to 7',
-    label: 'Cloudflare Workers',
-  },
-  systemd: {
-    description: '3 fields ⋅ OnCalendar ⋅ Linux',
-    label: 'Systemd',
-  },
-};
-
-function FormatDrawer() {
-  const { format, setFormat } = useEditorContext();
-
+function FormatDrawer({ format, setFormat, children }: Readonly<FormatSelectorProps>) {
   const [open, setOpen] = createSignal(false);
 
   function onSelect(format: ScheduleFormat) {
@@ -69,7 +42,7 @@ function FormatDrawer() {
 
       <Drawer open={open()} onOpenChange={d => setOpen(d.open)}>
         <DrawerTrigger class="flex h-8 w-24 items-center justify-between rounded-md border border-separator p-2 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
-          <p class="truncate font-medium text-sm">{Formats[format()].label}</p>
+          <p class="truncate font-medium text-sm">{FormatLabel[format()].label}</p>
 
           <div class="i-lucide-chevron-down ml-auto size-3 shrink-0 text-accent-foreground/50" />
         </DrawerTrigger>
@@ -83,7 +56,7 @@ function FormatDrawer() {
             </DrawerHeader>
 
             <div class="flex flex-col gap-1">
-              <For each={Object.entries(Formats)}>
+              <For each={Object.entries(FormatLabel)}>
                 {([key, value]) => (
                   <div
                     onPointerDown={() => onSelect(key as ScheduleFormat)}
@@ -112,39 +85,41 @@ function FormatDrawer() {
   );
 }
 
-export function FormatSelector() {
-  const { format, setFormat } = useEditorContext();
-
+export function FormatSelector({ format, setFormat }: Readonly<FormatSelectorProps>) {
   const isNonMobile = useMediaQuery('(min-width: 768px)');
 
   const collection = createListCollection({
-    items: Object.entries(Formats).map(([k, v]) => ({ label: v.label, value: k })),
+    items: Object.entries(FormatLabel).map(([k, v]) => ({ label: v.label, value: k })),
   });
 
   return (
-    <Show when={isNonMobile()} fallback={<FormatDrawer />}>
+    <Show when={isNonMobile()} fallback={<FormatDrawer format={format} setFormat={setFormat} />}>
       <Select
         collection={collection}
         value={[format()]}
         onValueChange={v => setFormat(v.value[0] as unknown as ScheduleFormat)}
         class="flex items-center gap-2">
-        <SelectLabel class="text-content-secondary">Dialect</SelectLabel>
-
         <SelectTrigger>
+          <div class="i-lucide-languages mr-2 size-4 text-content-secondary" />
+
           <SelectValue
             class="h-fit w-24 truncate font-medium leading-none"
             placeholder="Select dialect..."
           />
+
+          <div class="i-lucide-chevron-down size-[14px] shrink-0 text-content-tertiary" />
         </SelectTrigger>
 
         <SelectContent class="max-w-sm">
+          <p class="mt-1 ml-2 font-mono text-content-tertiary text-xs">Dialect</p>
+
           <For each={collection.items}>
             {item => (
               <SelectItem item={item.value}>
                 <p class="font-medium text-sm leading-normal">{item.label}</p>
 
                 <p class="text-content-tertiary text-xs">
-                  {Formats[item.value as ScheduleFormat].description}
+                  {FormatLabel[item.value as ScheduleFormat].description}
                 </p>
               </SelectItem>
             )}

@@ -1,5 +1,6 @@
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup';
 import { type DisplayType, useLibraryContext } from './context';
+import { LibraryDialect } from './LibraryDialect';
 import { LibraryFilter } from './LibraryFilter';
 
 export function LibraryHeader() {
@@ -16,6 +17,7 @@ export function LibraryHeader() {
       </div>
 
       <div class="flex items-center rounded-md border border-separator">
+        <LibraryDialect />
         <LibraryFilter />
 
         {/*<ToggleGroup
@@ -39,7 +41,7 @@ export function LibraryHeader() {
           class="gap-0 rounded-md rounded-l-none border-separator border-l">
           <ToggleGroupItem
             value="grid"
-            class='size-8 rounded-r-none rounded-l-none border-separator p-0 data-[state=on]:bg-background-hover'>
+            class="size-8 rounded-r-none rounded-l-none border-separator p-0 data-[state=on]:bg-background-hover">
             <div class="i-lucide-layout-grid size-4" />
           </ToggleGroupItem>
           <ToggleGroupItem
