@@ -87,7 +87,7 @@ function createEditorContext() {
       return p.descriptor;
     }
 
-    return '';
+    return ScheduleLabel[p.status];
   }
 
   const generator = () => {
