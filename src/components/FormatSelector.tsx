@@ -23,11 +23,9 @@ import type { ScheduleFormat } from '@/types/schedule';
 interface FormatSelectorProps {
   format: Accessor<ScheduleFormat>;
   setFormat: (format: ScheduleFormat) => void;
-
-  children: JSXElement;
 }
 
-function FormatDrawer({ format, setFormat, children }: Readonly<FormatSelectorProps>) {
+function FormatDrawer({ format, setFormat }: Readonly<FormatSelectorProps>) {
   const [open, setOpen] = createSignal(false);
 
   function onSelect(format: ScheduleFormat) {
@@ -38,10 +36,10 @@ function FormatDrawer({ format, setFormat, children }: Readonly<FormatSelectorPr
 
   return (
     <div class="flex items-center gap-2">
-      <p class="font-medium text-content-tertiary text-sm">Dialect</p>
-
       <Drawer open={open()} onOpenChange={d => setOpen(d.open)}>
-        <DrawerTrigger class="flex h-8 w-24 items-center justify-between rounded-md border border-separator p-2 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
+        <DrawerTrigger class="flex h-8 w-32 items-center justify-between rounded-md border border-separator p-2 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
+          <div class="i-lucide-code-xml mr-2 size-4 shrink-0 text-content-secondary" />
+
           <p class="truncate font-medium text-sm">{FormatLabel[format()].label}</p>
 
           <div class="i-lucide-chevron-down ml-auto size-3 shrink-0 text-accent-foreground/50" />
@@ -100,7 +98,7 @@ export function FormatSelector({ format, setFormat }: Readonly<FormatSelectorPro
         onValueChange={v => setFormat(v.value[0] as unknown as ScheduleFormat)}
         class="flex items-center gap-2">
         <SelectTrigger>
-          <div class="i-lucide-languages mr-2 size-4 text-content-secondary" />
+          <div class='i-lucide-code-xml mr-2 size-4 shrink-0 text-content-secondary' />
 
           <SelectValue
             class="h-fit w-24 truncate font-medium leading-none"
@@ -111,7 +109,7 @@ export function FormatSelector({ format, setFormat }: Readonly<FormatSelectorPro
         </SelectTrigger>
 
         <SelectContent class="max-w-sm">
-          <p class="mt-1 ml-2 font-mono text-content-tertiary text-xs">Dialect</p>
+          <p class="mt-1 ml-2 font-mono text-content-secondary text-xs uppercase">Dialect</p>
 
           <For each={collection.items}>
             {item => (
