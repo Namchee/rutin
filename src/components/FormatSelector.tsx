@@ -1,5 +1,5 @@
 import { createListCollection } from '@ark-ui/solid';
-import { type Accessor, createSignal, For, type JSXElement, type Setter, Show } from 'solid-js';
+import { type Accessor, createSignal, For, type JSX, Show } from 'solid-js';
 
 import {
   Drawer,
@@ -8,122 +8,142 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/Drawer';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/Select';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/Select';
 import { FormatLabel } from '@/const/schedule';
 import { cn } from '@/lib/css';
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
 import type { ScheduleFormat } from '@/types/schedule';
 
+const TRIGGER_BASE =
+  'flex h-8 w-32 items-center justify-between rounded-md border border-separator p-2 font-normal text-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-content-tertiary/25 focus:ring-offset-0';
+
 interface FormatSelectorProps {
   format: Accessor<ScheduleFormat>;
   setFormat: (format: ScheduleFormat) => void;
+
+  trigger?: JSX.Element;
+  class?: string;
 }
 
-function FormatDrawer({ format, setFormat }: Readonly<FormatSelectorProps>) {
+function DefaultTrigger(props: { format: Accessor<ScheduleFormat> }) {
+  return (
+    <>
+      <div class="i-lucide-code-xml mr-2 size-4 shrink-0 text-content-secondary" />
+
+      <p class="truncate font-medium text-sm">{FormatLabel[props.format()].label}</p>
+
+      <div class="i-lucide-chevron-down ml-auto size-3 shrink-0 text-content-tertiary" />
+    </>
+  );
+}
+
+const triggerClass = (props: Readonly<FormatSelectorProps>) => cn(TRIGGER_BASE, props.class);
+
+const resolveTrigger = (props: Readonly<FormatSelectorProps>) =>
+  props.trigger ?? <DefaultTrigger format={props.format} />;
+
+function FormatDrawer(props: Readonly<FormatSelectorProps>) {
   const [open, setOpen] = createSignal(false);
 
-  function onSelect(format: ScheduleFormat) {
-    setFormat(format);
+  function pickFormat(format: ScheduleFormat) {
+    props.setFormat(format);
 
     setOpen(false);
   }
 
   return (
-    <div class="flex items-center gap-2">
-      <Drawer open={open()} onOpenChange={d => setOpen(d.open)}>
-        <DrawerTrigger class="flex h-8 w-32 items-center justify-between rounded-md border border-separator p-2 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
-          <div class="i-lucide-code-xml mr-2 size-4 shrink-0 text-content-secondary" />
+    <Drawer open={open()} onOpenChange={details => setOpen(details.open)}>
+      <DrawerTrigger class={triggerClass(props)}>{resolveTrigger(props)}</DrawerTrigger>
 
-          <p class="truncate font-medium text-sm">{FormatLabel[format()].label}</p>
+      <DrawerContent>
+        <div class="px-2 py-4">
+          <DrawerHeader class="px-2 pt-0 pb-2 text-left">
+            <DrawerTitle class="font-mono text-content-secondary text-xs uppercase">
+              Dialect
+            </DrawerTitle>
+          </DrawerHeader>
 
-          <div class="i-lucide-chevron-down ml-auto size-3 shrink-0 text-accent-foreground/50" />
-        </DrawerTrigger>
+          <div class="flex flex-col gap-1">
+            <For each={Object.entries(FormatLabel)}>
+              {([key, value]) => (
+                <div
+                  onPointerDown={() => pickFormat(key as ScheduleFormat)}
+                  class={cn('flex items-center gap-3 rounded-md p-2 hover:bg-background-hover', {
+                    'bg-background-hover': props.format() === key,
+                  })}>
+                  <div class="flex-1">
+                    <p class="font-medium text-content-primary text-sm">{value.label}</p>
 
-        <DrawerContent>
-          <div class="px-2 py-4">
-            <DrawerHeader class="px-2 pt-0 pb-2 text-left">
-              <DrawerTitle class="font-mono text-content-secondary text-xs uppercase">
-                Dialect
-              </DrawerTitle>
-            </DrawerHeader>
-
-            <div class="flex flex-col gap-1">
-              <For each={Object.entries(FormatLabel)}>
-                {([key, value]) => (
-                  <div
-                    onPointerDown={() => onSelect(key as ScheduleFormat)}
-                    class={cn('flex items-center gap-3 rounded-md p-2 hover:bg-background-hover', {
-                      'bg-background-hover': format() === key,
-                    })}>
-                    <div class="flex-1">
-                      <p class="font-medium text-content-primary text-sm">{value.label}</p>
-
-                      <p class="text-content-tertiary text-xs">{value.description}</p>
-                    </div>
-
-                    <div
-                      class={cn('i-lucide-check size-4 text-content-primary', {
-                        invisible: format() !== key,
-                      })}
-                    />
+                    <p class="text-content-tertiary text-xs">{value.description}</p>
                   </div>
-                )}
-              </For>
-            </div>
+
+                  <div
+                    class={cn('i-lucide-check size-4 text-content-primary', {
+                      invisible: props.format() !== key,
+                    })}
+                  />
+                </div>
+              )}
+            </For>
           </div>
-        </DrawerContent>
-      </Drawer>
-    </div>
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 }
 
-export function FormatSelector({ format, setFormat }: Readonly<FormatSelectorProps>) {
-  const isNonMobile = useMediaQuery('(min-width: 768px)');
-
+function FormatSelect(props: Readonly<FormatSelectorProps>) {
   const collection = createListCollection({
     items: Object.entries(FormatLabel).map(([k, v]) => ({ label: v.label, value: k })),
   });
 
   return (
-    <Show when={isNonMobile()} fallback={<FormatDrawer format={format} setFormat={setFormat} />}>
-      <Select
-        collection={collection}
-        value={[format()]}
-        onValueChange={v => setFormat(v.value[0] as unknown as ScheduleFormat)}
-        class="flex items-center gap-2">
-        <SelectTrigger>
-          <div class='i-lucide-code-xml mr-2 size-4 shrink-0 text-content-secondary' />
+    <Select
+      collection={collection}
+      value={[props.format()]}
+      onValueChange={v => props.setFormat(v.value[0] as unknown as ScheduleFormat)}
+      class="flex items-center gap-2">
+      <SelectTrigger class={triggerClass(props)}>{resolveTrigger(props)}</SelectTrigger>
 
-          <SelectValue
-            class="h-fit w-24 truncate font-medium leading-none"
-            placeholder="Select dialect..."
-          />
+      <SelectContent class="max-w-sm">
+        <p class="mt-1 ml-2 font-mono text-content-secondary text-xs uppercase">Dialect</p>
 
-          <div class="i-lucide-chevron-down size-[14px] shrink-0 text-content-tertiary" />
-        </SelectTrigger>
+        <For each={collection.items}>
+          {item => (
+            <SelectItem item={item.value}>
+              <p class="font-medium text-sm leading-normal">{item.label}</p>
 
-        <SelectContent class="max-w-sm">
-          <p class="mt-1 ml-2 font-mono text-content-secondary text-xs uppercase">Dialect</p>
+              <p class="text-content-tertiary text-xs">
+                {FormatLabel[item.value as ScheduleFormat].description}
+              </p>
+            </SelectItem>
+          )}
+        </For>
+      </SelectContent>
+    </Select>
+  );
+}
 
-          <For each={collection.items}>
-            {item => (
-              <SelectItem item={item.value}>
-                <p class="font-medium text-sm leading-normal">{item.label}</p>
+export function FormatSelector(props: Readonly<FormatSelectorProps>) {
+  const isNonMobile = useMediaQuery('(min-width: 768px)');
 
-                <p class="text-content-tertiary text-xs">
-                  {FormatLabel[item.value as ScheduleFormat].description}
-                </p>
-              </SelectItem>
-            )}
-          </For>
-        </SelectContent>
-      </Select>
+  return (
+    <Show
+      when={isNonMobile()}
+      fallback={
+        <FormatDrawer
+          class={props.class}
+          format={props.format}
+          setFormat={props.setFormat}
+          trigger={props.trigger}
+        />
+      }>
+      <FormatSelect
+        class={props.class}
+        format={props.format}
+        setFormat={props.setFormat}
+        trigger={props.trigger}
+      />
     </Show>
   );
 }
