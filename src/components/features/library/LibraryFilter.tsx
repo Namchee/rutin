@@ -1,4 +1,5 @@
 import { Show } from 'solid-js';
+import { Badge } from '@/components/ui/Badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,9 +22,15 @@ export function LibraryFilter() {
   return (
     <Show when={isNonMobile} fallback={<LibraryFilterDrawer />}>
       <DropdownMenu positioning={{ placement: 'bottom-end' }}>
-        <DropdownMenuTrigger class='flex h-8 cursor-pointer items-center gap-2 rounded-md rounded-r-none border-separator px-3 text-content-secondary text-sm transition-colors hover:bg-background-hover'>
+        <DropdownMenuTrigger class="flex h-8 cursor-pointer items-center gap-2 rounded-md rounded-r-none border-separator px-3 text-content-secondary text-sm transition-colors hover:bg-background-hover">
           <div class="i-lucide-tag size-4" />
-          <span>{tags()[0]}</span>
+          <div>
+            {tags()[0]}
+
+            <Show when={tags.length === 1}>
+              <Badge>{tags.length - 1}</Badge>
+            </Show>
+          </div>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent>

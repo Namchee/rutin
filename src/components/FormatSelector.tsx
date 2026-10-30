@@ -21,7 +21,7 @@ interface FormatSelectorProps {
   format: Accessor<ScheduleFormat>;
   setFormat: (format: ScheduleFormat) => void;
 
-  trigger?: JSX.Element;
+  children?: JSX.Element;
   class?: string;
 }
 
@@ -40,7 +40,7 @@ function DefaultTrigger(props: { format: Accessor<ScheduleFormat> }) {
 const triggerClass = (props: Readonly<FormatSelectorProps>) => cn(TRIGGER_BASE, props.class);
 
 const resolveTrigger = (props: Readonly<FormatSelectorProps>) =>
-  props.trigger ?? <DefaultTrigger format={props.format} />;
+  props.children ?? <DefaultTrigger format={props.format} />;
 
 function FormatDrawer(props: Readonly<FormatSelectorProps>) {
   const [open, setOpen] = createSignal(false);
@@ -135,14 +135,14 @@ export function FormatSelector(props: Readonly<FormatSelectorProps>) {
           class={props.class}
           format={props.format}
           setFormat={props.setFormat}
-          trigger={props.trigger}
+          children={props.children}
         />
       }>
       <FormatSelect
         class={props.class}
         format={props.format}
         setFormat={props.setFormat}
-        trigger={props.trigger}
+        children={props.children}
       />
     </Show>
   );

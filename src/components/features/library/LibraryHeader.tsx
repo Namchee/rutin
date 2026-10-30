@@ -7,7 +7,7 @@ export function LibraryHeader() {
   const { display, setDisplay } = useLibraryContext();
 
   return (
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between gap-2">
       <div class="relative w-full max-w-80">
         <div class="i-lucide-search text pointer-events-none absolute top-2.25 left-3 size-4 -content-secondary" />
         <input
