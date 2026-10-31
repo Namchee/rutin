@@ -1,163 +1,283 @@
 [
   {
-    "description": "Every minute, continuously",
+    "description": "Runs every minute.",
     "label": "Every Minute",
     "syntax": "* * * * *",
     "tags": ["Interval"]
   },
   {
-    "description": "Every 5 minutes",
+    "description": "Runs every 2 minutes.",
+    "label": "Every 2 Minutes",
+    "syntax": "*/2 * * * *",
+    "tags": ["Interval"]
+  },
+  {
+    "description": "Runs every 5 minutes.",
     "label": "Every 5 Minutes",
     "syntax": "*/5 * * * *",
     "tags": ["Interval"]
   },
   {
-    "description": "Every 10 minutes",
+    "description": "Runs every 10 minutes.",
     "label": "Every 10 Minutes",
     "syntax": "*/10 * * * *",
     "tags": ["Interval"]
   },
   {
-    "description": "Every 15 minutes",
+    "description": "Runs every 15 minutes.",
     "label": "Every 15 Minutes",
     "syntax": "*/15 * * * *",
     "tags": ["Interval"]
   },
   {
-    "description": "Every 30 minutes",
+    "description": "Runs every 20 minutes.",
+    "label": "Every 20 Minutes",
+    "syntax": "*/20 * * * *",
+    "tags": ["Interval"]
+  },
+  {
+    "description": "Runs every 30 minutes.",
     "label": "Every 30 Minutes",
     "syntax": "*/30 * * * *",
     "tags": ["Interval"]
   },
   {
-    "description": "At the start of every hour",
+    "description": "Runs at the beginning of every hour.",
     "label": "Every Hour",
     "syntax": "0 * * * *",
     "tags": ["Hourly"]
   },
   {
-    "description": "At minute 0 of every 2nd hour",
+    "description": "Runs at 15 minutes past every hour.",
+    "label": "Every Hour at :15",
+    "syntax": "15 * * * *",
+    "tags": ["Hourly"]
+  },
+  {
+    "description": "Runs every 2 hours, starting at midnight.",
     "label": "Every 2 Hours",
     "syntax": "0 */2 * * *",
     "tags": ["Interval"]
   },
   {
-    "description": "At minute 0 of every 6th hour",
+    "description": "Runs every 4 hours, starting at midnight.",
+    "label": "Every 4 Hours",
+    "syntax": "0 */4 * * *",
+    "tags": ["Interval"]
+  },
+  {
+    "description": "Runs every 6 hours, starting at midnight.",
     "label": "Every 6 Hours",
     "syntax": "0 */6 * * *",
     "tags": ["Interval"]
   },
   {
-    "description": "At minute 0 of every 12th hour",
+    "description": "Runs every 8 hours, starting at midnight.",
+    "label": "Every 8 Hours",
+    "syntax": "0 */8 * * *",
+    "tags": ["Interval"]
+  },
+  {
+    "description": "Runs every 12 hours, starting at midnight.",
     "label": "Every 12 Hours",
     "syntax": "0 */12 * * *",
     "tags": ["Interval"]
   },
   {
-    "description": "Every day at midnight",
-    "label": "Every Day at Midnight",
+    "description": "Runs every day at 12:00 AM.",
+    "label": "Daily at 12:00 AM",
     "syntax": "0 0 * * *",
     "tags": ["Daily"]
   },
   {
-    "description": "Every day at 6:00 AM",
-    "label": "Every Day at 6:00 AM",
+    "description": "Runs every day at 6:00 AM.",
+    "label": "Daily at 6:00 AM",
     "syntax": "0 6 * * *",
     "tags": ["Daily"]
   },
   {
-    "description": "Every day at 9:00 AM",
-    "label": "Every Day at 9:00 AM",
+    "description": "Runs every day at 9:00 AM.",
+    "label": "Daily at 9:00 AM",
     "syntax": "0 9 * * *",
     "tags": ["Daily"]
   },
   {
-    "description": "Every day at noon",
-    "label": "Every Day at Noon",
+    "description": "Runs every day at 12:00 PM.",
+    "label": "Daily at 12:00 PM",
     "syntax": "0 12 * * *",
     "tags": ["Daily"]
   },
   {
-    "description": "Every day at 6:00 PM",
-    "label": "Every Day at 6:00 PM",
+    "description": "Runs every day at 6:00 PM.",
+    "label": "Daily at 6:00 PM",
     "syntax": "0 18 * * *",
     "tags": ["Daily"]
   },
   {
-    "description": "Every day at 8:00 AM and 8:00 PM",
-    "label": "Twice a Day",
+    "description": "Runs every day at 8:00 AM and 8:00 PM.",
+    "label": "Twice Daily at 8:00 AM and 8:00 PM",
     "syntax": "0 8,20 * * *",
     "tags": ["Daily"]
   },
   {
-    "description": "Every weekday at 9:00 AM",
-    "label": "Every Weekday at 9:00 AM",
+    "description": "Runs Monday through Friday at 8:30 AM.",
+    "label": "Weekdays at 8:30 AM",
+    "syntax": "30 8 * * 1-5",
+    "tags": ["Weekday", "Business Hours"]
+  },
+  {
+    "description": "Runs Monday through Friday at 9:00 AM.",
+    "label": "Weekdays at 9:00 AM",
     "syntax": "0 9 * * 1-5",
     "tags": ["Weekday", "Business Hours"]
   },
   {
-    "description": "Every 15 minutes on weekdays",
+    "description": "Runs Monday through Friday at 12:30 PM.",
+    "label": "Weekdays at 12:30 PM",
+    "syntax": "30 12 * * 1-5",
+    "tags": ["Weekday", "Business Hours"]
+  },
+  {
+    "description": "Runs every 15 minutes, Monday through Friday.",
     "label": "Every 15 Minutes on Weekdays",
     "syntax": "*/15 * * * 1-5",
     "tags": ["Interval", "Weekday"]
   },
   {
-    "description": "Every hour from 9 AM to 5 PM on weekdays",
-    "label": "Every Hour During Business Hours",
+    "description": "Runs every hour from 9:00 AM through 5:00 PM, Monday through Friday.",
+    "label": "Hourly on Weekdays, 9 AM–5 PM",
     "syntax": "0 9-17 * * 1-5",
     "tags": ["Hourly", "Business Hours"]
   },
   {
-    "description": "At minute 0 and 30 from 9 AM to 5 PM on weekdays",
-    "label": "Every 30 Minutes During Business Hours",
+    "description": "Runs every 2 hours from 9:00 AM through 5:00 PM, Monday through Friday.",
+    "label": "Every 2 Hours on Weekdays, 9 AM–5 PM",
+    "syntax": "0 9-17/2 * * 1-5",
+    "tags": ["Interval", "Business Hours"]
+  },
+  {
+    "description": "Runs at 0 and 30 minutes past every hour from 9:00 AM through 5:00 PM, Monday through Friday.",
+    "label": "Every 30 Minutes on Weekdays, 9 AM–5 PM",
     "syntax": "0,30 9-17 * * 1-5",
     "tags": ["Interval", "Business Hours"]
   },
   {
-    "description": "Every weekend at 10:00 AM",
-    "label": "Every Weekend at 10:00 AM",
+    "description": "Runs at 9:00 AM, 1:00 PM, and 5:00 PM, Monday through Friday.",
+    "label": "Three Times Daily on Weekdays",
+    "syntax": "0 9,13,17 * * 1-5",
+    "tags": ["Business Hours", "Weekday"]
+  },
+  {
+    "description": "Runs at 0 and 30 minutes past every hour from 8:00 AM through 6:00 PM, Monday through Friday.",
+    "label": "Every 30 Minutes on Weekdays, 8 AM–6 PM",
+    "syntax": "0,30 8-18 * * 1-5",
+    "tags": ["Interval", "Business Hours"]
+  },
+  {
+    "description": "Runs Monday through Friday at 6:00 PM.",
+    "label": "Weekdays at 6:00 PM",
+    "syntax": "0 18 * * 1-5",
+    "tags": ["Weekday"]
+  },
+  {
+    "description": "Runs every Saturday and Sunday at 10:00 AM.",
+    "label": "Weekends at 10:00 AM",
     "syntax": "0 10 * * 6,0",
     "tags": ["Weekend"]
   },
   {
-    "description": "Every Monday at 9:00 AM",
+    "description": "Runs every Monday at 9:00 AM.",
     "label": "Every Monday at 9:00 AM",
     "syntax": "0 9 * * 1",
     "tags": ["Weekly"]
   },
   {
-    "description": "Every Friday at 5:00 PM",
+    "description": "Runs every Tuesday and Thursday at 9:00 AM.",
+    "label": "Every Tuesday and Thursday at 9:00 AM",
+    "syntax": "0 9 * * 2,4",
+    "tags": ["Weekly"]
+  },
+  {
+    "description": "Runs every Monday, Wednesday, and Friday at 8:00 AM.",
+    "label": "Every Monday, Wednesday, and Friday at 8:00 AM",
+    "syntax": "0 8 * * 1,3,5",
+    "tags": ["Weekly"]
+  },
+  {
+    "description": "Runs every Friday at 5:00 PM.",
     "label": "Every Friday at 5:00 PM",
     "syntax": "0 17 * * 5",
     "tags": ["Weekly"]
   },
   {
-    "description": "Every month on the 1st at midnight",
-    "label": "Every Month on the 1st",
+    "description": "Runs every Saturday at 11:00 PM.",
+    "label": "Every Saturday at 11:00 PM",
+    "syntax": "0 23 * * 6",
+    "tags": ["Weekly", "Weekend"]
+  },
+  {
+    "description": "Runs every Sunday at 11:59 PM.",
+    "label": "Every Sunday at 11:59 PM",
+    "syntax": "59 23 * * 0",
+    "tags": ["Weekly", "Weekend"]
+  },
+  {
+    "description": "Runs on the first day of every month at 12:00 AM.",
+    "label": "Monthly on the 1st at 12:00 AM",
     "syntax": "0 0 1 * *",
     "tags": ["Monthly"]
   },
   {
-    "description": "Every month on the 15th at noon",
-    "label": "Every Month on the 15th",
+    "description": "Runs on the 5th day of every month at 12:00 AM.",
+    "label": "Monthly on the 5th at 12:00 AM",
+    "syntax": "0 0 5 * *",
+    "tags": ["Monthly"]
+  },
+  {
+    "description": "Runs on the 10th and 20th of every month at 12:00 AM.",
+    "label": "Monthly on the 10th and 20th",
+    "syntax": "0 0 10,20 * *",
+    "tags": ["Monthly"]
+  },
+  {
+    "description": "Runs on the 15th day of every month at 12:00 PM.",
+    "label": "Monthly on the 15th at 12:00 PM",
     "syntax": "0 12 15 * *",
     "tags": ["Monthly"]
   },
   {
-    "description": "On the 1st day of January, April, July, and October",
+    "description": "Runs on the 1st and 15th of every month at 8:00 AM.",
+    "label": "Monthly on the 1st and 15th at 8:00 AM",
+    "syntax": "0 8 1,15 * *",
+    "tags": ["Monthly"]
+  },
+  {
+    "description": "Runs on the 1st through 5th of every month at 9:00 AM.",
+    "label": "First 5 Days of Every Month at 9:00 AM",
+    "syntax": "0 9 1-5 * *",
+    "tags": ["Monthly"]
+  },
+  {
+    "description": "Runs on the 31st day of every month at 12:00 AM. Months without a 31st day are skipped.",
+    "label": "Monthly on the 31st at 12:00 AM",
+    "syntax": "0 0 31 * *",
+    "tags": ["Monthly"]
+  },
+  {
+    "description": "Runs on January 1st, April 1st, July 1st, and October 1st at 12:00 AM.",
     "label": "First Day of Every Quarter",
     "syntax": "0 0 1 1,4,7,10 *",
     "tags": ["Quarterly"]
   },
   {
-    "description": "Every year on January 1st at midnight",
-    "label": "Every Year on January 1st",
+    "description": "Runs every year on January 1st at 12:00 AM.",
+    "label": "Every January 1st at 12:00 AM",
     "syntax": "0 0 1 1 *",
     "tags": ["Yearly"]
   },
   {
-    "description": "Every year on Christmas Day at midnight",
-    "label": "Every Year on Christmas",
+    "description": "Runs every year on December 25th at 12:00 AM.",
+    "label": "Every December 25th at 12:00 AM",
     "syntax": "0 0 25 12 *",
     "tags": ["Yearly"]
   }

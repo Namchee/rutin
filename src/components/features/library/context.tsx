@@ -6,7 +6,6 @@ export type DisplayType = 'grid' | 'list';
 function createLibraryContext() {
   const [format, setFormat] = createSignal<ScheduleFormat>('unix');
   const [display, setDisplay] = createSignal<DisplayType>('grid');
-  const [tags, setTags] = createSignal<string[]>(['all']);
 
   return {
     display,
@@ -14,9 +13,6 @@ function createLibraryContext() {
     format,
     setDisplay,
     setFormat,
-    setTags,
-
-    tags,
   };
 }
 
