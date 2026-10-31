@@ -208,7 +208,7 @@ export function ScheduleExecutions() {
   return (
     <div class="flex flex-col overflow-hidden rounded-lg border border-separator">
       <div class="flex h-fit items-center justify-between border-separator border-b px-4 py-2">
-        <p class="font-medium text-content-secondary text-sm">Next executions</p>
+        <p class="font-medium text-content-secondary text-sm">Executions</p>
 
         <TimezoneSelector timezone={timezone} setTimezone={setTimezone} />
       </div>

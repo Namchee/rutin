@@ -67,7 +67,7 @@ export function ScheduleEditor() {
         <FormatSelector format={format} setFormat={setFormat} />
 
         <Show when={state() !== 'incomplete'}>
-          <Badge variant={state() === 'valid' ? 'default' : 'outline'}>
+          <Badge variant={state() === 'valid' ? 'default' : 'outline'} class="px-2">
             <div
               class={cn('size-[14px]', {
                 'i-lucide-check': state() === 'valid',
