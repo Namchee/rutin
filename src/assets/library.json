@@ -4,5 +4,161 @@
     "label": "Every Minute",
     "syntax": "* * * * *",
     "tags": ["Interval"]
+  },
+  {
+    "description": "Every 5 minutes",
+    "label": "Every 5 Minutes",
+    "syntax": "*/5 * * * *",
+    "tags": ["Interval"]
+  },
+  {
+    "description": "Every 10 minutes",
+    "label": "Every 10 Minutes",
+    "syntax": "*/10 * * * *",
+    "tags": ["Interval"]
+  },
+  {
+    "description": "Every 15 minutes",
+    "label": "Every 15 Minutes",
+    "syntax": "*/15 * * * *",
+    "tags": ["Interval"]
+  },
+  {
+    "description": "Every 30 minutes",
+    "label": "Every 30 Minutes",
+    "syntax": "*/30 * * * *",
+    "tags": ["Interval"]
+  },
+  {
+    "description": "At the start of every hour",
+    "label": "Every Hour",
+    "syntax": "0 * * * *",
+    "tags": ["Hourly"]
+  },
+  {
+    "description": "At minute 0 of every 2nd hour",
+    "label": "Every 2 Hours",
+    "syntax": "0 */2 * * *",
+    "tags": ["Interval"]
+  },
+  {
+    "description": "At minute 0 of every 6th hour",
+    "label": "Every 6 Hours",
+    "syntax": "0 */6 * * *",
+    "tags": ["Interval"]
+  },
+  {
+    "description": "At minute 0 of every 12th hour",
+    "label": "Every 12 Hours",
+    "syntax": "0 */12 * * *",
+    "tags": ["Interval"]
+  },
+  {
+    "description": "Every day at midnight",
+    "label": "Every Day at Midnight",
+    "syntax": "0 0 * * *",
+    "tags": ["Daily"]
+  },
+  {
+    "description": "Every day at 6:00 AM",
+    "label": "Every Day at 6:00 AM",
+    "syntax": "0 6 * * *",
+    "tags": ["Daily"]
+  },
+  {
+    "description": "Every day at 9:00 AM",
+    "label": "Every Day at 9:00 AM",
+    "syntax": "0 9 * * *",
+    "tags": ["Daily"]
+  },
+  {
+    "description": "Every day at noon",
+    "label": "Every Day at Noon",
+    "syntax": "0 12 * * *",
+    "tags": ["Daily"]
+  },
+  {
+    "description": "Every day at 6:00 PM",
+    "label": "Every Day at 6:00 PM",
+    "syntax": "0 18 * * *",
+    "tags": ["Daily"]
+  },
+  {
+    "description": "Every day at 8:00 AM and 8:00 PM",
+    "label": "Twice a Day",
+    "syntax": "0 8,20 * * *",
+    "tags": ["Daily"]
+  },
+  {
+    "description": "Every weekday at 9:00 AM",
+    "label": "Every Weekday at 9:00 AM",
+    "syntax": "0 9 * * 1-5",
+    "tags": ["Weekday", "Business Hours"]
+  },
+  {
+    "description": "Every 15 minutes on weekdays",
+    "label": "Every 15 Minutes on Weekdays",
+    "syntax": "*/15 * * * 1-5",
+    "tags": ["Interval", "Weekday"]
+  },
+  {
+    "description": "Every hour from 9 AM to 5 PM on weekdays",
+    "label": "Every Hour During Business Hours",
+    "syntax": "0 9-17 * * 1-5",
+    "tags": ["Hourly", "Business Hours"]
+  },
+  {
+    "description": "At minute 0 and 30 from 9 AM to 5 PM on weekdays",
+    "label": "Every 30 Minutes During Business Hours",
+    "syntax": "0,30 9-17 * * 1-5",
+    "tags": ["Interval", "Business Hours"]
+  },
+  {
+    "description": "Every weekend at 10:00 AM",
+    "label": "Every Weekend at 10:00 AM",
+    "syntax": "0 10 * * 6,0",
+    "tags": ["Weekend"]
+  },
+  {
+    "description": "Every Monday at 9:00 AM",
+    "label": "Every Monday at 9:00 AM",
+    "syntax": "0 9 * * 1",
+    "tags": ["Weekly"]
+  },
+  {
+    "description": "Every Friday at 5:00 PM",
+    "label": "Every Friday at 5:00 PM",
+    "syntax": "0 17 * * 5",
+    "tags": ["Weekly"]
+  },
+  {
+    "description": "Every month on the 1st at midnight",
+    "label": "Every Month on the 1st",
+    "syntax": "0 0 1 * *",
+    "tags": ["Monthly"]
+  },
+  {
+    "description": "Every month on the 15th at noon",
+    "label": "Every Month on the 15th",
+    "syntax": "0 12 15 * *",
+    "tags": ["Monthly"]
+  },
+  {
+    "description": "On the 1st day of January, April, July, and October",
+    "label": "First Day of Every Quarter",
+    "syntax": "0 0 1 1,4,7,10 *",
+    "tags": ["Quarterly"]
+  },
+  {
+    "description": "Every year on January 1st at midnight",
+    "label": "Every Year on January 1st",
+    "syntax": "0 0 1 1 *",
+    "tags": ["Yearly"]
+  },
+  {
+    "description": "Every year on Christmas Day at midnight",
+    "label": "Every Year on Christmas",
+    "syntax": "0 0 25 12 *",
+    "tags": ["Yearly"]
   }
 ]
