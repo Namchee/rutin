@@ -9,6 +9,7 @@ export function LibraryDialect() {
     <FormatSelector
       format={format}
       setFormat={setFormat}
+      position="end"
       class="w-32 max-w-full truncate rounded-r-none border-0 max-md:w-fit">
       <div class='flex w-full items-center overflow-hidden'>
         <div class="i-lucide-code-xml size-4 shrink-0 text-content-secondary md:mr-2" />

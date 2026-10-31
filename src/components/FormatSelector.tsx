@@ -21,6 +21,7 @@ interface FormatSelectorProps {
   format: Accessor<ScheduleFormat>;
   setFormat: (format: ScheduleFormat) => void;
 
+  position?: 'start' | 'end';
   children?: JSX.Element;
   class?: string;
 }
@@ -102,11 +103,14 @@ function FormatSelect(props: Readonly<FormatSelectorProps>) {
       collection={collection}
       value={[props.format()]}
       onValueChange={v => props.setFormat(v.value[0] as unknown as ScheduleFormat)}
+      positioning={{
+        placement: props.position === 'end' ? 'bottom-end' : 'bottom-start',
+      }}
       class="flex items-center gap-2">
       <SelectTrigger class={triggerClass(props)}>{resolveTrigger(props)}</SelectTrigger>
 
       <SelectContent class="max-w-sm">
-        <p class="mt-1 ml-2 font-mono text-content-secondary text-xs uppercase">Dialect</p>
+        <p class="my-1 ml-2 font-mono text-content-secondary text-xs uppercase">Dialect</p>
 
         <For each={collection.items}>
           {item => (
@@ -143,6 +147,7 @@ export function FormatSelector(props: Readonly<FormatSelectorProps>) {
         format={props.format}
         setFormat={props.setFormat}
         children={props.children}
+        position={props.position}
       />
     </Show>
   );
