@@ -1,18 +1,21 @@
 import { createContext, createSignal, type JSX, useContext } from 'solid-js';
+import { useQueryState } from '@/lib/hooks/use-query-state';
 import type { ScheduleFormat } from '@/types/schedule';
 
 export type DisplayType = 'grid' | 'list';
 
 function createLibraryContext() {
-  const [format, setFormat] = createSignal<ScheduleFormat>('unix');
+  const [query, setQuery] = useQueryState('q', { default: '' });
+  const [format, setFormat] = useQueryState<ScheduleFormat>('dialect', { default: 'unix' });
   const [display, setDisplay] = createSignal<DisplayType>('grid');
 
   return {
     display,
-
     format,
+    query,
     setDisplay,
     setFormat,
+    setQuery,
   };
 }
 

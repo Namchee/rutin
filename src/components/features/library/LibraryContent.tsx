@@ -8,13 +8,16 @@ import { LibraryItem } from './LibraryItem';
 export function LibraryContent() {
   const { display } = useLibraryContext();
 
+  // filter logic
+  const templates = Templates.filter(t => t);
+
   return (
     <div
       class={cn({
         'flex flex-col gap-2': display() === 'list',
         'grid grid-cols-3': display() === 'grid',
       })}>
-      <For each={Templates}>
+      <For each={templates}>
         {(template: LibraryTemplate) => <LibraryItem template={template} />}
       </For>
     </div>
