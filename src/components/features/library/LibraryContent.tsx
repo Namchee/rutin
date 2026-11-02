@@ -13,8 +13,8 @@ export function LibraryContent() {
 
   return (
     <div
-      class={cn({
-        'flex flex-col gap-2': display() === 'list',
+      class={cn('gap-4', {
+        'flex flex-col': display() === 'list',
         'grid grid-cols-3': display() === 'grid',
       })}>
       <For each={templates}>
