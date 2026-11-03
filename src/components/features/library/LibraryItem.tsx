@@ -44,10 +44,14 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
 
   return (
     <div
-      class={cn('flex rounded-md border border-md border-separator', {
-        'flex-col divide-y divide-separator': display() === 'grid',
+      class={cn('flex divide-separator rounded-md border border-md border-separator', {
+        'divide-x': display() === 'list',
+        'flex-col divide-y': display() === 'grid',
       })}>
-      <div class="flex items-center gap-4 px-4 py-2">
+      <div
+        class={cn('flex items-center gap-4 px-4 py-2', {
+          'w-1/8 flex-col items-start justify-start gap-2': display() === 'list',
+        })}>
         <div class="flex flex-col gap-0.5">
           <p class="font-mono text-2xs text-content-tertiary uppercase">Per day</p>
           <p class="font-medium font-mono text-content-secondary">{formatter.format(720)}</p>
@@ -59,7 +63,7 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
         </div>
       </div>
 
-      <div class="flex flex-col gap-2 p-4">
+      <div class="flex flex-1 flex-col gap-2 p-4">
         <div class="flex items-center gap-1">
           {template.syntax.split(' ').map(s => (
             <p class="inline w-fit rounded-md border border-separator bg-background px-1.5 py-0.5 font-mono">
@@ -73,27 +77,25 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
         <p class="text-content-tertiary text-xs">{template.description}</p>
       </div>
 
-      <div class="flex items-center justify-between bg-background px-4 py-3">
+      <div class={cn("flex items-center justify-between bg-background px-4 py-3", {
+        'flex-col': display() === 'list'
+      })}>
         <p class="font-mono text-content-secondary text-xs">
           <span class="uppercase">Next </span>- Today, 02:10
         </p>
 
         <div class="flex items-center gap-1">
           <Tooltip>
-            <TooltipTrigger>
-              <Button
-                variant="ghost"
-                size="icon"
-                class="size-6"
-                onClick={onCopy}
-                disabled={copied()}>
-                <div
-                  class={cn('size-3', {
-                    'i-lucide-check': copied(),
-                    'i-lucide-copy': !copied(),
-                  })}
-                />
-              </Button>
+            <TooltipTrigger
+              class="grid size-6 place-items-center rounded-md rounded-md transition-colors enabled:cursor-pointer enabled:focus-visible:bg-background-hover enabled:hover:bg-background-hover"
+              onClick={onCopy}
+              disabled={copied()}>
+              <div
+                class={cn('size-3', {
+                  'i-lucide-check': copied(),
+                  'i-lucide-copy': !copied(),
+                })}
+              />
             </TooltipTrigger>
 
             <TooltipContent>Copy</TooltipContent>
@@ -103,7 +105,7 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
             <TooltipTrigger>
               <a
                 href={`/?q=${template.syntax}&dialect=${format()}`}
-                class='grid size-6 place-items-center rounded-md transition-colors hover:bg-background-hover focus-visible:bg-background-hover'>
+                class="grid size-6 place-items-center rounded-md transition-colors hover:bg-background-hover focus-visible:bg-background-hover">
                 <div class="i-lucide-square-pen size-3 text-content-secondary" />
               </a>
             </TooltipTrigger>
