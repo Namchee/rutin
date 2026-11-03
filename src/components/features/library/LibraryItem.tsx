@@ -11,7 +11,7 @@ interface LibraryItemProps {
 }
 
 export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
-  const { display } = useLibraryContext();
+  const { display, format } = useLibraryContext();
 
   const [copied, setCopied] = createSignal<boolean>(false);
   const [timeoutRef, setTimeoutRef] = createSignal<ReturnType<typeof setTimeout> | undefined>();
@@ -41,7 +41,6 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
       clearTimeout(ref);
     }
   });
-
 
   return (
     <div
@@ -82,7 +81,12 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
         <div class="flex items-center gap-1">
           <Tooltip>
             <TooltipTrigger>
-              <Button variant="ghost" size="icon" class="size-6" onClick={onCopy} disabled={copied()}>
+              <Button
+                variant="ghost"
+                size="icon"
+                class="size-6"
+                onClick={onCopy}
+                disabled={copied()}>
                 <div
                   class={cn('size-3', {
                     'i-lucide-check': copied(),
@@ -97,9 +101,11 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
 
           <Tooltip>
             <TooltipTrigger>
-              <Button variant="ghost" size="icon" class="size-6">
+              <a
+                href={`/?q=${template.syntax}&dialect=${format()}`}
+                class='grid size-6 place-items-center rounded-md transition-colors hover:bg-background-hover focus-visible:bg-background-hover'>
                 <div class="i-lucide-square-pen size-3 text-content-secondary" />
-              </Button>
+              </a>
             </TooltipTrigger>
 
             <TooltipContent>Use in Editor</TooltipContent>
