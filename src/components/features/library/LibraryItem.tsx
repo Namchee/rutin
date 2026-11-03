@@ -1,3 +1,6 @@
+import { TooltipTrigger } from '@ark-ui/solid';
+import { Button } from '@/components/ui/Button';
+import { Tooltip, TooltipContent } from '@/components/ui/Tooltip';
 import { cn } from '@/lib/css';
 import type { LibraryTemplate } from '@/types/library';
 import { useLibraryContext } from './context';
@@ -14,37 +17,65 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
   return (
     <div
       class={cn('flex rounded-md border border-md border-separator', {
-        'flex-col': display() === 'grid',
+        'flex-col divide-y divide-separator': display() === 'grid',
       })}>
-      <div class="flex items-center gap-4 border-separator border-b px-4 py-2">
+      <div class="flex items-center gap-4 px-4 py-2">
         <div class="flex flex-col gap-0.5">
-          <p class="font-mono text-2xs text-content-secondary uppercase">Per day</p>
-          <p class='font-medium font-mono text-content-secondary text-sm'>
-            {formatter.format(720)}
-          </p>
+          <p class="font-mono text-2xs text-content-tertiary uppercase">Per day</p>
+          <p class="font-medium font-mono text-content-secondary">{formatter.format(720)}</p>
         </div>
 
         <div class="flex flex-col gap-0.5">
-          <p class="font-mono text-2xs text-content-secondary uppercase">Per year</p>
-          <p class='font-medium font-mono text-content-secondary text-sm'>
-            {formatter.format(14400)}
-          </p>
+          <p class="font-mono text-2xs text-content-tertiary uppercase">Per year</p>
+          <p class="font-medium font-mono text-content-secondary">{formatter.format(14400)}</p>
         </div>
       </div>
 
       <div class="flex flex-col gap-2 p-4">
-        <p class="inline w-fit rounded-md border border-separator bg-background px-1 font-mono">
-          {template.syntax}
-        </p>
-
-        <div>
-          <p class="font-medium text-content-secondary text-sm">{template.label}</p>
-
-          <p class="text-content-tertiary text-xs">{template.description}</p>
+        <div class="flex items-center gap-1">
+          {template.syntax.split(' ').map(s => (
+            <p class="inline w-fit rounded-md border border-separator bg-background px-1 font-mono">
+              {s}
+            </p>
+          ))}
         </div>
+
+        <p class="font-medium text-content-secondary text-sm">{template.label}</p>
+
+        <p class="text-content-tertiary text-xs">{template.description}</p>
       </div>
 
-      <div></div>
+      <div class="flex items-center justify-between bg-background px-4 py-3">
+        <p class="font-mono text-content-secondary text-xs">
+          <span class="uppercase">Next </span>- Today, 02:10
+        </p>
+
+        <div class="flex items-center gap-1">
+          <Tooltip>
+            <TooltipTrigger>
+              <Button variant="ghost" size="icon" class="size-6">
+                <div class="i-lucide-copy size-3 text-content-secondary" />
+              </Button>
+            </TooltipTrigger>
+
+            <TooltipContent>
+              Copy
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger>
+              <Button variant="ghost" size="icon" class="size-6">
+                <div class="i-lucide-square-pen size-3 text-content-secondary" />
+              </Button>
+            </TooltipTrigger>
+
+            <TooltipContent>
+              Use in Editor
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      </div>
     </div>
   );
 }
