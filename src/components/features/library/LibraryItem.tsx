@@ -1,4 +1,5 @@
 import { TooltipTrigger } from '@ark-ui/solid';
+import { createSignal, onCleanup } from 'solid-js';
 import { Button } from '@/components/ui/Button';
 import { Tooltip, TooltipContent } from '@/components/ui/Tooltip';
 import { cn } from '@/lib/css';
@@ -12,7 +13,35 @@ interface LibraryItemProps {
 export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
   const { display } = useLibraryContext();
 
+  const [copied, setCopied] = createSignal<boolean>(false);
+  const [timeoutRef, setTimeoutRef] = createSignal<ReturnType<typeof setTimeout> | undefined>();
+
   const formatter = new Intl.NumberFormat('en-GB');
+
+  async function onCopy() {
+    try {
+      await navigator.clipboard.writeText(template.syntax);
+    } catch {
+      return;
+    }
+
+    setCopied(true);
+
+    setTimeoutRef(
+      setTimeout(() => {
+        setCopied(false);
+      }, 2_500),
+    );
+  }
+
+  onCleanup(() => {
+    const ref = timeoutRef();
+
+    if (ref) {
+      clearTimeout(ref);
+    }
+  });
+
 
   return (
     <div
@@ -34,7 +63,7 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
       <div class="flex flex-col gap-2 p-4">
         <div class="flex items-center gap-1">
           {template.syntax.split(' ').map(s => (
-            <p class="inline w-fit rounded-md border border-separator bg-background px-1 font-mono">
+            <p class="inline w-fit rounded-md border border-separator bg-background px-1.5 py-0.5 font-mono">
               {s}
             </p>
           ))}
@@ -53,14 +82,17 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
         <div class="flex items-center gap-1">
           <Tooltip>
             <TooltipTrigger>
-              <Button variant="ghost" size="icon" class="size-6">
-                <div class="i-lucide-copy size-3 text-content-secondary" />
+              <Button variant="ghost" size="icon" class="size-6" onClick={onCopy} disabled={copied()}>
+                <div
+                  class={cn('size-3', {
+                    'i-lucide-check': copied(),
+                    'i-lucide-copy': !copied(),
+                  })}
+                />
               </Button>
             </TooltipTrigger>
 
-            <TooltipContent>
-              Copy
-            </TooltipContent>
+            <TooltipContent>Copy</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -70,9 +102,7 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
               </Button>
             </TooltipTrigger>
 
-            <TooltipContent>
-              Use in Editor
-            </TooltipContent>
+            <TooltipContent>Use in Editor</TooltipContent>
           </Tooltip>
         </div>
       </div>
