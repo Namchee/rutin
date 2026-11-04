@@ -21,7 +21,13 @@ export function LibraryHeader() {
 
         <ToggleGroup
           value={[display()]}
-          onValueChange={val => setDisplay(val.value[0] as DisplayType)}
+          onValueChange={val => {
+            if (val.value.length === 0) {
+              return;
+            }
+
+            setDisplay(val.value[0] as DisplayType);
+          }}
           class="gap-0 rounded-md rounded-l-none border-separator border-l">
           <Tooltip>
             <TooltipTrigger>

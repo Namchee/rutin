@@ -80,9 +80,15 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
       <div class={cn("flex items-center justify-between bg-background px-4 py-3", {
         'flex-col': display() === 'list'
       })}>
-        <p class="font-mono text-content-secondary text-xs">
-          <span class="uppercase">Next </span>- Today, 02:10
-        </p>
+        <div class={cn("flex items-center font-mono text-content-secondary text-xs", {
+          'flex-col': display() === 'list'
+        })}>
+          <span class="uppercase">Next </span>
+
+          <span>
+            Today, 02:10
+          </span>
+        </div>
 
         <div class="flex items-center gap-1">
           <Tooltip>
