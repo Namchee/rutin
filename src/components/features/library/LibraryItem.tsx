@@ -48,20 +48,6 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
         'divide-x': display() === 'list',
         'flex-col divide-y': display() === 'grid',
       })}>
-      <div
-        class={cn('flex items-center gap-4 px-4 py-2', {
-          'w-1/8 flex-col items-start justify-start gap-2': display() === 'list',
-        })}>
-        <div class="flex flex-col gap-0.5">
-          <p class="font-mono text-2xs text-content-tertiary uppercase">Per day</p>
-          <p class="font-medium font-mono text-content-secondary">{formatter.format(720)}</p>
-        </div>
-
-        <div class="flex flex-col gap-0.5">
-          <p class="font-mono text-2xs text-content-tertiary uppercase">Per year</p>
-          <p class="font-medium font-mono text-content-secondary">{formatter.format(14400)}</p>
-        </div>
-      </div>
 
       <div class="flex flex-1 flex-col gap-2 p-4">
         <div class="flex items-center gap-1">
