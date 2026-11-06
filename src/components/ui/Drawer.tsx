@@ -66,7 +66,7 @@ const DrawerContent = <T extends ValidComponent = 'div'>(props: DrawerContentPro
                 {props.children}
 
                 <Show when={props.showX}>
-                  <DrawerPrimitive.CloseTrigger class='absolute top-3 right-3 w-fit text-content-primary'>
+                  <DrawerPrimitive.CloseTrigger class="absolute top-3 right-3 w-fit text-content-primary">
                     <div class="i-lucide-x size-3" />
                   </DrawerPrimitive.CloseTrigger>
                 </Show>

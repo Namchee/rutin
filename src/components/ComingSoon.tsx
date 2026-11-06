@@ -12,7 +12,7 @@ export function ComingSoon() {
         </span>
       </h1>
 
-      <p class='text-content-tertiary text-lg leading-normal'>
+      <p class="text-content-tertiary text-lg leading-normal">
         This feature isn't quite out of the oven yet.
       </p>
 

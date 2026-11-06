@@ -1,62 +1,8 @@
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/css';
-import type { FieldName, ScheduleFormat } from '@/types/schedule';
 
 import { useEditorContext } from './context';
-
-interface HintEntry {
-  field: FieldName;
-  label: string;
-  /** When true, the field is optional in this dialect; rendered as `[label]`. */
-  optional?: boolean;
-}
-
-const Hints: Record<ScheduleFormat, HintEntry[]> = {
-  amazon: [
-    { field: 'minute', label: 'Minute' },
-    { field: 'hour', label: 'Hour' },
-    { field: 'dayOfMonth', label: 'Date' },
-    { field: 'month', label: 'Month' },
-    { field: 'dayOfWeek', label: 'Day' },
-    { field: 'year', label: 'Year' },
-  ],
-  'cf-workers': [
-    { field: 'minute', label: 'Minute' },
-    { field: 'hour', label: 'Hour' },
-    { field: 'dayOfMonth', label: 'Date' },
-    { field: 'month', label: 'Month' },
-    { field: 'dayOfWeek', label: 'Day' },
-  ],
-  node: [
-    { field: 'second', label: 'Second', optional: true },
-    { field: 'minute', label: 'Minute' },
-    { field: 'hour', label: 'Hour' },
-    { field: 'dayOfMonth', label: 'Date' },
-    { field: 'month', label: 'Month' },
-    { field: 'dayOfWeek', label: 'Day' },
-  ],
-  quartz: [
-    { field: 'second', label: 'Second' },
-    { field: 'minute', label: 'Minute' },
-    { field: 'hour', label: 'Hour' },
-    { field: 'dayOfMonth', label: 'Date' },
-    { field: 'month', label: 'Month' },
-    { field: 'dayOfWeek', label: 'Day' },
-    { field: 'year', label: 'Year', optional: true },
-  ],
-  systemd: [
-    { field: 'dayOfWeek', label: 'Day' },
-    { field: 'date', label: 'Year-Month-Day' },
-    { field: 'time', label: 'Hour:Minute:Second' },
-  ],
-  unix: [
-    { field: 'minute', label: 'Minute' },
-    { field: 'hour', label: 'Hour' },
-    { field: 'dayOfMonth', label: 'Date' },
-    { field: 'month', label: 'Month' },
-    { field: 'dayOfWeek', label: 'Day' },
-  ],
-};
+import { Hints } from '@/const/schedule';
 
 export function ScheduleHint() {
   const { format, currentToken, tokens, errors, onHintSelect, value, state } = useEditorContext();

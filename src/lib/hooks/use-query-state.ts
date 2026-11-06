@@ -15,7 +15,10 @@ export function booleanParser() {
   return (v: string | string[]) => Boolean(v) || v === '';
 }
 
-export function useQueryState<T = string>(key: string, options: QueryStateOptions<T>): [Accessor<T>, (val: T | null) => void] {
+export function useQueryState<T = string>(
+  key: string,
+  options: QueryStateOptions<T>,
+): [Accessor<T>, (val: T | null) => void] {
   const [params, setParams] = useSearchParams();
 
   function accessor() {
@@ -23,7 +26,7 @@ export function useQueryState<T = string>(key: string, options: QueryStateOption
       return options.parser(params[key] ?? '');
     }
 
-    return params[key] as T ?? options.default;
+    return (params[key] as T) ?? options.default;
   }
 
   function setter(val: T | null) {

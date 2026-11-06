@@ -1,4 +1,4 @@
-import type { Format, ScheduleFormat } from '@/types/schedule';
+import type { Format, ScheduleFormat, ScheduleHint } from '@/types/schedule';
 
 // biome-ignore assist/source/useSortedKeys: Need to preserve order
 export const FormatLabel: Record<ScheduleFormat, Format> = {
@@ -26,4 +26,51 @@ export const FormatLabel: Record<ScheduleFormat, Format> = {
     description: '3 fields ⋅ OnCalendar ⋅ Linux',
     label: 'Systemd',
   },
+};
+
+export const Hints: Record<ScheduleFormat, ScheduleHint[]> = {
+  amazon: [
+    { field: 'minute', label: 'Minute' },
+    { field: 'hour', label: 'Hour' },
+    { field: 'dayOfMonth', label: 'Date' },
+    { field: 'month', label: 'Month' },
+    { field: 'dayOfWeek', label: 'Day' },
+    { field: 'year', label: 'Year' },
+  ],
+  'cf-workers': [
+    { field: 'minute', label: 'Minute' },
+    { field: 'hour', label: 'Hour' },
+    { field: 'dayOfMonth', label: 'Date' },
+    { field: 'month', label: 'Month' },
+    { field: 'dayOfWeek', label: 'Day' },
+  ],
+  node: [
+    { field: 'second', label: 'Second', optional: true },
+    { field: 'minute', label: 'Minute' },
+    { field: 'hour', label: 'Hour' },
+    { field: 'dayOfMonth', label: 'Date' },
+    { field: 'month', label: 'Month' },
+    { field: 'dayOfWeek', label: 'Day' },
+  ],
+  quartz: [
+    { field: 'second', label: 'Second' },
+    { field: 'minute', label: 'Minute' },
+    { field: 'hour', label: 'Hour' },
+    { field: 'dayOfMonth', label: 'Date' },
+    { field: 'month', label: 'Month' },
+    { field: 'dayOfWeek', label: 'Day' },
+    { field: 'year', label: 'Year', optional: true },
+  ],
+  systemd: [
+    { field: 'dayOfWeek', label: 'Day' },
+    { field: 'date', label: 'Year-Month-Day' },
+    { field: 'time', label: 'Hour:Minute:Second' },
+  ],
+  unix: [
+    { field: 'minute', label: 'Minute' },
+    { field: 'hour', label: 'Hour' },
+    { field: 'dayOfMonth', label: 'Date' },
+    { field: 'month', label: 'Month' },
+    { field: 'dayOfWeek', label: 'Day' },
+  ],
 };

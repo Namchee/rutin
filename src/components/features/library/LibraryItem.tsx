@@ -1,17 +1,17 @@
 import { TooltipTrigger } from '@ark-ui/solid';
 import { createSignal, onCleanup } from 'solid-js';
-import { Button } from '@/components/ui/Button';
 import { Tooltip, TooltipContent } from '@/components/ui/Tooltip';
 import { cn } from '@/lib/css';
 import type { LibraryTemplate } from '@/types/library';
 import { useLibraryContext } from './context';
+import { Hints } from '@/const/schedule';
 
 interface LibraryItemProps {
   template: LibraryTemplate;
 }
 
 export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
-  const { display, format } = useLibraryContext();
+  const { format } = useLibraryContext();
 
   const [copied, setCopied] = createSignal<boolean>(false);
   const [timeoutRef, setTimeoutRef] = createSignal<ReturnType<typeof setTimeout> | undefined>();
@@ -43,18 +43,19 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
   });
 
   return (
-    <div
-      class={cn('flex divide-separator rounded-md border border-md border-separator', {
-        'divide-x': display() === 'list',
-        'flex-col divide-y': display() === 'grid',
-      })}>
-
+    <div class="flex flex-col divide-y divide-separator rounded-md border border-md border-separator">
       <div class="flex flex-1 flex-col gap-2 p-4">
         <div class="flex items-center gap-1">
-          {template.syntax.split(' ').map(s => (
-            <p class="inline w-fit rounded-md border border-separator bg-background px-1.5 py-0.5 font-mono">
-              {s}
-            </p>
+          {template.syntax.split(' ').map((val, idx) => (
+            <Tooltip>
+              <TooltipTrigger class="inline w-fit rounded-md border border-separator bg-background px-1.5 py-0.5 font-mono">
+                {val}
+              </TooltipTrigger>
+
+              <TooltipContent>
+                {Hints[format()][idx].label}
+              </TooltipContent>
+            </Tooltip>
           ))}
         </div>
 
@@ -63,17 +64,11 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
         <p class="text-content-tertiary text-xs">{template.description}</p>
       </div>
 
-      <div class={cn("flex items-center justify-between bg-background px-4 py-3", {
-        'flex-col': display() === 'list'
-      })}>
-        <div class={cn("flex items-center font-mono text-content-secondary text-xs", {
-          'flex-col': display() === 'list'
-        })}>
-          <span class="uppercase">Next </span>
+      <div class="flex items-center justify-between bg-background px-4 py-3">
+        <div class="flex items-center font-mono text-content-secondary text-xs">
+          <span class="uppercase">Next &ndash; </span>
 
-          <span>
-            Today, 02:10
-          </span>
+          <span>Today, 02:10</span>
         </div>
 
         <div class="flex items-center gap-1">

@@ -38,9 +38,7 @@ export function LibraryHeader() {
               </ToggleGroupItem>
             </TooltipTrigger>
 
-            <TooltipContent>
-              Toggle grid view
-            </TooltipContent>
+            <TooltipContent>Toggle grid view</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -52,9 +50,7 @@ export function LibraryHeader() {
               </ToggleGroupItem>
             </TooltipTrigger>
 
-            <TooltipContent>
-              Toggle list view
-            </TooltipContent>
+            <TooltipContent>Toggle list view</TooltipContent>
           </Tooltip>
         </ToggleGroup>
       </div>

@@ -36,9 +36,7 @@ type ButtonProps<T extends ValidComponent = 'button'> = ComponentProps<T> &
     children?: JSX.Element;
   };
 
-const Button = <T extends ValidComponent = 'button'>(
-  props: ButtonProps<T>,
-) => {
+const Button = <T extends ValidComponent = 'button'>(props: ButtonProps<T>) => {
   const [local, others] = splitProps(props as ButtonProps, ['as', 'variant', 'size', 'class']);
 
   return (

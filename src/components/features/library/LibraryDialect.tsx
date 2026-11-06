@@ -11,7 +11,7 @@ export function LibraryDialect() {
       setFormat={setFormat}
       position="end"
       class="w-32 max-w-full truncate rounded-r-none border-0 max-md:w-fit">
-      <div class='flex w-full items-center overflow-hidden'>
+      <div class="flex w-full items-center overflow-hidden">
         <div class="i-lucide-code-xml size-4 shrink-0 text-content-secondary md:mr-2" />
         <span class="truncate max-md:hidden">{FormatLabel[format()].label}</span>
         <div class="i-lucide-chevron-down ml-auto size-3 shrink-0 text-content-tertiary" />

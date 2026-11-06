@@ -146,7 +146,7 @@ function TimezoneSelector({ timezone, setTimezone }: Readonly<TimezoneSelectorPr
         onValueChange={v => setTimezone(v.value[0])}
         class="flex items-center gap-2">
         <SelectTrigger>
-          <div class='i-lucide-globe mr-2 size-4 shrink-0 text-content-secondary' />
+          <div class="i-lucide-globe mr-2 size-4 shrink-0 text-content-secondary" />
 
           <SelectValue
             class="h-fit w-20 truncate font-medium leading-none"
