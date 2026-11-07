@@ -60,7 +60,7 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
   });
 
   const next = createMemo(() => {
-    const result = Parsers[format()].process(template.syntax);
+    const result = Parsers.unix.process(template.syntax);
 
     if (result.status !== 'valid') {
       return null;
