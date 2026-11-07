@@ -1,9 +1,11 @@
 import { TooltipTrigger } from '@ark-ui/solid';
-import { createMemo, createSignal, onCleanup } from 'solid-js';
+import { createMemo, createSignal, onCleanup, Show } from 'solid-js';
+import { Temporal } from 'temporal-polyfill';
 import { Tooltip, TooltipContent } from '@/components/ui/Tooltip';
 import { Hints } from '@/const/schedule';
 import { cn } from '@/lib/css';
 import { Parsers } from '@/lib/parsers';
+import { formatDateTime, formatRelativeTime } from '@/lib/temporal';
 import type { LibraryTemplate } from '@/types/library';
 import type { FieldName, Token, TokenMap } from '@/types/schedule';
 import { useLibraryContext } from './context';
@@ -57,6 +59,18 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
       }));
   });
 
+  const next = createMemo(() => {
+    const result = Parsers[format()].process(template.syntax);
+
+    if (result.status !== 'valid') {
+      return null;
+    }
+
+    const iteration = result.generator.next();
+
+    return iteration.done ? null : iteration.value;
+  });
+
   async function onCopy() {
     try {
       await navigator.clipboard.writeText(syntax().value);
@@ -102,11 +116,26 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
       </div>
 
       <div class="flex items-center justify-between bg-background px-4 py-3">
-        <div class="flex items-center font-mono text-content-secondary text-xs">
-          <span class="uppercase">Next &ndash; </span>
+        <Show when={next()}>
+          {date => (
+            <div class="flex gap-1 text-xs">
+              <p class='font-mono text-content-secondary'>Next</p>
 
-          <span>Today, 02:10</span>
-        </div>
+              <span class='text-content-tertiary'>
+                &middot;
+              </span>
+
+              <Tooltip>
+                <TooltipTrigger class="text-content-secondary">
+                  {formatDateTime(date())}
+                </TooltipTrigger>
+
+                <TooltipContent>                  {formatRelativeTime(Temporal.Now.plainDateTimeISO(), date())}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          )}
+        </Show>
 
         <div class="flex items-center gap-1">
           <Tooltip>
