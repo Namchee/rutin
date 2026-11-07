@@ -5,7 +5,7 @@ import { Hints } from '@/const/schedule';
 import { cn } from '@/lib/css';
 import { Parsers } from '@/lib/parsers';
 import type { LibraryTemplate } from '@/types/library';
-import type { Token, TokenMap } from '@/types/schedule';
+import type { FieldName, Token, TokenMap } from '@/types/schedule';
 import { useLibraryContext } from './context';
 
 interface LibraryItemProps {
@@ -45,15 +45,21 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
     return Parsers[format()].convert(tokens, template.syntax, 'unix');
   });
 
-  const fields = createMemo(() =>
-    syntax()
-      .value.split(' ')
-      .map((value, index) => ({ hint: Hints[format()][index]?.label, value })),
-  );
+  const fields = createMemo(() => {
+    const hints = Hints[format()];
+
+    return Object.entries(syntax().tokens)
+      .filter((entry): entry is [FieldName, Token] => entry[1] !== undefined)
+      .sort(([, a], [, b]) => a.position[0] - b.position[0])
+      .map(([field, token]) => ({
+        hint: hints.find(hint => hint.field === field)?.label,
+        value: token.value,
+      }));
+  });
 
   async function onCopy() {
     try {
-      await navigator.clipboard.writeText(template.syntax);
+      await navigator.clipboard.writeText(syntax().value);
     } catch {
       return;
     }
