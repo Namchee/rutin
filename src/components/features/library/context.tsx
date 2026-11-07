@@ -1,18 +1,27 @@
-import { createContext, createSignal, type JSX, useContext } from 'solid-js';
+import { createContext, createMemo, type JSX, useContext } from 'solid-js';
+import Templates from '@/assets/library.json';
 import { useQueryState } from '@/lib/hooks/use-query-state';
 import type { ScheduleFormat } from '@/types/schedule';
-
-export type DisplayType = 'grid' | 'list';
 
 function createLibraryContext() {
   const [query, setQuery] = useQueryState('q', { default: '' });
   const [format, setFormat] = useQueryState<ScheduleFormat>('dialect', { default: 'unix' });
+
+  const templates = createMemo(() => {
+    const q = query().toLowerCase().trim();
+
+    return Templates.filter(template => {
+      return template.syntax.match(q) || template.label.match(q) || template.description.match(q);
+    });
+  });
 
   return {
     format,
     query,
     setFormat,
     setQuery,
+
+    templates
   };
 }
 

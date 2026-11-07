@@ -4,5 +4,4 @@ export interface LibraryTemplate {
   // for quick scanning
   label: string;
   syntax: string;
-  tags: string[];
 }
