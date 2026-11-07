@@ -7,13 +7,10 @@ export type DisplayType = 'grid' | 'list';
 function createLibraryContext() {
   const [query, setQuery] = useQueryState('q', { default: '' });
   const [format, setFormat] = useQueryState<ScheduleFormat>('dialect', { default: 'unix' });
-  const [display, setDisplay] = createSignal<DisplayType>('grid');
 
   return {
-    display,
     format,
     query,
-    setDisplay,
     setFormat,
     setQuery,
   };

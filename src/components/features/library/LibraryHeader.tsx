@@ -1,11 +1,9 @@
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/ToggleGroup';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/Tooltip';
-import { type DisplayType, useLibraryContext } from './context';
+import type { DisplayType } from './context';
 import { LibraryDialect } from './LibraryDialect';
 
 export function LibraryHeader() {
-  const { display, setDisplay } = useLibraryContext();
-
   return (
     <div class="flex items-center justify-between gap-2">
       <div class="relative w-full max-w-80">
@@ -18,41 +16,6 @@ export function LibraryHeader() {
 
       <div class="flex items-center rounded-md border border-separator">
         <LibraryDialect />
-
-        <ToggleGroup
-          value={[display()]}
-          onValueChange={val => {
-            if (val.value.length === 0) {
-              return;
-            }
-
-            setDisplay(val.value[0] as DisplayType);
-          }}
-          class="gap-0 rounded-md rounded-l-none border-separator border-l">
-          <Tooltip>
-            <TooltipTrigger>
-              <ToggleGroupItem
-                value="grid"
-                class="size-8 rounded-r-none rounded-l-none border-separator p-0 data-[state=on]:bg-background-hover">
-                <div class="i-lucide-layout-grid size-4" />
-              </ToggleGroupItem>
-            </TooltipTrigger>
-
-            <TooltipContent>Toggle grid view</TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger>
-              <ToggleGroupItem
-                value="list"
-                class="size-8 rounded-l-none p-0 data-[state=on]:bg-background-hover">
-                <div class="i-lucide-layout-list size-4" />
-              </ToggleGroupItem>
-            </TooltipTrigger>
-
-            <TooltipContent>Toggle list view</TooltipContent>
-          </Tooltip>
-        </ToggleGroup>
       </div>
     </div>
   );

@@ -115,27 +115,28 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
         <p class="text-content-tertiary text-xs">{template.description}</p>
       </div>
 
-      <div class="flex items-center justify-between bg-background px-4 py-3">
-        <Show when={next()}>
-          {date => (
-            <div class="flex gap-1 text-xs">
-              <p class='font-mono text-content-secondary'>Next</p>
+      <div class="flex items-center justify-between gap-2 bg-background px-4 py-3">
+        <div class='max-w-full flex-1 overflow-hidden'>
+          <Show when={next()}>
+            {date => (
+              <div class="flex gap-1 truncate text-xs">
+                <p class="font-medium font-mono text-content-secondary uppercase">Next</p>
 
-              <span class='text-content-tertiary'>
-                &middot;
-              </span>
+                <span class="text-content-tertiary">&middot;</span>
 
-              <Tooltip>
-                <TooltipTrigger class="text-content-secondary">
-                  {formatDateTime(date())}
-                </TooltipTrigger>
+                <Tooltip>
+                  <TooltipTrigger class="text-content-secondary">
+                    {formatDateTime(date())}
+                  </TooltipTrigger>
 
-                <TooltipContent>                  {formatRelativeTime(Temporal.Now.plainDateTimeISO(), date())}
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          )}
-        </Show>
+                  <TooltipContent>
+                    {formatRelativeTime(Temporal.Now.plainDateTimeISO(), date())}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            )}
+          </Show>
+        </div>
 
         <div class="flex items-center gap-1">
           <Tooltip>

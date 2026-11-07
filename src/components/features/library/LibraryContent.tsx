@@ -1,25 +1,19 @@
 import { For } from 'solid-js';
 import Templates from '@/assets/library.json';
-import { cn } from '@/lib/css';
 import type { LibraryTemplate } from '@/types/library';
-import { useLibraryContext } from './context';
 import { LibraryItem } from './LibraryItem';
 
 export function LibraryContent() {
-  const { display } = useLibraryContext();
-
   // filter logic
   const templates = Templates.filter(t => t);
 
   return (
-    <div
-      class={cn('gap-4', {
-        'flex flex-col': display() === 'list',
-        'grid grid-cols-3': display() === 'grid',
-      })}>
-      <For each={templates}>
-        {(template: LibraryTemplate) => <LibraryItem template={template} />}
-      </For>
+    <div class="@container">
+      <div class='grid-cols grid @4xl:grid-cols-3 @xl:grid-cols-2 grid-cols-1 gap-4'>
+        <For each={templates}>
+          {(template: LibraryTemplate) => <LibraryItem template={template} />}
+        </For>
+      </div>
     </div>
   );
 }
