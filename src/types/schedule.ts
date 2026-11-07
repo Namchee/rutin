@@ -5,7 +5,7 @@ export interface Format {
 }
 
 export type ScheduleGenerator = Generator<Date, void, void> | undefined;
-interface Token {
+export interface Token {
   value: string;
   position: [number, number];
 }

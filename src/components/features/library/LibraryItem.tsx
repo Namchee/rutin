@@ -1,13 +1,29 @@
 import { TooltipTrigger } from '@ark-ui/solid';
-import { createSignal, onCleanup } from 'solid-js';
+import { createMemo, createSignal, onCleanup } from 'solid-js';
 import { Tooltip, TooltipContent } from '@/components/ui/Tooltip';
-import { cn } from '@/lib/css';
-import type { LibraryTemplate } from '@/types/library';
-import { useLibraryContext } from './context';
 import { Hints } from '@/const/schedule';
+import { cn } from '@/lib/css';
+import { Parsers } from '@/lib/parsers';
+import type { LibraryTemplate } from '@/types/library';
+import type { Token, TokenMap } from '@/types/schedule';
+import { useLibraryContext } from './context';
 
 interface LibraryItemProps {
   template: LibraryTemplate;
+}
+
+function getToken(raw: string[], index: number): Token | undefined {
+  const value = raw[index];
+  if (value === undefined) {
+    return undefined;
+  }
+
+  const start = raw.slice(0, index).join(' ').length + (index > 0 ? 1 : 0);
+
+  return {
+    position: [start, start + value.length],
+    value,
+  };
 }
 
 export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
@@ -16,7 +32,24 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
   const [copied, setCopied] = createSignal<boolean>(false);
   const [timeoutRef, setTimeoutRef] = createSignal<ReturnType<typeof setTimeout> | undefined>();
 
-  const formatter = new Intl.NumberFormat('en-GB');
+  const syntax = createMemo(() => {
+    const rawTokens = template.syntax.split(' ');
+    const tokens: TokenMap = {
+      dayOfMonth: getToken(rawTokens, 2),
+      dayOfWeek: getToken(rawTokens, 4),
+      hour: getToken(rawTokens, 1),
+      minute: getToken(rawTokens, 0),
+      month: getToken(rawTokens, 3),
+    };
+
+    return Parsers[format()].convert(tokens, template.syntax, 'unix');
+  });
+
+  const fields = createMemo(() =>
+    syntax()
+      .value.split(' ')
+      .map((value, index) => ({ hint: Hints[format()][index]?.label, value })),
+  );
 
   async function onCopy() {
     try {
@@ -46,15 +79,13 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
     <div class="flex flex-col divide-y divide-separator rounded-md border border-md border-separator">
       <div class="flex flex-1 flex-col gap-2 p-4">
         <div class="flex items-center gap-1">
-          {template.syntax.split(' ').map((val, idx) => (
+          {fields().map(field => (
             <Tooltip>
               <TooltipTrigger class="inline w-fit rounded-md border border-separator bg-background px-1.5 py-0.5 font-mono">
-                {val}
+                {field.value}
               </TooltipTrigger>
 
-              <TooltipContent>
-                {Hints[format()][idx].label}
-              </TooltipContent>
+              <TooltipContent>{field.hint ?? 'Field'}</TooltipContent>
             </Tooltip>
           ))}
         </div>
