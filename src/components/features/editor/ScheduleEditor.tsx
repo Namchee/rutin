@@ -140,17 +140,8 @@ function FormatSelector() {
 }
 
 export function ScheduleEditor() {
-  const {
-    onInput,
-    state,
-    format,
-    onBlur,
-    onCaretMovement,
-    normal,
-    value,
-    ref,
-    normalize,
-  } = useEditorContext();
+  const { onInput, state, format, onBlur, onCaretMovement, normal, value, ref, normalize } =
+    useEditorContext();
 
   const [copied, setCopied] = createSignal<boolean>(false);
   const [timeoutRef, setTimeoutRef] = createSignal<ReturnType<typeof setTimeout> | undefined>();

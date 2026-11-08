@@ -9,7 +9,7 @@ export default function Library() {
       <Title>Library | Rutin</Title>
 
       <LibraryContextProvider>
-        <div class='flex h-full flex-col gap-8'>
+        <div class="flex h-full flex-col gap-8">
           <div class="flex w-full flex-col gap-0">
             <h1 class="font-semibold text-2xl leading-relaxed">Library</h1>
             <p class="text-content-tertiary">

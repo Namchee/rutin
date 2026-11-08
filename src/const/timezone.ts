@@ -1,4 +1,4 @@
-import { Temporal } from "temporal-polyfill";
+import { Temporal } from 'temporal-polyfill';
 
 export const Timezones: Record<string, { label: string; description: string }> = {
   [Temporal.Now.timeZoneId()]: {

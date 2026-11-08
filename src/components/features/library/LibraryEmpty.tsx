@@ -6,7 +6,7 @@ export function LibraryEmpty() {
           <div class="i-lucide-ghost size-12 text-content-secondary"></div>
         </div>
 
-        <div class='space-y-1 text-center'>
+        <div class="space-y-1 text-center">
           <p class="font-semibold text-content-secondary">No Expression Found</p>
 
           <p class="text-content-tertiary text-sm">
