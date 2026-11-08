@@ -5,7 +5,7 @@ import { Tooltip, TooltipContent } from '@/components/ui/Tooltip';
 import { Hints } from '@/const/schedule';
 import { cn } from '@/lib/css';
 import { Parsers } from '@/lib/parsers';
-import { formatDateTime, formatRelativeTime } from '@/lib/temporal';
+import { formatDate, formatDateTime, formatRelativeTime } from '@/lib/temporal';
 import type { LibraryTemplate } from '@/types/library';
 import type { FieldName, Token, TokenMap } from '@/types/schedule';
 import { useLibraryContext } from './context';
@@ -29,7 +29,7 @@ function getToken(raw: string[], index: number): Token | undefined {
 }
 
 export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
-  const { format } = useLibraryContext();
+  const { format, timezone } = useLibraryContext();
 
   const [copied, setCopied] = createSignal<boolean>(false);
   const [timeoutRef, setTimeoutRef] = createSignal<ReturnType<typeof setTimeout> | undefined>();
@@ -116,17 +116,21 @@ export function LibraryItem({ template }: Readonly<LibraryItemProps>) {
       </div>
 
       <div class="flex items-center justify-between gap-2 bg-background px-4 py-3">
-        <div class='max-w-full flex-1 overflow-hidden'>
+        <div class="min-w-0 max-w-full flex-1">
           <Show when={next()}>
             {date => (
-              <div class="flex gap-1 truncate text-xs">
-                <p class="font-medium font-mono text-content-secondary uppercase">Next</p>
+              <div class="flex min-w-0 gap-1 text-xs">
+                <p class="shrink-0 whitespace-nowrap font-medium font-mono text-content-secondary uppercase">
+                  Next
+                </p>
 
-                <span class="text-content-tertiary">&middot;</span>
+                <span class="shrink-0 text-content-tertiary">&middot;</span>
 
                 <Tooltip>
-                  <TooltipTrigger class="text-content-secondary">
-                    {formatDateTime(date())}
+                  <TooltipTrigger class="min-w-0 truncate text-left text-content-secondary">
+                    {formatDate(date(), {
+                      timeZone: timezone() !== 'utc' ? timezone() : undefined,
+                    })}
                   </TooltipTrigger>
 
                   <TooltipContent>

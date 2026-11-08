@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/css';
 
 import type { ScheduleFormat } from '@/types/schedule';
-import { FormatSelector } from '../../FormatSelector';
 import { useEditorContext } from './context';
+import { FormatSelector } from './FormatSelector';
 import { ScheduleDescriptor } from './ScheduleDescriptor';
 import { ScheduleHint } from './ScheduleHint';
 
@@ -64,7 +64,7 @@ export function ScheduleEditor() {
   return (
     <div class="flex flex-col rounded-lg border border-separator">
       <div class="flex h-fit items-center justify-between border-separator border-b px-4 py-2">
-        <FormatSelector format={format} setFormat={setFormat} />
+        <FormatSelector />
 
         <Show when={state() !== 'incomplete'}>
           <Badge variant={state() === 'valid' ? 'default' : 'outline'} class="px-2">
