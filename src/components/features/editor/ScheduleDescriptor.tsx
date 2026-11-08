@@ -12,10 +12,11 @@ export function ScheduleDescriptor() {
       <div class="flex flex-col gap-2">
         <p class="font-semibold text-content-secondary text-xs uppercase">In plain English</p>
 
-        <p class={cn("leading-relaxed", {
-          "text-content-secondary": state() === 'valid',
-          "text-content-tertiary": state() !== 'valid',
-        })}>
+        <p
+          class={cn('leading-relaxed', {
+            'text-content-secondary': state() === 'valid',
+            'text-content-tertiary': state() !== 'valid',
+          })}>
           {descriptor()}
         </p>
       </div>

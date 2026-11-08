@@ -1,0 +1,237 @@
+[
+  {
+    "description": "Ideal for frequent polling, lightweight checks, and rapid task processing.",
+    "label": "Every Minute",
+    "syntax": "* * * * *"
+  },
+  {
+    "description": "A short recurring interval for checking updates without running every minute.",
+    "label": "Every 2 Minutes",
+    "syntax": "*/2 * * * *"
+  },
+  {
+    "description": "Suitable for periodic status checks and processing small batches of work.",
+    "label": "Every 5 Minutes",
+    "syntax": "*/5 * * * *"
+  },
+  {
+    "description": "A lightweight schedule for recurring synchronization and background checks.",
+    "label": "Every 10 Minutes",
+    "syntax": "*/10 * * * *"
+  },
+  {
+    "description": "Useful for periodic data synchronization and scheduled health checks.",
+    "label": "Every 15 Minutes",
+    "syntax": "*/15 * * * *"
+  },
+  {
+    "description": "A less frequent option for routine background processing.",
+    "label": "Every 20 Minutes",
+    "syntax": "*/20 * * * *"
+  },
+  {
+    "description": "Suitable for periodic maintenance and tasks that don't require frequent execution.",
+    "label": "Every 30 Minutes",
+    "syntax": "*/30 * * * *"
+  },
+  {
+    "description": "A convenient schedule for hourly maintenance and recurring summaries.",
+    "label": "Every Hour",
+    "syntax": "0 * * * *"
+  },
+  {
+    "description": "Run hourly tasks shortly after the hour, leaving time for other scheduled processes.",
+    "label": "Every Hour at :15",
+    "syntax": "15 * * * *"
+  },
+  {
+    "description": "A balanced schedule for tasks that need regular execution throughout the day.",
+    "label": "Every 2 Hours",
+    "syntax": "0 */2 * * *"
+  },
+  {
+    "description": "Useful for periodic reporting, synchronization, and background maintenance.",
+    "label": "Every 4 Hours",
+    "syntax": "0 */4 * * *"
+  },
+  {
+    "description": "A low-frequency schedule for routine checks and data processing.",
+    "label": "Every 6 Hours",
+    "syntax": "0 */6 * * *"
+  },
+  {
+    "description": "Suitable for tasks that only need to run a few times throughout the day.",
+    "label": "Every 8 Hours",
+    "syntax": "0 */8 * * *"
+  },
+  {
+    "description": "A simple option for twice-daily maintenance and synchronization.",
+    "label": "Every 12 Hours",
+    "syntax": "0 */12 * * *"
+  },
+  {
+    "description": "A common choice for overnight backups, cleanup jobs, and daily maintenance.",
+    "label": "Daily at 12:00 AM",
+    "syntax": "0 0 * * *"
+  },
+  {
+    "description": "Schedule early-morning data processing before the start of the workday.",
+    "label": "Daily at 6:00 AM",
+    "syntax": "0 6 * * *"
+  },
+  {
+    "description": "Prepare daily reports and updates before the workday gets underway.",
+    "label": "Daily at 9:00 AM",
+    "syntax": "0 9 * * *"
+  },
+  {
+    "description": "A convenient time for midday synchronization and routine processing.",
+    "label": "Daily at 12:00 PM",
+    "syntax": "0 12 * * *"
+  },
+  {
+    "description": "Schedule end-of-day reports, summaries, and routine maintenance.",
+    "label": "Daily at 6:00 PM",
+    "syntax": "0 18 * * *"
+  },
+  {
+    "description": "Distribute recurring workloads across morning and evening execution windows.",
+    "label": "Twice Daily at 8:00 AM and 8:00 PM",
+    "syntax": "0 8,20 * * *"
+  },
+  {
+    "description": "Ideal for automated reports, business-day synchronization, and routine office workflows.",
+    "label": "Weekdays at 8:30 AM",
+    "syntax": "30 8 * * 1-5"
+  },
+  {
+    "description": "Start daily business workflows and scheduled processing at the beginning of the workday.",
+    "label": "Weekdays at 9:00 AM",
+    "syntax": "0 9 * * 1-5"
+  },
+  {
+    "description": "Schedule midday business workflows and recurring operational tasks.",
+    "label": "Weekdays at 12:30 PM",
+    "syntax": "30 12 * * 1-5"
+  },
+  {
+    "description": "Keep routine checks and background processing running throughout the business week.",
+    "label": "Every 15 Minutes on Weekdays",
+    "syntax": "*/15 * * * 1-5"
+  },
+  {
+    "description": "Run recurring business operations during standard working hours.",
+    "label": "Hourly on Weekdays, 9 AM–5 PM",
+    "syntax": "0 9-17 * * 1-5"
+  },
+  {
+    "description": "A less frequent alternative for scheduled business-hour processing.",
+    "label": "Every 2 Hours on Weekdays, 9 AM–5 PM",
+    "syntax": "0 9-17/2 * * 1-5"
+  },
+  {
+    "description": "Run recurring checks and synchronization twice per hour during the workday.",
+    "label": "Every 30 Minutes on Weekdays, 9 AM–5 PM",
+    "syntax": "0,30 9-17 * * 1-5"
+  },
+  {
+    "description": "Schedule several checkpoints throughout the business day for reporting and processing.",
+    "label": "Three Times Daily on Weekdays",
+    "syntax": "0 9,13,17 * * 1-5"
+  },
+  {
+    "description": "Extend recurring business-hour processing to an earlier start and later finish.",
+    "label": "Every 30 Minutes on Weekdays, 8 AM–6 PM",
+    "syntax": "0,30 8-18 * * 1-5"
+  },
+  {
+    "description": "Handle end-of-day reporting, summaries, and business-day cleanup.",
+    "label": "Weekdays at 6:00 PM",
+    "syntax": "0 18 * * 1-5"
+  },
+  {
+    "description": "Schedule weekend maintenance, reporting, or recurring personal tasks.",
+    "label": "Weekends at 10:00 AM",
+    "syntax": "0 10 * * 6,0"
+  },
+  {
+    "description": "A convenient schedule for weekly reports and Monday morning routines.",
+    "label": "Every Monday at 9:00 AM",
+    "syntax": "0 9 * * 1"
+  },
+  {
+    "description": "Coordinate recurring tasks around a twice-weekly schedule.",
+    "label": "Every Tuesday and Thursday at 9:00 AM",
+    "syntax": "0 9 * * 2,4"
+  },
+  {
+    "description": "Spread recurring tasks across the beginning, middle, and end of the workweek.",
+    "label": "Every Monday, Wednesday, and Friday at 8:00 AM",
+    "syntax": "0 8 * * 1,3,5"
+  },
+  {
+    "description": "A useful schedule for weekly summaries, reporting, and end-of-week routines.",
+    "label": "Every Friday at 5:00 PM",
+    "syntax": "0 17 * * 5"
+  },
+  {
+    "description": "Schedule weekend tasks before the day ends.",
+    "label": "Every Saturday at 11:00 PM",
+    "syntax": "0 23 * * 6"
+  },
+  {
+    "description": "Run weekly cleanup or maintenance tasks at the end of Sunday.",
+    "label": "Every Sunday at 11:59 PM",
+    "syntax": "59 23 * * 0"
+  },
+  {
+    "description": "A common choice for monthly billing cycles, reporting, and scheduled resets.",
+    "label": "Monthly on the 1st at 12:00 AM",
+    "syntax": "0 0 1 * *"
+  },
+  {
+    "description": "Align recurring tasks with early-month processing and administrative workflows.",
+    "label": "Monthly on the 5th at 12:00 AM",
+    "syntax": "0 0 5 * *"
+  },
+  {
+    "description": "Schedule two checkpoints within each month for recurring administrative tasks.",
+    "label": "Monthly on the 10th and 20th",
+    "syntax": "0 0 10,20 * *"
+  },
+  {
+    "description": "A midday schedule for monthly reporting and financial processing.",
+    "label": "Monthly on the 15th at 12:00 PM",
+    "syntax": "0 12 15 * *"
+  },
+  {
+    "description": "Useful for splitting monthly billing, reporting, or reconciliation into two runs.",
+    "label": "Monthly on the 1st and 15th at 8:00 AM",
+    "syntax": "0 8 1,15 * *"
+  },
+  {
+    "description": "Automate early-month checks, reporting, and recurring administrative tasks.",
+    "label": "First 5 Days of Every Month at 9:00 AM",
+    "syntax": "0 9 1-5 * *"
+  },
+  {
+    "description": "Useful for month-end processing when only months with 31 days should trigger execution.",
+    "label": "Monthly on the 31st at 12:00 AM",
+    "syntax": "0 0 31 * *"
+  },
+  {
+    "description": "A quarterly schedule for financial reviews, business reporting, and periodic maintenance.",
+    "label": "First Day of Every Quarter",
+    "syntax": "0 0 1 1,4,7,10 *"
+  },
+  {
+    "description": "Automate annual resets, year-end preparation, or recurring New Year's tasks.",
+    "label": "Every January 1st at 12:00 AM",
+    "syntax": "0 0 1 1 *"
+  },
+  {
+    "description": "Schedule annual holiday tasks, reminders, and seasonal workflows.",
+    "label": "Every December 25th at 12:00 AM",
+    "syntax": "0 0 25 12 *"
+  }
+]

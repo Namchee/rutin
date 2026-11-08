@@ -5,7 +5,7 @@ export interface Format {
 }
 
 export type ScheduleGenerator = Generator<Date, void, void> | undefined;
-interface Token {
+export interface Token {
   value: string;
   position: [number, number];
 }
@@ -22,7 +22,15 @@ export type FieldName =
   // special Systemd
   | 'time'
   | 'date';
+
 export interface NormalizedSchedule {
   value: string;
   tokens: TokenMap;
+}
+
+export interface ScheduleHint {
+  field: FieldName;
+  label: string;
+  // When true, the field is optional and rendered with square brances.
+  optional?: boolean;
 }

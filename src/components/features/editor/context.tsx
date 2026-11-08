@@ -79,7 +79,7 @@ function createEditorContext() {
     }
 
     return [];
-  }
+  };
 
   const descriptor = () => {
     const p = parsed();
@@ -87,8 +87,8 @@ function createEditorContext() {
       return p.descriptor;
     }
 
-    return '';
-  }
+    return ScheduleLabel[p.status];
+  };
 
   const generator = () => {
     const p = parsed();
@@ -97,9 +97,7 @@ function createEditorContext() {
     }
 
     return undefined;
-  }
-
-
+  };
 
   function updateCurrentToken() {
     if (!input) {
@@ -178,9 +176,8 @@ function createEditorContext() {
   }
 
   function updateFormat(newFormat: ScheduleFormat) {
-    const val = state() === 'valid'
-      ? Parsers[newFormat].convert(tokens(), value(), format()).value
-      : value();
+    const val =
+      state() === 'valid' ? Parsers[newFormat].convert(tokens(), value(), format()).value : value();
 
     setFormat(newFormat);
     setValue(val);

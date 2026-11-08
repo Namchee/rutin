@@ -9,7 +9,7 @@ export default function NotFound() {
 
       <A
         href="/"
-        class='group mt-8 inline-flex w-fit items-center gap-1 text-content-secondary text-sm transition-colors hover:text-content-primary'>
+        class="group mt-8 inline-flex w-fit items-center gap-1 text-content-secondary text-sm transition-colors hover:text-content-primary">
         <span>Bring me home</span>{' '}
         <div class="i-lucide-arrow-right size-4 transition-all group-hover:translate-x-1" />
       </A>

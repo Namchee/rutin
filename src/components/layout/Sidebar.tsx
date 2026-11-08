@@ -39,12 +39,12 @@ interface SidebarProps {
 export function MobileDrawer() {
   return (
     <Drawer swipeDirection="start">
-      <DrawerTrigger class='group grid size-6 place-items-center rounded transition-colors hover:bg-surface-hover md:hidden'>
+      <DrawerTrigger class="group grid size-6 place-items-center rounded transition-colors hover:bg-surface-hover md:hidden">
         <div class="i-lucide-text-align-end size-4 bg-content-secondary transition-colors group-hover:bg-content-primary" />
       </DrawerTrigger>
 
       <DrawerContent class="w-[240px] gap-4 p-2" showX>
-        <SidebarBody expanded={() => true} setExpanded={() => { }} />
+        <SidebarBody expanded={() => true} setExpanded={() => {}} />
       </DrawerContent>
     </Drawer>
   );

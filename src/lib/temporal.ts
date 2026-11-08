@@ -1,5 +1,7 @@
 import type { Temporal } from 'temporal-polyfill/full';
 
+const RelativeTimeFormat = new Intl.RelativeTimeFormat('en-GB', { numeric: 'always' });
+
 export function formatDate(
   date: Temporal.PlainDateTime,
   options?: Intl.DateTimeFormatOptions,
@@ -20,23 +22,48 @@ export function formatDate(
   });
 }
 
+export function formatDateTime(date: Temporal.PlainDateTime): string {
+  return date
+    .toLocaleString('en-GB', {
+      day: 'numeric',
+      hour: '2-digit',
+      hour12: false,
+      minute: '2-digit',
+      month: 'short',
+      weekday: 'short',
+      year: 'numeric',
+    })
+    .replace(',', '');
+}
+
 export function formatRelativeTime(a: Temporal.PlainDateTime, b: Temporal.PlainDateTime): string {
-  const formatter = new Intl.RelativeTimeFormat('en-GB', { numeric: 'auto' });
   const diff = a.until(b, { largestUnit: 'year' });
 
-  const parts: [number, Intl.RelativeTimeFormatUnit][] = [
-    [diff.years, 'year'],
-    [diff.months, 'month'],
-    [diff.days, 'day'],
-    [diff.hours, 'hour'],
-    [diff.minutes, 'minute'],
+  const units: [number, string, Intl.RelativeTimeFormatUnit][] = [
+    [diff.years, 'y', 'year'],
+    [diff.months, 'mo', 'month'],
+    [diff.days, 'd', 'day'],
+    [diff.hours, 'h', 'hour'],
+    [diff.minutes, 'm', 'minute'],
   ];
 
-  for (const [value, unit] of parts) {
-    if (value !== 0) {
-      return formatter.format(value, unit);
+  const parts = units.filter(([value]) => value !== 0).slice(0, 2);
+
+  if (parts.length === 0) {
+    if (diff.sign === 0) {
+      return 'Just now';
     }
+
+    return diff.sign > 0 ? 'in <1m' : '<1m ago';
   }
 
-  return 'Just now';
+  if (parts.length === 1) {
+    const [value, , unit] = parts[0];
+
+    return RelativeTimeFormat.format(value, unit);
+  }
+
+  const value = parts.map(([count, unit]) => `${Math.abs(count)}${unit}`).join(' ');
+
+  return diff.sign < 0 ? `${value} ago` : `in ${value}`;
 }

@@ -1,14 +1,27 @@
-import { createSignal, onCleanup, Show } from 'solid-js';
-
+import { createListCollection } from '@ark-ui/solid';
+import { createSignal, For, onCleanup, Show } from 'solid-js';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/Drawer';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/Select';
+import { FormatLabel } from '@/const/schedule';
 import { cn } from '@/lib/css';
-
+import { useMediaQuery } from '@/lib/hooks/use-media-query';
 import type { ScheduleFormat } from '@/types/schedule';
-
 import { useEditorContext } from './context';
-import { FormatSelector } from './FormatSelector';
 import { ScheduleDescriptor } from './ScheduleDescriptor';
 import { ScheduleHint } from './ScheduleHint';
 
@@ -20,6 +33,111 @@ const Placeholders: Record<ScheduleFormat, string> = {
   systemd: '* *-*-* *:*:*',
   unix: '* * * * *',
 };
+
+function FormatDrawer() {
+  const { format, setFormat } = useEditorContext();
+
+  const [open, setOpen] = createSignal(false);
+
+  function onSelect(format: ScheduleFormat) {
+    setFormat(format);
+
+    setOpen(false);
+  }
+
+  return (
+    <div class="flex items-center gap-2">
+      <p class="font-medium text-content-tertiary text-sm">Dialect</p>
+
+      <Drawer open={open()} onOpenChange={d => setOpen(d.open)}>
+        <DrawerTrigger class="flex h-8 w-24 items-center justify-between rounded-md border border-separator p-2 font-normal transition-shadow focus:ring-accent focus:ring-offset-0">
+          <p class="truncate font-medium text-sm">{FormatLabel[format()].label}</p>
+
+          <div class="i-lucide-chevron-down ml-auto size-3 shrink-0 text-accent-foreground/50" />
+        </DrawerTrigger>
+
+        <DrawerContent>
+          <div class="px-2 py-4">
+            <DrawerHeader class="px-2 pt-0 pb-2 text-left">
+              <DrawerTitle class="font-mono text-content-secondary text-xs uppercase">
+                Dialect
+              </DrawerTitle>
+            </DrawerHeader>
+
+            <div class="flex flex-col gap-1">
+              <For each={Object.entries(FormatLabel)}>
+                {([key, value]) => (
+                  <div
+                    onPointerDown={() => onSelect(key as ScheduleFormat)}
+                    class={cn('flex items-center gap-3 rounded-md p-2 hover:bg-background-hover', {
+                      'bg-background-hover': format() === key,
+                    })}>
+                    <div class="flex-1">
+                      <p class="font-medium text-content-primary text-sm">{value.label}</p>
+
+                      <p class="text-content-tertiary text-xs">{value.description}</p>
+                    </div>
+
+                    <div
+                      class={cn('i-lucide-check size-4 text-content-primary', {
+                        invisible: format() !== key,
+                      })}
+                    />
+                  </div>
+                )}
+              </For>
+            </div>
+          </div>
+        </DrawerContent>
+      </Drawer>
+    </div>
+  );
+}
+
+function FormatSelector() {
+  const { format, setFormat } = useEditorContext();
+
+  const isNonMobile = useMediaQuery('(min-width: 768px)');
+
+  const collection = createListCollection({
+    items: Object.entries(FormatLabel).map(([k, v]) => ({ label: v.label, value: k })),
+  });
+
+  return (
+    <Show when={isNonMobile()} fallback={<FormatDrawer />}>
+      <Select
+        collection={collection}
+        value={[format()]}
+        onValueChange={v => setFormat(v.value[0] as unknown as ScheduleFormat)}
+        class="flex items-center gap-2">
+        <SelectLabel class="text-content-secondary">Dialect</SelectLabel>
+
+        <SelectTrigger>
+          <SelectValue
+            class="h-fit w-24 truncate font-medium leading-none"
+            placeholder="Select dialect..."
+          />
+
+          <div class="i-lucide-chevron-down ml-auto size-3 shrink-0 text-content-tertiary" />
+        </SelectTrigger>
+
+        <SelectContent class="max-w-sm">
+          <For each={collection.items}>
+            {item => (
+              <SelectItem item={item.value}>
+                <p class="font-medium text-sm leading-normal">{item.label}</p>
+
+                <p class="text-content-tertiary text-xs">
+                  {FormatLabel[item.value as ScheduleFormat].description}
+                </p>
+              </SelectItem>
+            )}
+          </For>
+        </SelectContent>
+      </Select>
+    </Show>
+  );
+}
 
 export function ScheduleEditor() {
   const { onInput, state, format, onBlur, onCaretMovement, normal, value, ref, normalize } =
@@ -54,11 +172,11 @@ export function ScheduleEditor() {
 
   return (
     <div class="flex flex-col rounded-lg border border-separator">
-      <div class="flex h-16 items-center justify-between border-separator border-b p-4">
+      <div class="flex h-fit items-center justify-between border-separator border-b px-4 py-2">
         <FormatSelector />
 
         <Show when={state() !== 'incomplete'}>
-          <Badge variant={state() === 'valid' ? 'default' : 'outline'}>
+          <Badge variant={state() === 'valid' ? 'default' : 'outline'} class="px-2">
             <div
               class={cn('size-[14px]', {
                 'i-lucide-check': state() === 'valid',
@@ -89,7 +207,7 @@ export function ScheduleEditor() {
           />
         </div>
 
-        <div class="pb-4" style={{ "padding-bottom": '16px' }}>
+        <div class="pb-4" style={{ 'padding-bottom': '16px' }}>
           <ScheduleHint />
         </div>
       </div>

@@ -1,7 +1,6 @@
 import { createListCollection } from '@ark-ui/solid';
 import { type Accessor, createEffect, createSignal, For, type Setter, Show } from 'solid-js';
 import { Temporal } from 'temporal-polyfill/full';
-
 import {
   Drawer,
   DrawerContent,
@@ -16,13 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/Select';
-
+import { Timezones } from '@/const/timezone';
 import { cn } from '@/lib/css';
 import { take } from '@/lib/generator';
 import { useIntersectionObserver } from '@/lib/hooks/use-intersection-observer';
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
 import { formatDate, formatRelativeTime } from '@/lib/temporal';
-
 import { useEditorContext } from './context';
 
 function ExecutionEmpty() {
@@ -50,17 +48,6 @@ function ExecutionExhausted() {
     </div>
   );
 }
-
-const Timezones: Record<string, { label: string; description: string }> = {
-  [Temporal.Now.timeZoneId()]: {
-    description: `GMT ${Temporal.Now.zonedDateTimeISO().offset}`,
-    label: Temporal.Now.timeZoneId(),
-  },
-  utc: {
-    description: 'GMT +00:00',
-    label: 'UTC',
-  },
-};
 
 interface TimezoneSelectorProps {
   timezone: Accessor<string>;
@@ -126,7 +113,7 @@ function TimezoneDrawer({ timezone, setTimezone }: Readonly<TimezoneSelectorProp
   );
 }
 
-export function TimezoneSelector({ timezone, setTimezone }: Readonly<TimezoneSelectorProps>) {
+function TimezoneSelector({ timezone, setTimezone }: Readonly<TimezoneSelectorProps>) {
   const isNonMobile = useMediaQuery('(min-width: 768px)');
 
   const collection = createListCollection({
@@ -144,19 +131,24 @@ export function TimezoneSelector({ timezone, setTimezone }: Readonly<TimezoneSel
         collection={collection}
         value={[timezone()]}
         onValueChange={v => setTimezone(v.value[0])}
-        class="flex items-center gap-2">
-        <SelectTrigger class="w-32">
-          <div class="flex max-w-full items-center gap-1.5 overflow-hidden">
-            <div class="i-lucide-globe size-4" />
+        positioning={{
+          placement: 'bottom-end',
+        }}
+        class="flex items-center">
+        <SelectTrigger>
+          <div class="i-lucide-globe mr-2 size-4 shrink-0 text-content-secondary" />
 
-            <SelectValue
-              class="h-fit truncate font-medium leading-none"
-              placeholder="Select dialect..."
-            />
-          </div>
+          <SelectValue
+            class="h-fit w-20 truncate font-medium leading-none"
+            placeholder="Select dialect..."
+          />
+
+          <div class="i-lucide-chevron-down size-[14px] shrink-0 text-content-tertiary" />
         </SelectTrigger>
 
         <SelectContent class="max-w-md">
+          <p class="my-1 ml-2 font-mono text-content-secondary text-xs uppercase">Timezone</p>
+
           <For each={collection.items}>
             {item => (
               <SelectItem item={item.value}>
@@ -207,8 +199,8 @@ export function ScheduleExecutions() {
 
   return (
     <div class="flex flex-col overflow-hidden rounded-lg border border-separator">
-      <div class="flex h-16 items-center justify-between border-separator border-b p-4">
-        <p class="font-medium text-content-secondary text-sm">Next executions</p>
+      <div class="flex h-fit items-center justify-between border-separator border-b px-4 py-2">
+        <p class="font-medium text-content-secondary text-sm">Executions</p>
 
         <TimezoneSelector timezone={timezone} setTimezone={setTimezone} />
       </div>
