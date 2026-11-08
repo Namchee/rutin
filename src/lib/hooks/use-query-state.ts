@@ -33,10 +33,8 @@ export function useQueryState<T = string>(
     return (value as T) ?? options.default;
   };
 
-  // Local state keeps consumers responsive while URL writes are debounced.
   const [state, setState] = createSignal<T>(parse(params[key]));
 
-  // Serialized values we wrote but whose URL update has not been observed yet.
   const echoes = new Set<string>();
 
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -51,7 +49,6 @@ export function useQueryState<T = string>(
     }
   }
 
-  // Sync from external navigation (back/forward, links) and ignore our own echoes.
   createEffect(() => {
     const raw = params[key];
     const written = echoKey(raw === undefined ? null : String(raw));

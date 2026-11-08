@@ -12,7 +12,7 @@ export function Layout({ children }: Readonly<LayoutProps>) {
   const [expanded, setExpanded] = createSignal<boolean>(true);
 
   return (
-    <div class="flex min-h-screen bg-background text-content-primary">
+    <div class='flex min-h-screen bg-background text-content-primary'>
       <Sidebar expanded={expanded} setExpanded={setExpanded} />
 
       <button
