@@ -11,7 +11,7 @@ function createLibraryContext() {
     const q = query().toLowerCase().trim();
 
     return Templates.filter(template => {
-      return template.syntax.match(q) || template.label.match(q) || template.description.match(q);
+      return template.syntax.toLowerCase().match(q) || template.label.toLowerCase().match(q) || template.description.toLowerCase().match(q);
     });
   });
 

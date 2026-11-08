@@ -1,5 +1,7 @@
 import type { Temporal } from 'temporal-polyfill/full';
 
+const RelativeTimeFormat = new Intl.RelativeTimeFormat('en-GB', { numeric: 'always' });
+
 export function formatDate(
   date: Temporal.PlainDateTime,
   options?: Intl.DateTimeFormatOptions,
@@ -34,24 +36,18 @@ export function formatDateTime(date: Temporal.PlainDateTime): string {
     .replace(',', '');
 }
 
-export function formatRelativeTime(
-  a: Temporal.PlainDateTime,
-  b: Temporal.PlainDateTime,
-): string {
+export function formatRelativeTime(a: Temporal.PlainDateTime, b: Temporal.PlainDateTime): string {
   const diff = a.until(b, { largestUnit: 'year' });
 
-  const units: [number, string][] = [
-    [diff.years, 'y'],
-    [diff.months, 'm'],
-    [diff.days, 'd'],
-    [diff.hours, 'h'],
-    [diff.minutes, 'm'],
+  const units: [number, string, Intl.RelativeTimeFormatUnit][] = [
+    [diff.years, 'y', 'year'],
+    [diff.months, 'mo', 'month'],
+    [diff.days, 'd', 'day'],
+    [diff.hours, 'h', 'hour'],
+    [diff.minutes, 'm', 'minute'],
   ];
 
-  const parts = units
-    .filter(([value]) => value !== 0)
-    .slice(0, 2)
-    .map(([value, unit]) => `${Math.abs(value)}${unit}`);
+  const parts = units.filter(([value]) => value !== 0).slice(0, 2);
 
   if (parts.length === 0) {
     if (diff.sign === 0) {
@@ -61,7 +57,13 @@ export function formatRelativeTime(
     return diff.sign > 0 ? 'in <1m' : '<1m ago';
   }
 
-  const value = parts.join(' ');
+  if (parts.length === 1) {
+    const [value, , unit] = parts[0];
+
+    return RelativeTimeFormat.format(value, unit);
+  }
+
+  const value = parts.map(([count, unit]) => `${Math.abs(count)}${unit}`).join(' ');
 
   return diff.sign < 0 ? `${value} ago` : `in ${value}`;
 }
